@@ -1,0 +1,2 @@
+[console_scripts]
+cybersec-agents = cybersec_agents.cli.main:main
