@@ -1,22 +1,22 @@
 
 repos:
 -   repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 23.12.1  # Use a specific version
     hooks:
     -   id: black
         args: [--line-length=88, --target-version=py37]
 -   repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+    rev: 5.13.2  # Use a specific version
     hooks:
     -   id: isort
         args: [--profile=black, --line-length=88]
 -   repo: https://github.com/PyCQA/autoflake
-    rev: v2.0.0
+    rev: v2.2.1  # Use a specific version
     hooks:
     -   id: autoflake
         args: [--remove-all-unused-imports, --remove-unused-variables]
--   repo: https://github.com/mypy/mypy
-    rev: v1.0.0
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0  # Use the mirrors-mypy instead of direct mypy
     hooks:
     -   id: mypy
         args: [--ignore-missing-imports, --strict]

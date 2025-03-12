@@ -123,7 +123,7 @@ def setup_pre_commit() -> bool:
     """Set up pre-commit hook configuration."""
     try:
         # First check if we're in a git repository
-        success, output = run_command(['git', 'rev-parse', '--git-dir'])
+        success, output = run_command(["git", "rev-parse", "--git-dir"])
         if not success:
             print("Error: Not in a git repository. Please run 'git init' first.")
             return False
@@ -151,15 +151,15 @@ repos:
     -   id: mypy
         args: [--ignore-missing-imports, --strict]
 """
-        with open('.pre-commit-config.yaml', 'w') as f:
+        with open(".pre-commit-config.yaml", "w") as f:
             f.write(pre_commit_config)
-        
+
         print("Installing pre-commit hooks...")
-        success, output = run_command(['pre-commit', 'install'])
+        success, output = run_command(["pre-commit", "install"])
         if not success:
             print(f"Error installing pre-commit hook: {output}")
             return False
-        
+
         print("Pre-commit hooks installed successfully")
         return True
     except Exception as e:
