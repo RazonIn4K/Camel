@@ -1,8 +1,0 @@
-{
-  "tests/test_blog_generator.py": true,
-  "tests/test_codebase_analyzer.py": true,
-  "tests/test_forensics_planner.py": true,
-  "tests/test_model_integration.py": true,
-  "tests/test_network_anomaly_detector.py": true,
-  "tests/test_wireless_mobile_assessor.py": true
-}
