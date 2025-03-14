@@ -1,10 +1,10 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
 import asyncio
 import statistics
 import tempfile
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple, Union
 from unittest.mock import AsyncMock, patch
 
 import pytest

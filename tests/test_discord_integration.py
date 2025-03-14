@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 """Test Discord integration features of Gray Swan Arena."""
 
 import json
@@ -17,9 +18,9 @@ from cybersec_agents.grayswan.utils.logging_utils import setup_logging
 
 # Constants
 OUTPUT_DIR = Path("tests/output")
-TEST_CHANNEL_ID: tuple[Any, ...] = (
-    "123456789012345678"  # Replace with actual channel ID for real testing
-)
+TEST_CHANNEL_ID: tuple[
+    Any, ...
+] = "123456789012345678"  # Replace with actual channel ID for real testing
 
 
 def setup_test_environment():

@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 #!/usr/bin/env python3
 """Example script demonstrating the visualization utilities in Gray Swan Arena.
 

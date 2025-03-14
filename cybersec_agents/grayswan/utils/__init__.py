@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 """Utility functions for the Gray Swan Arena."""
 
 # Only import the logging_utils module to avoid circular imports

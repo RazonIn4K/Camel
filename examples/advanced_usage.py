@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 #!/usr/bin/env python
 """Example demonstrating advanced usage of the Gray Swan Arena agents with error handling."""
 

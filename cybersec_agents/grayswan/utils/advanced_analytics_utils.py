@@ -682,7 +682,9 @@ def create_advanced_clustering(
                     )
                 else:
                     # Regular clusters
-                    color_idx: tuple[Any, ...] = (cluster_id % 10) / 10  # Cycle through colors
+                    color_idx: tuple[Any, ...] = (
+                        cluster_id % 10
+                    ) / 10  # Cycle through colors
                     legend_elements.append(
                         plt.Line2D(
                             [0],

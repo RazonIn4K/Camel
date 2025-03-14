@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 """Gray Swan Arena Agent Classes."""
 
 from .evaluation_agent import EvaluationAgent

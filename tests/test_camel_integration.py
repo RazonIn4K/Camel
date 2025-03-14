@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 """Test integration with Camel AI."""
 
 import os

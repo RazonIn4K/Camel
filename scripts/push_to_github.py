@@ -9,7 +9,9 @@ from typing import List, Tuple
 def run_command(command: List[str]) -> Tuple[bool, str]:
     """Run a shell command and return success status and output."""
     try:
-        result: Any = subprocess.run(command, check=True, capture_output=True, text=True)
+        result: Any = subprocess.run(
+            command, check=True, capture_output=True, text=True
+        )
         return True, result.stdout
     except subprocess.CalledProcessError as e:
         return False, e.stderr

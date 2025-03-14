@@ -11,7 +11,9 @@ BATCH_SIZE = 50  # Process 50 files at a time
 def run_command(command: List[str]) -> Tuple[bool, str]:
     """Run a shell command and return success status and output."""
     try:
-        result: Any = subprocess.run(command, check=True, capture_output=True, text=True)
+        result: Any = subprocess.run(
+            command, check=True, capture_output=True, text=True
+        )
         return True, result.stdout
     except subprocess.CalledProcessError as e:
         return False, e.stderr
@@ -196,7 +198,9 @@ def main() -> int:
 
     # Check if required tools are available
     required_tools: list[Any] = ["black", "autoflake", "isort", "mypy"]
-    missing_required: list[Any] = [tool for tool in required_tools if not dep_results.get(tool)]
+    missing_required: list[Any] = [
+        tool for tool in required_tools if not dep_results.get(tool)
+    ]
 
     if missing_required:
         print("\nMissing required dependencies:")

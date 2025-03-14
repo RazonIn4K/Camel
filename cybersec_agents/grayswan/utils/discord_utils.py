@@ -143,7 +143,9 @@ class DiscordScraper:
                                     )
 
                                 # Extract mentioned users
-                                mentions: list[Any] = [user.name for user in message.mentions]
+                                mentions: list[Any] = [
+                                    user.name for user in message.mentions
+                                ]
 
                                 matching_messages.append(
                                     {

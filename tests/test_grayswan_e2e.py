@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 """End-to-end test for Gray Swan Arena."""
 
 import json

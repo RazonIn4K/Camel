@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 """Cybersecurity agents package."""
 
 __version__: str = "0.2.1"

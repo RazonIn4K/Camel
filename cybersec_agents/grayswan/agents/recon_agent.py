@@ -216,7 +216,9 @@ class ReconAgent:
                 }
 
             # Perform Discord search (simplified mock implementation)
-            results: list[Any] = self._mock_discord_search(target_model, target_behavior, channels)
+            results: list[Any] = self._mock_discord_search(
+                target_model, target_behavior, channels
+            )
 
             # Store the search history
             search_record: dict[str, Any] = {

@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 #!/usr/bin/env python
 """
 Benchmark script for Gray Swan Arena agents.

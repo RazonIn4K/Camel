@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 """Gray Swan Arena module."""
 
 __version__: str = "0.2.0"

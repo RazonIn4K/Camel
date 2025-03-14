@@ -579,8 +579,12 @@ def create_interactive_dashboard(
 
         # Count unique models and prompt types
         models: dict[str, Any] = {r.get("model_name", "Unknown") for r in results}
-        prompt_types: dict[str, Any] = {r.get("prompt_type", "Unknown") for r in results}
-        attack_vectors: dict[str, Any] = {r.get("attack_vector", "Unknown") for r in results}
+        prompt_types: dict[str, Any] = {
+            r.get("prompt_type", "Unknown") for r in results
+        }
+        attack_vectors: dict[str, Any] = {
+            r.get("attack_vector", "Unknown") for r in results
+        }
 
         # Create basic charts
         from .visualization_utils import (

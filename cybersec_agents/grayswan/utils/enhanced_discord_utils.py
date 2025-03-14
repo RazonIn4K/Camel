@@ -53,7 +53,9 @@ try:
             )
     else:
         NLP_AVAILABLE: bool = False
-        missing_packages: list[Any] = [pkg for pkg, status in nltk_status.items() if not status]
+        missing_packages: list[Any] = [
+            pkg for pkg, status in nltk_status.items() if not status
+        ]
         logger.warning(
             f"NLTK initialization incomplete. Missing packages: {', '.join(missing_packages)}"
         )
@@ -199,7 +201,9 @@ class EnhancedDiscordScraper(DiscordScraper):
         if content_filter:
             try:
                 pattern = re.compile(content_filter, re.IGNORECASE)
-                results: list[Any] = [r for r in results if pattern.search(r["content"])]
+                results: list[Any] = [
+                    r for r in results if pattern.search(r["content"])
+                ]
             except re.error:
                 logger.warning(f"Invalid content_filter regex: {content_filter}")
 
@@ -209,7 +213,9 @@ class EnhancedDiscordScraper(DiscordScraper):
             ]
 
         if has_mentions is not None:
-            results: list[Any] = [r for r in results if (len(r["mentions"]) > 0) == has_mentions]
+            results: list[Any] = [
+                r for r in results if (len(r["mentions"]) > 0) == has_mentions
+            ]
 
         # Apply sentiment analysis if needed
         if (sentiment_filter or include_sentiment) and self.nlp_available:

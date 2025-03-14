@@ -1,4 +1,5 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
+
 """Test browser automation features of Gray Swan Arena."""
 
 import json
