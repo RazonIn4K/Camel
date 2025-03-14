@@ -1,42 +1,42 @@
 # Architecture Overview
 
-## Core Modules
+## Core Components
 
-1. service_wrapper.py
+### 1. Service Wrapper (`service_wrapper.py`)
 - High-level interface for coordinating agents
 - Manages agent lifecycle and interactions
 - Handles configuration and resource management
 
-2. network_security_agent.py
-- Network traffic analysis
-- Threat detection
-- Security report generation
+### 2. Agents
+- Network Security Agent: Traffic analysis and threat detection
+- Forensics Planner: Investigation planning and evidence collection
+- Wireless Security Assessor: Network and mobile security analysis
+- Code Assistant: Code review and improvement suggestions
 
-3. forensics_planner.py
-- Investigation planning
-- Evidence collection procedures
-- Timeline generation
+### 3. Integration Layer
+- Model management
+- API integrations
+- Resource coordination
 
-4. wireless_security_assessor.py
-- Wireless network assessment
-- Mobile security analysis
-- Security recommendations
+## System Design
 
-5. blog_generator.py
-- Technical content generation
-- Report formatting
-- Content monetization
+[Include system architecture diagram]
 
-## Key Classes and Relationships
+## Implementation Details
 
-```mermaid
-graph TD
-    A[CyberSecurityService] --> B[NetworkAnomalyDetector]
-    A --> C[ForensicsPlanner]
-    A --> D[WirelessMobileSecurityAssessor]
-    A --> E[CyberSecurityBlogGenerator]
-    B --> F[ChatAgent]
-    C --> F
-    D --> F
-    E --> F
+### Agent Communication
+```python
+async def comprehensive_security_audit(target_network):
+    """Example of multi-agent coordination."""
+    service = CyberSecurityService()
+    
+    # Network scanning
+    scan_results = await service.agents["network"].execute_async(
+        "perform_network_scan",
+        {"target": target_network}
+    )
+    
+    # Further processing...
 ```
+
+For implementation examples, see the [User Guide](user_guide.md).

@@ -5,6 +5,8 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
 
+BATCH_SIZE = 50  # Process 50 files at a time
+
 
 def run_command(command: List[str]) -> Tuple[bool, str]:
     """Run a shell command and return success status and output."""
@@ -15,6 +17,18 @@ def run_command(command: List[str]) -> Tuple[bool, str]:
         return False, e.stderr
 
 
+def process_in_batches(files: List[str], command_prefix: List[str]) -> bool:
+    """Process files in batches to avoid command line length limits."""
+    for i in range(0, len(files), BATCH_SIZE):
+        batch = files[i : i + BATCH_SIZE]
+        command = command_prefix + batch
+        success, output = run_command(command)
+        if not success:
+            print(f"Error processing batch: {output}")
+            return False
+    return True
+
+
 def check_dependencies() -> Dict[str, bool]:
     """Verify that required tools are installed."""
     required_tools = [
@@ -22,56 +36,67 @@ def check_dependencies() -> Dict[str, bool]:
         "autoflake",
         "isort",
         "mypy",
+    ]
+    optional_tools = [
         "docformatter",
     ]
     results = {}
+
+    print("Checking required tools...")
     for tool in required_tools:
         success, _ = run_command([tool, "--version"])
         results[tool] = success
         if not success:
             print(f"Error: {tool} is not installed. Please install it with:")
             print(f"pip install {tool}")
+
+    print("\nChecking optional tools...")
+    for tool in optional_tools:
+        success, _ = run_command([tool, "--version"])
+        results[tool] = success
+        if not success:
+            print(f"Warning: {tool} is not installed. Some features may be limited.")
+            print(f"To install: pip install {tool}")
+
     return results
 
 
 def format_project() -> bool:
     """Format all Python files in the project."""
     project_root = Path(__file__).parent.parent
-    python_files = list(project_root.glob("**/*.py"))
-    python_files_str = [str(f) for f in python_files]
+    python_files = []
+
+    # Collect Python files while excluding venv directory
+    for file in project_root.glob("**/*.py"):
+        # Skip files in venv directory
+        if "venv" not in str(file).split("/"):
+            python_files.append(str(file))
+
+    if not python_files:
+        print("No Python files found to format")
+        return True
 
     # Run black formatter
     print("Running black formatter...")
-    success, output = run_command(
-        ["black", "--line-length", "88", "--target-version", "py37", *python_files_str]
-    )
-    if not success:
-        print("Error running black:", output)
+    if not process_in_batches(
+        python_files, ["black", "--line-length", "88", "--target-version", "py37"]
+    ):
         return False
     print("Black formatting complete.")
 
     # Run isort
     print("\nRunning isort to sort imports...")
-    success, output = run_command(
-        [
-            "isort",
-            "--profile",
-            "black",
-            "--multi-line",
-            "3",
-            "--line-length",
-            "88",
-            *python_files_str,
-        ]
-    )
-    if not success:
-        print("Error running isort:", output)
+    if not process_in_batches(
+        python_files,
+        ["isort", "--profile", "black", "--multi-line", "3", "--line-length", "88"],
+    ):
         return False
     print("Import sorting complete.")
 
     # Run autoflake
     print("\nRunning autoflake to remove unused imports...")
-    success, output = run_command(
+    if not process_in_batches(
+        python_files,
         [
             "autoflake",
             "--in-place",
@@ -79,41 +104,38 @@ def format_project() -> bool:
             "--remove-all-unused-imports",
             "--remove-unused-variables",
             "--expand-star-imports",
-            *python_files_str,
-        ]
-    )
-    if not success:
-        print("Error running autoflake:", output)
+        ],
+    ):
         return False
     print("Autoflake cleanup complete.")
 
-    # Run docformatter
-    print("\nRunning docformatter...")
-    success, output = run_command(
-        [
-            "docformatter",
-            "--in-place",
-            "--recursive",
-            "--wrap-summaries",
-            "88",
-            "--wrap-descriptions",
-            "88",
-            *python_files_str,
-        ]
-    )
-    if not success:
-        print("Error running docformatter:", output)
-        return False
-    print("Docstring formatting complete.")
+    # Try running docformatter if available
+    print("\nAttempting to run docformatter...")
+    try:
+        success = process_in_batches(
+            python_files,
+            [
+                "docformatter",
+                "--in-place",
+                "--wrap-summaries",
+                "88",
+                "--wrap-descriptions",
+                "88",
+            ],
+        )
+        if success:
+            print("Docstring formatting complete.")
+        else:
+            print("Docformatter encountered some issues - continuing anyway")
+    except Exception as e:
+        print(f"Docformatter failed - skipping: {str(e)}")
 
     # Run mypy for type checking
     print("\nRunning mypy type checker...")
-    success, output = run_command(
-        ["mypy", "--ignore-missing-imports", "--strict", *python_files_str]
-    )
-    if not success:
-        print("Type checking issues found:", output)
-        # Don't return False here as type issues might need manual fixing
+    if not process_in_batches(
+        python_files, ["mypy", "--ignore-missing-imports", "--strict"]
+    ):
+        print("Type checking issues found - continuing anyway")
     print("Type checking complete.")
 
     return True
@@ -171,17 +193,21 @@ def main() -> int:
     """Main entry point."""
     print("Checking dependencies...")
     dep_results = check_dependencies()
-    if not all(dep_results.values()):
+
+    # Check if required tools are available
+    required_tools = ["black", "autoflake", "isort", "mypy"]
+    missing_required = [tool for tool in required_tools if not dep_results.get(tool)]
+
+    if missing_required:
+        print("\nMissing required dependencies:")
+        for tool in missing_required:
+            print(f"- {tool}")
         print("\nPlease install missing dependencies and try again.")
         return 1
 
     print("\nStarting code formatting...")
     if not format_project():
         return 1
-
-    print("\nSetting up pre-commit hooks...")
-    if not setup_pre_commit():
-        print("Warning: Pre-commit setup failed, but formatting completed")
 
     print("\nCode formatting completed successfully!")
     return 0

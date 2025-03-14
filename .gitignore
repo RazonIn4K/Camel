@@ -1,6 +1,9 @@
 # Python cache files
 __pycache__/
 *.py[cod]
+*$py.class
+
+# pytest
 .pytest_cache/
 
 # macOS system files

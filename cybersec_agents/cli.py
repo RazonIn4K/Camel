@@ -2,27 +2,42 @@ from typing import Optional
 
 import click
 
-from .core.service_wrapper import CyberSecurityService
+from .forensics_planner import ForensicsPlanner
+from .network_anomaly_detector import NetworkAnomalyDetector
 
 
 @click.group()
 def cli():
-    """Cybersecurity Agents CLI."""
+    """Camel AI Cybersecurity CLI."""
 
 
 @cli.command()
-@click.option("--provider", default="anthropic", help="AI provider to use")
-@click.option("--config", type=str, help="Path to config file")
-def analyze(provider: str, config: Optional[str] = None):
-    """Run security analysis."""
-    service = CyberSecurityService(provider=provider, config_path=config)
-    service.process_command("analyze")  # Use the service instance
+@click.argument("command")
+@click.option("--output", "-o", help="Output file path")
+@click.option(
+    "--format", "-f", default="text", type=click.Choice(["text", "json", "yaml"])
+)
+def run(command: str, output: Optional[str], format: str):
+    """Execute a cybersecurity analysis command."""
+    if command.startswith("analyze"):
+        detector = NetworkAnomalyDetector()
+        result = detector.analyze_command(command)
+        _handle_output(result, output, format)
+    elif command.startswith("plan"):
+        planner = ForensicsPlanner()
+        result = planner.create_plan(command)
+        _handle_output(result, output, format)
 
 
-def main():
-    """Main entry point for CLI."""
-    cli()
+def _handle_output(result: dict, output: Optional[str], format: str):
+    """Handle command output in specified format."""
+    formatted_result = _format_result(result, format)
+    if output:
+        with open(output, "w") as f:
+            f.write(formatted_result)
+    else:
+        click.echo(formatted_result)
 
 
 if __name__ == "__main__":
-    main()
+    cli()

@@ -31,6 +31,21 @@ pycryptodome>=3.19.0
 tqdm>=4.66.1
 colorama>=0.4.6
 
-# AgentOps
+# AgentOps monitoring
 agentops>=1.0.0
+
+# Gray Swan Arena dependencies
+matplotlib>=3.7.1
+discord.py>=2.3.0
+anthropic>=0.5.0  # For Claude models
+transformers>=4.30.0  # For Llama models
+asyncio>=3.4.3
+
+# Browser automation for the ExploitDeliveryAgent
+playwright>=1.40.0
+selenium>=4.15.0
+webdriver-manager>=4.0.1  # For easier webdriver management
+
+# Additional visualization tools
+seaborn>=0.13.0  # Enhanced visualization
 

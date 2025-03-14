@@ -1,26 +1,38 @@
 Metadata-Version: 2.2
 Name: cybersec_agents
-Version: 0.1.0
-Requires-Python: >=3.7
-Requires-Dist: requests>=2.25.0
-Requires-Dist: typing-extensions>=4.0.0
-Requires-Dist: scapy>=2.5.0
-Requires-Dist: pyyaml>=6.0.2
-Requires-Dist: camel-ai>=0.2.26
-Requires-Dist: openai>=1.3.5
-Requires-Dist: langchain>=0.0.337
-Requires-Dist: google-cloud-secret-manager>=2.16.1
+Version: 0.2.1
+Summary: A collection of cybersecurity agents, including Gray Swan Arena for AI red-teaming
+Author: David Ortiz
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Security
+Requires-Python: >=3.8
+Requires-Dist: pyyaml
+Requires-Dist: requests
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: matplotlib
+Requires-Dist: seaborn
+Requires-Dist: python-dotenv
+Requires-Dist: camel-ai
+Requires-Dist: openai
+Requires-Dist: flask
+Requires-Dist: discord.py
 Provides-Extra: dev
-Requires-Dist: pytest>=7.0.0; extra == "dev"
-Requires-Dist: black>=22.0.0; extra == "dev"
-Requires-Dist: flake8>=4.0.0; extra == "dev"
-Requires-Dist: autoflake>=2.0.0; extra == "dev"
-Requires-Dist: isort>=5.0.0; extra == "dev"
-Requires-Dist: mypy>=1.0.0; extra == "dev"
-Requires-Dist: docformatter>=1.7.0; extra == "dev"
-Requires-Dist: pre-commit>=3.0.0; extra == "dev"
-Provides-Extra: gui
-Requires-Dist: tkinter; extra == "gui"
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: black; extra == "dev"
+Requires-Dist: isort; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: pre-commit; extra == "dev"
+Provides-Extra: browser
+Requires-Dist: playwright; extra == "browser"
+Requires-Dist: selenium; extra == "browser"
+Requires-Dist: webdriver-manager; extra == "browser"
+Dynamic: author
+Dynamic: classifier
 Dynamic: provides-extra
 Dynamic: requires-dist
 Dynamic: requires-python
+Dynamic: summary

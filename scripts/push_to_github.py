@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
 """Script to format code and push changes to GitHub."""
 
-import os
-import signal
 import subprocess
 import sys
-import time
-import traceback
-from pathlib import Path
-from subprocess import run
-from typing import List, NoReturn, Optional, Tuple
+from typing import List, Tuple
 
 
 def run_command(command: List[str]) -> Tuple[bool, str]:

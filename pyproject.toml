@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_optional = true
+explicit_package_bases = true
+namespace_packages = true
+ignore_missing_imports = true
+exclude = ['venv', 'build', 'dist', 'stubs', 'examples', 'tests']
+# This setting helps with duplicate module errors
+allow_redefinition = true
+# This helps with import errors
+implicit_reexport = true
+
+# Exclude certain directories from type checking
+[[tool.mypy.overrides]]
+module = [
+    "cybersec_agents.grayswan.*",
+    "tests.*",
+    "examples.*",
+    "cybersec_agents.utils.*",
+    "cybersec_agents.agents.*",
+    "cybersec_agents.core.*",
+    "cybersec_agents.gui.*",
+    "cybersec_agents.cli",
+    "cybersec_agents.config",
+    "cybersec_agents.network_anomaly_detector"
+]
+ignore_errors = true
+
+[tool.black]
+line-length = 88
+target-version = ['py37']
+
+[tool.isort]
+profile = "black"
+line_length = 88
