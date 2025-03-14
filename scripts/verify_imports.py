@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verification script to test all imports and class availability."""
+"""Verification script to test all imports and class availability for Gray Swan Arena."""
 import importlib
 import sys
 from typing import Any, Dict
@@ -19,21 +19,19 @@ def main():
     imports_to_test = [
         # Main package
         "cybersec_agents",
-        # Agents
-        "cybersec_agents.agents.network_security_agent",
-        "cybersec_agents.agents.forensics_planner",
-        "cybersec_agents.agents.network_anomaly_detector",
-        "cybersec_agents.agents.wireless_mobile_assessor",
-        # Analyzers
-        "cybersec_agents.analyzers.codebase_analyzer",
-        "cybersec_agents.analyzers.forensics_engine",
-        "cybersec_agents.analyzers.wireless_scanner",
-        # Core
-        "cybersec_agents.core.service_wrapper",
-        # Generators
-        "cybersec_agents.generators.blog_generator",
-        # Utils
-        "cybersec_agents.utils.credentials",
+        # Gray Swan Arena components
+        "cybersec_agents.grayswan",
+        "cybersec_agents.grayswan.agents.recon_agent",
+        "cybersec_agents.grayswan.agents.prompt_engineer_agent",
+        "cybersec_agents.grayswan.agents.exploit_delivery_agent",
+        "cybersec_agents.grayswan.agents.evaluation_agent",
+        # Gray Swan Arena utilities
+        "cybersec_agents.grayswan.utils.logging_utils",
+        "cybersec_agents.grayswan.utils.agentops_utils",
+        "cybersec_agents.grayswan.utils.browser_utils",
+        "cybersec_agents.grayswan.utils.discord_utils",
+        "cybersec_agents.grayswan.utils.visualization_utils",
+        "cybersec_agents.grayswan.utils.model_utils",
     ]
 
     # Test each import
@@ -50,57 +48,57 @@ def main():
             print(f"✓ {import_path}")
         else:
             failed_imports.append((import_path, result["error"]))
-            print(f"✗ {import_path} - Error: {result['error']}")
+            print(f"✗ {import_path} - {result['error']}")
 
-    print("\nTesting class instantiation...")
+    print("-" * 50)
+    print(
+        f"Summary: {len(successful_imports)} successful, {len(failed_imports)} failed"
+    )
+
+    # Test class imports
+    print("\nTesting class imports...")
     print("-" * 50)
 
-    # Test class instantiation if imports successful
-    if "cybersec_agents" in successful_imports:
+    class_imports_to_test = [
+        # Gray Swan Arena agents
+        ("cybersec_agents", "ReconAgent"),
+        ("cybersec_agents", "PromptEngineerAgent"),
+        ("cybersec_agents", "ExploitDeliveryAgent"),
+        ("cybersec_agents", "EvaluationAgent"),
+        # Direct imports from grayswan
+        ("cybersec_agents.grayswan", "ReconAgent"),
+        ("cybersec_agents.grayswan", "PromptEngineerAgent"),
+        ("cybersec_agents.grayswan", "ExploitDeliveryAgent"),
+        ("cybersec_agents.grayswan", "EvaluationAgent"),
+        # Main function
+        ("cybersec_agents.grayswan", "main"),
+    ]
+
+    failed_class_imports = []
+    successful_class_imports = []
+
+    for module_path, class_name in class_imports_to_test:
         try:
-            from cybersec_agents import (
-                CodebaseAnalyzerAgent,
-                CyberSecurityBlogGenerator,
-                CyberSecurityService,
-                ForensicsPlanner,
-                NetworkAnomalyDetector,
-                NetworkSecurityAgent,
-                WirelessMobileSecurityAssessor,
-            )
+            module = importlib.import_module(module_path)
+            getattr(module, class_name)
+            successful_class_imports.append((module_path, class_name))
+            print(f"✓ from {module_path} import {class_name}")
+        except (ImportError, AttributeError) as e:
+            failed_class_imports.append((module_path, class_name, str(e)))
+            print(f"✗ from {module_path} import {class_name} - {str(e)}")
 
-            # Try instantiating each class
-            classes_to_test = [
-                ("NetworkSecurityAgent", NetworkSecurityAgent),
-                ("CyberSecurityService", CyberSecurityService),
-                ("ForensicsPlanner", ForensicsPlanner),
-                ("NetworkAnomalyDetector", NetworkAnomalyDetector),
-                ("WirelessMobileSecurityAssessor", WirelessMobileSecurityAssessor),
-                ("CodebaseAnalyzerAgent", CodebaseAnalyzerAgent),
-                ("CyberSecurityBlogGenerator", CyberSecurityBlogGenerator),
-            ]
-
-            for class_name, class_type in classes_to_test:
-                try:
-                    class_type()
-                    print(f"✓ {class_name} successfully instantiated")
-                except Exception as e:
-                    print(f"✗ {class_name} instantiation failed - Error: {str(e)}")
-
-        except ImportError as e:
-            print(f"Failed to import classes from cybersec_agents: {str(e)}")
-
-    print("\nSummary:")
     print("-" * 50)
-    print(f"Successful imports: {len(successful_imports)}")
-    print(f"Failed imports: {len(failed_imports)}")
+    print(
+        f"Summary: {len(successful_class_imports)} successful, {len(failed_class_imports)} failed"
+    )
 
-    if failed_imports:
-        print("\nFailed imports details:")
-        for import_path, error in failed_imports:
-            print(f"- {import_path}: {error}")
-        return 1
-    return 0
+    # Exit with error code if any imports failed
+    if failed_imports or failed_class_imports:
+        sys.exit(1)
+    else:
+        print("\nAll imports verified successfully!")
+        sys.exit(0)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

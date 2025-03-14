@@ -30,14 +30,7 @@ implicit_reexport = true
 module = [
     "cybersec_agents.grayswan.*",
     "tests.*",
-    "examples.*",
-    "cybersec_agents.utils.*",
-    "cybersec_agents.agents.*",
-    "cybersec_agents.core.*",
-    "cybersec_agents.gui.*",
-    "cybersec_agents.cli",
-    "cybersec_agents.config",
-    "cybersec_agents.network_anomaly_detector"
+    "examples.*"
 ]
 ignore_errors = true
 

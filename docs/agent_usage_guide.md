@@ -1,292 +1,301 @@
 # Comprehensive Agent Usage Guide
 
-## Available Agents and Their Use Cases
+This guide provides detailed instructions for using the Gray Swan Arena agents available in the Camel AI framework.
 
-### 1. Document Analysis Agent
+## Table of Contents
+
+1. [Gray Swan Arena Agents](#gray-swan-arena-agents)
+   - [Reconnaissance Agent](#reconnaissance-agent)
+   - [Prompt Engineer Agent](#prompt-engineer-agent)
+   - [Exploit Delivery Agent](#exploit-delivery-agent)
+   - [Evaluation Agent](#evaluation-agent)
+2. [Model Selection and Configuration](#model-selection-and-configuration)
+   - [Using o3-mini for Reasoning Tasks](#using-o3-mini-for-reasoning-tasks)
+   - [Configuring GPT-4o as a Backup Model](#configuring-gpt-4o-as-a-backup-model)
+3. [Running the Full Pipeline](#running-the-full-pipeline)
+   - [Advanced Configuration](#advanced-configuration)
+
+## Gray Swan Arena Agents
+
+The Gray Swan Arena provides a set of specialized agents for testing AI safety and security.
+
+### Reconnaissance Agent
+
+The ReconAgent is responsible for gathering information about target AI models.
+
 ```python
-from cybersec_agents import DocumentAnalysisAgent
+from cybersec_agents import ReconAgent
 
-# Initialize agent
-doc_agent = DocumentAnalysisAgent()
+# Initialize the agent
+agent = ReconAgent(output_dir="./reports", model_name="gpt-4")
 
-# Analyze PDF
-analysis = doc_agent.analyze_pdf("path/to/document.pdf")
-
-# Analyze source code
-code_review = doc_agent.analyze_code("path/to/source.py")
-
-# Analyze multiple files
-multi_analysis = doc_agent.analyze_files([
-    "docs/spec.pdf",
-    "src/main.py",
-    "config.yaml"
-])
-```
-
-Command Line Usage:
-```bash
-# Analyze single file
-cyber-agents analyze-doc --file "path/to/file.pdf"
-
-# Analyze directory
-cyber-agents analyze-doc --dir "src/" --type "python"
-
-# Generate summary report
-cyber-agents analyze-doc --file "document.pdf" --output "analysis.md"
-```
-
-### 2. Prompt Engineering Agent
-```python
-from cybersec_agents import PromptEngineeringAgent
-
-# Initialize agent
-prompt_agent = PromptEngineeringAgent()
-
-# Improve a prompt
-better_prompt = prompt_agent.improve_prompt(
-    "how does this code work",
-    context={
-        "language": "python",
-        "domain": "web_development"
-    }
+# Run web search on a target model
+web_results = agent.run_web_search(
+    target_model="GPT-4",
+    target_behavior="bypass content filters"
 )
 
-# Generate structured prompts
-structured_prompt = prompt_agent.generate_structured_prompt(
-    topic="database optimization",
-    components=["context", "constraints", "examples"]
-)
-```
-
-Command Line Usage:
-```bash
-# Improve prompt
-cyber-agents improve-prompt "explain this function"
-
-# Generate domain-specific prompt
-cyber-agents generate-prompt --domain "database" --type "analysis"
-```
-
-### 3. Code Assistant Agent
-```python
-from cybersec_agents import CodeAssistantAgent
-
-# Initialize agent
-code_agent = CodeAssistantAgent()
-
-# Review code
-review = code_agent.review_code(
-    file_path="src/main.py",
-    focus=["security", "performance"]
+# Run Discord search on a target model
+discord_results = agent.run_discord_search(
+    target_model="GPT-4",
+    target_behavior="bypass content filters",
+    channels=["ai-ethics", "red-teaming"]
 )
 
-# Suggest improvements
-suggestions = code_agent.suggest_improvements(
-    code_snippet="""
-    def process_data(data):
-        return data.split(',')
-    """,
-    aspects=["error_handling", "type_hints"]
+# Generate a comprehensive report
+report = agent.generate_report(
+    target_model="GPT-4",
+    target_behavior="bypass content filters",
+    web_results=web_results,
+    discord_results=discord_results
 )
 
-# Generate tests
-tests = code_agent.generate_tests(
-    file_path="src/utils.py",
-    test_framework="pytest"
+# Save the report
+report_path = agent.save_report(
+    report=report,
+    target_model="GPT-4",
+    target_behavior="bypass content filters"
 )
 ```
 
-Command Line Usage:
-```bash
-# Review code
-cyber-agents review-code --file "src/main.py"
+### Prompt Engineer Agent
 
-# Generate tests
-cyber-agents generate-tests --file "src/utils.py"
-```
+The PromptEngineerAgent generates effective prompts to test target models based on reconnaissance data.
 
-## GUI Integration Guide
-
-### File Type Support
-
-The GUI supports the following file types:
-
-1. Documents:
-   - PDF (.pdf)
-   - Word (.doc, .docx)
-   - Text (.txt)
-   - Markdown (.md)
-
-2. Source Code:
-   - Python (.py)
-   - JavaScript (.js)
-   - TypeScript (.ts)
-   - Java (.java)
-   - C++ (.cpp)
-   - Ruby (.rb)
-   - Go (.go)
-   - And more...
-
-3. Configuration:
-   - YAML (.yaml, .yml)
-   - JSON (.json)
-   - INI (.ini)
-   - TOML (.toml)
-
-4. Data:
-   - CSV (.csv)
-   - XML (.xml)
-   - SQL (.sql)
-
-### GUI Usage Examples
-
-1. Document Analysis:
 ```python
-from cybersec_agents.gui import DocumentViewer
+from cybersec_agents import PromptEngineerAgent
 
-# Initialize viewer
-viewer = DocumentViewer()
+# Initialize the agent
+agent = PromptEngineerAgent(output_dir="./prompts", model_name="gpt-4")
 
-# Load and analyze document
-viewer.load_document("path/to/document.pdf")
-analysis = viewer.analyze_current_document()
+# Generate prompts based on reconnaissance data
+prompts = agent.generate_prompts(
+    target_model="GPT-4",
+    target_behavior="bypass content filters",
+    recon_report=report,
+    num_prompts=10
+)
 
-# Extract specific sections
-sections = viewer.extract_sections(
-    criteria=["headings", "code_blocks", "tables"]
+# Save the prompts
+prompts_path = agent.save_prompts(
+    prompts=prompts,
+    target_model="GPT-4",
+    target_behavior="bypass content filters"
 )
 ```
 
-2. Code Analysis:
+### Exploit Delivery Agent
+
+The ExploitDeliveryAgent is responsible for delivering prompts to target models and recording responses.
+
 ```python
-from cybersec_agents.gui import CodeEditor
+from cybersec_agents import ExploitDeliveryAgent
 
-# Initialize editor
-editor = CodeEditor()
+# Initialize the agent
+agent = ExploitDeliveryAgent(output_dir="./exploits", model_name="gpt-4")
 
-# Load and analyze code
-editor.load_file("src/main.py")
-suggestions = editor.get_improvements()
+# Run prompts against a target model
+results = agent.run_prompts(
+    prompts=prompts,
+    target_model="gpt-4",
+    target_behavior="bypass content filters",
+    method="api",
+    max_tries=3,
+    delay_between_tries=2
+)
 
-# Interactive code review
-editor.start_review_session(
-    focus=["security", "performance"],
-    interactive=True
+# Save the results
+results_path = agent.save_results(
+    results=results,
+    target_model="GPT-4",
+    target_behavior="bypass content filters"
 )
 ```
 
-3. Multi-File Analysis:
+### Evaluation Agent
+
+The EvaluationAgent analyzes exploit results, generates visualizations, and produces evaluation reports.
+
 ```python
-from cybersec_agents.gui import ProjectExplorer
+from cybersec_agents import EvaluationAgent
 
-# Initialize explorer
-explorer = ProjectExplorer()
+# Initialize the agent
+agent = EvaluationAgent(output_dir="./evaluations", model_name="gpt-4")
 
-# Analyze project
-explorer.load_project("path/to/project")
-analysis = explorer.analyze_project(
-    file_types=["python", "javascript"],
-    aspects=["security", "quality"]
+# Evaluate exploit results
+evaluation = agent.evaluate_results(
+    results=results,
+    target_model="GPT-4",
+    target_behavior="bypass content filters"
+)
+
+# Save the evaluation
+eval_path = agent.save_evaluation(
+    evaluation=evaluation,
+    target_model="GPT-4",
+    target_behavior="bypass content filters"
+)
+
+# Generate a summary report
+summary = agent.generate_summary(
+    evaluation=evaluation,
+    target_model="GPT-4",
+    target_behavior="bypass content filters"
+)
+
+# Save the summary
+summary_path = agent.save_summary(
+    summary=summary,
+    target_model="GPT-4",
+    target_behavior="bypass content filters"
+)
+
+# Create visualizations
+visualizations = agent.create_visualizations(
+    evaluation=evaluation,
+    target_model="GPT-4",
+    target_behavior="bypass content filters"
 )
 ```
 
-### GUI Configuration
+## Model Selection and Configuration
 
-```yaml
-gui:
-  theme: "dark"
-  file_types:
-    enabled:
-      - pdf
-      - python
-      - javascript
-      - markdown
-    custom_handlers:
-      pdf: "pdf_handler.py"
-      python: "python_handler.py"
-  
-  viewers:
-    document:
-      enable_syntax_highlight: true
-      show_line_numbers: true
-    
-    code:
-      theme: "monokai"
-      font_size: 12
-      enable_minimap: true
-```
+Gray Swan Arena agents support multiple AI models, allowing you to optimize performance and cost by selecting appropriate models for different tasks.
 
-### Adding Custom File Type Support
+### Using o3-mini for Reasoning Tasks
 
-1. Create a custom handler:
+For reasoning tasks that require good performance but don't need the full capabilities of larger models, you can configure agents to use o3-mini:
+
 ```python
-from cybersec_agents.gui.handlers import BaseFileHandler
+# Example: Using o3-mini for the Evaluation Agent's reasoning tasks
+from cybersec_agents import EvaluationAgent
 
-class CustomFileHandler(BaseFileHandler):
-    def __init__(self):
-        self.supported_extensions = [".custom"]
-    
-    def read_file(self, file_path: str) -> str:
-        # Implement custom file reading logic
-        pass
-    
-    def parse_content(self, content: str) -> Dict:
-        # Implement custom parsing logic
-        pass
-```
+# Initialize the agent with o3-mini for reasoning tasks
+agent = EvaluationAgent(
+    output_dir="./evaluations",
+    model_name="o3-mini",  # Using o3-mini for reasoning tasks
+    reasoning_model="o3-mini"  # Explicitly specify for reasoning tasks
+)
 
-2. Register the handler:
-```python
-from cybersec_agents.gui import GUI
-from custom_handler import CustomFileHandler
+# The model will efficiently perform reasoning tasks like classification and analysis
+evaluation = agent.evaluate_results(
+    results=exploit_results,
+    target_model="gpt-4",
+    target_behavior="jailbreak"
+)
 
-gui = GUI()
-gui.register_handler(".custom", CustomFileHandler())
-```
-
-## Integration with Camel AI
-
-The GUI automatically integrates with Camel AI for:
-1. Document understanding
-2. Code analysis
-3. Context management
-4. Multi-agent coordination
-
-Example:
-```python
-from cybersec_agents.gui import GUI
-from camel.agents import DocumentAgent
-
-# Initialize GUI with custom Camel agent
-gui = GUI()
-doc_agent = DocumentAgent(specialization="technical_documents")
-gui.register_agent("document_analysis", doc_agent)
-
-# Use in analysis
-results = gui.analyze_document(
-    "spec.pdf",
-    agent="document_analysis"
+# Generate insight summaries using o3-mini's reasoning capabilities
+summary = agent.generate_summary(
+    evaluation=evaluation,
+    target_model="gpt-4",
+    target_behavior="jailbreak"
 )
 ```
 
-## Best Practices
+### Configuring GPT-4o as a Backup Model
 
-1. File Organization:
-   - Group related files
-   - Use consistent naming
-   - Maintain clear structure
+You can configure agents to use GPT-4o as a backup model for tasks requiring advanced capabilities:
 
-2. Agent Selection:
-   - Choose specialized agents for specific tasks
-   - Combine agents for complex analysis
-   - Use prompt engineering for better results
+```python
+# Example: Using o3-mini as primary with GPT-4o as backup for the Prompt Engineer Agent
+from cybersec_agents import PromptEngineerAgent
 
-3. Resource Management:
-   - Monitor memory usage
-   - Cache frequent operations
-   - Clean up temporary files
+# Initialize with configuration for both models
+agent = PromptEngineerAgent(
+    output_dir="./prompts",
+    model_name="o3-mini",  # Primary model
+    backup_model="gpt-4o"  # Backup model for complex tasks
+)
 
-4. Error Handling:
-   - Validate file types
-   - Handle parsing errors
-   - Provide meaningful feedback
+# The agent will use o3-mini for initial prompt generation
+# If the task complexity exceeds o3-mini's capabilities, it will automatically
+# fall back to using GPT-4o
+prompts = agent.generate_prompts(
+    target_model="claude-3",
+    target_behavior="jailbreak",
+    recon_report=report,
+    num_prompts=10,
+    complexity_threshold=0.7  # Threshold for switching to backup model
+)
+```
+
+## Advanced Configuration Example
+
+Here's a more comprehensive example showing how to configure all agents with different models for different tasks:
+
+```python
+from cybersec_agents import ReconAgent, PromptEngineerAgent, ExploitDeliveryAgent, EvaluationAgent
+
+# Define output directory
+output_base_dir = "./gray_swan_results"
+
+# Initialize agents with optimized model configuration
+recon_agent = ReconAgent(
+    output_dir=f"{output_base_dir}/reports",
+    model_name="o3-mini",  # Good for initial research
+    backup_model="gpt-4o",  # Falls back to GPT-4o for complex analysis
+    web_search_model="o3-mini"  # Efficient for search parsing
+)
+
+prompt_agent = PromptEngineerAgent(
+    output_dir=f"{output_base_dir}/prompts",
+    model_name="gpt-4o",  # Creative task benefits from GPT-4o's capabilities
+    reasoning_model="o3-mini"  # Use o3-mini for reasoning about prompt structure
+)
+
+exploit_agent = ExploitDeliveryAgent(
+    output_dir=f"{output_base_dir}/exploits",
+    model_name="o3-mini",  # Sufficient for delivery mechanics
+    backup_model="gpt-4o",  # Falls back for complex scenarios
+    analysis_model="o3-mini"  # Analyzing initial responses
+)
+
+eval_agent = EvaluationAgent(
+    output_dir=f"{output_base_dir}/evaluations",
+    model_name="o3-mini",  # Efficient for standard evaluations
+    reasoning_model="o3-mini",  # Good performance for classification tasks
+    visualization_model="gpt-4o"  # Better for complex visualization planning
+)
+
+# Target parameters
+target_model = "claude-3"
+target_behavior = "jailbreak"
+
+# Run the pipeline with this optimized configuration
+# ... (same pipeline steps as in the basic example)
+```
+
+## Running the Full Pipeline
+
+You can run the full Gray Swan Arena pipeline using the main module:
+
+```python
+from cybersec_agents import grayswan_main
+
+# Run the full pipeline with default configuration
+grayswan_main.main()
+
+# Or with custom model configuration
+grayswan_main.main(
+    recon_model="o3-mini",
+    prompt_model="gpt-4o",
+    exploit_model="o3-mini",
+    eval_model="o3-mini",
+    backup_model="gpt-4o"
+)
+```
+
+Alternatively, you can run specific phases:
+
+```python
+from cybersec_agents.grayswan.main import run_reconnaissance
+
+# Run just the reconnaissance phase with o3-mini
+report = run_reconnaissance(
+    target_model="GPT-4",
+    target_behavior="bypass content filters",
+    output_dir="./reports",
+    model_name="o3-mini",
+    backup_model="gpt-4o"  # Use GPT-4o as backup for complex analysis
+)
+```

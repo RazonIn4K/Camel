@@ -1,28 +1,42 @@
 repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+
 -   repo: https://github.com/psf/black
-    rev: 23.12.1
+    rev: 23.3.0
     hooks:
     -   id: black
-        args: [--line-length=88, --target-version=py37]
+        language_version: python3.12
+
 -   repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 5.12.0
     hooks:
     -   id: isort
-        args: [--profile=black, --line-length=88]
--   repo: https://github.com/PyCQA/autoflake
-    rev: v2.2.1
+        args: ["--profile", "black"]
+
+-   repo: https://github.com/pycqa/autoflake
+    rev: v2.2.0
     hooks:
     -   id: autoflake
-        args: [--remove-all-unused-imports, --remove-unused-variables]
--   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
-    hooks:
-    -   id: mypy
-        additional_dependencies: [
-            "types-requests",
-            "types-PyYAML",
-            "types-python-dateutil",
-            "types-setuptools",
-            "types-six",
+        args: [
+            '--in-place',
+            '--remove-all-unused-imports',
+            '--remove-unused-variables',
         ]
-        args: [--config-file=pyproject.toml]
+
+exclude: |
+    (?x)(
+        ^venv/|
+        ^\.venv/|
+        ^\.git/|
+        ^\.pytest_cache/|
+        ^\.mypy_cache/|
+        ^\.tox/|
+        ^build/|
+        ^dist/
+    )

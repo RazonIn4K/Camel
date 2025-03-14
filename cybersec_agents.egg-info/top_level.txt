@@ -1,7 +1,0 @@
-config
-cybersec_agents
-docs
-examples
-gui
-scripts
-tests

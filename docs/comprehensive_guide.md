@@ -79,7 +79,7 @@ This codebase extends Camel AI to create specialized cybersecurity agents for:
        model_name: "claude-2"
        temperature: 0.7
        max_tokens: 4000
-   
+
    # Agent configurations
    agents:
      network:
@@ -91,12 +91,12 @@ This codebase extends Camel AI to create specialized cybersecurity agents for:
      wireless:
        enabled: true
        system_message: "You are a wireless security specialist..."
-   
+
    # Logging configuration
    logging:
      level: "INFO"
      file: "agent_logs.txt"
-   
+
    # Codebase analyzer settings
    codebase_analyzer:
      memory:
@@ -199,12 +199,12 @@ def create_research_agent():
     4. Suggesting methodologies
     5. Analyzing experimental results
     """
-    
+
     model = ModelFactory.create(
         model_platform=ModelPlatformType.OPENAI,
         model_type=ModelType.GPT_4
     )
-    
+
     return ChatAgent(system_message=system_message, model=model)
 
 # Usage
@@ -223,12 +223,12 @@ def create_content_agent():
     4. Suggesting engaging titles and headings
     5. Improving readability and engagement
     """
-    
+
     model = ModelFactory.create(
         model_platform=ModelPlatformType.OPENAI,
         model_type=ModelType.GPT_4
     )
-    
+
     return ChatAgent(system_message=system_message, model=model)
 
 # Usage
@@ -247,12 +247,12 @@ def create_data_analysis_agent():
     4. Identifying potential insights from data
     5. Recommending further analysis techniques
     """
-    
+
     model = ModelFactory.create(
         model_platform=ModelPlatformType.OPENAI,
         model_type=ModelType.GPT_4
     )
-    
+
     return ChatAgent(system_message=system_message, model=model)
 
 # Usage
@@ -291,7 +291,7 @@ class BaseSecurityAgent(ABC):
         self.config = config
         self.provider = config["model"]["provider"]
         self._init_client()
-        
+
     def execute(self, action: str, params: Dict) -> Dict:
         """Execute an action with logging and error handling"""
         logging.info(f"Executing {action} with params: {params}")
@@ -340,7 +340,7 @@ class CyberSecurityService:
         self.setup_logging()
         self.agents = self._initialize_agents()
         self.interaction_history = []
-        
+
     def process_command(self, command: str, **kwargs) -> Dict:
         """Process commands and route to appropriate agents"""
         logging.info(f"Processing command: {command}")
@@ -354,52 +354,93 @@ class CyberSecurityService:
         return results
 ```
 
-### CLI Interface
+### Command-Line Interface
 
-The cybersecurity implementation includes a CLI interface:
+The CLI provides direct access to agent functionality:
 
 ```python
-@click.group()
-@click.option('--config', type=str, help='Path to config file')
-@click.pass_context
-def cli(ctx, config):
-    """Cybersecurity AI Agents CLI"""
-    ctx.obj = CyberSecurityService(config)
+# cli.py
+import argparse
+import sys
+from cybersec_agents import NetworkSecurityAgent, ForensicsPlanner
 
-@cli.command()
-@click.argument('command')
-@click.option('--output', type=str, help='Output format (json/text)')
-@click.pass_obj
-def run(service, command, output):
-    """Run a command using the AI agents"""
-    result = service.process_command(command)
-    if output == 'json':
-        click.echo(json.dumps(result, indent=2))
-    else:
-        click.echo(result)
+def main():
+    parser = argparse.ArgumentParser(description="Cybersecurity Agents CLI")
+    parser.add_argument('command', choices=['network', 'forensics'])
+    parser.add_argument('--input', '-i', help="Input file or data")
+    parser.add_argument('--output', '-o', help="Output file")
+
+    args = parser.parse_args()
+
+    if args.command == 'network':
+        agent = NetworkSecurityAgent()
+        result = agent.analyze(args.input)
+        # Process result
+
+    elif args.command == 'forensics':
+        planner = ForensicsPlanner()
+        plan = planner.generate_plan(args.input)
+        # Process plan
+
+if __name__ == "__main__":
+    main()
 ```
 
-### GUI Interface
+### API Interface
 
-The GUI provides a user-friendly interface for interacting with agents:
+The API allows web-based access to agent functionality:
 
 ```python
-class AgentSelectionGUI:
-    def __init__(self):
-        self.root = tk.Tk()
-        self.root.title("AI Agent Selection")
-        self.notebook = ttk.Notebook(self.root)
-        
-        # Quick Action Tab
-        self.quick_action_frame = ttk.Frame(self.notebook)
-        self.notebook.add(self.quick_action_frame, text="Quick Action")
-        self.nl_input = ttk.Entry(self.quick_action_frame, width=50)
-        self.nl_input.pack(pady=10)
-        
-        # Agent Selection Tab
-        self.agent_frame = ttk.Frame(self.notebook)
-        self.notebook.add(self.agent_frame, text="Select Agent")
-        # ... (agent selection UI components)
+# api.py
+from flask import Flask, request, jsonify
+from cybersec_agents import NetworkSecurityAgent
+
+app = Flask(__name__)
+agent = NetworkSecurityAgent()
+
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    data = request.json
+    if not data or 'input' not in data:
+        return jsonify({"error": "Missing input data"}), 400
+
+    result = agent.analyze(data['input'])
+    return jsonify({"result": result})
+
+if __name__ == "__main__":
+    app.run(debug=True)
+```
+
+### Application Architecture Diagram
+
+```
+A[User] --> B[CLI]
+A --> C[API]
+B --> E[Agent System]
+C --> E
+E --> F[External Services]
+E --> G[Database]
+```
+
+### System Architecture
+
+A comprehensive view of the system architecture:
+
+```
+User Interfaces:
+- CLI receives user command/request
+- API receives HTTP requests
+
+Processing Pipeline:
+1. Request validation and parsing
+2. Agent selection and initialization
+3. Task execution and monitoring
+4. Result processing and formatting
+
+Output Handling:
+- Formatted to user specifications
+- Stored in database if requested
+- Displayed to user via CLI or API response
 ```
 
 <a name="multi-agent"></a>
@@ -429,7 +470,7 @@ for system in vulnerable_systems:
         case_type="vulnerability_exploitation",
         target_systems=[system['hostname']]
     )
-    
+
 # Assess wireless security based on findings
 if any(system['service'] == 'wifi' for system in vulnerable_systems):
     wireless_recommendations = wireless_agent.generate_security_recommendations(
@@ -447,18 +488,18 @@ def analyze_pcap_file(pcap_path):
     """Complete walkthrough of PCAP analysis with multiple agents."""
     # Initialize the service
     service = CyberSecurityService()
-    
+
     # Step 1: Initial traffic analysis
     network_analysis = service.agents["network"].execute(
         "analyze_pcap",
         {"file_path": pcap_path}
     )
-    
+
     print("Network Traffic Analysis:")
     print(f"- Packets analyzed: {network_analysis['packet_count']}")
     print(f"- Protocols identified: {', '.join(network_analysis['protocols'])}")
     print(f"- Suspicious connections: {network_analysis['suspicious_count']}")
-    
+
     # Step 2: If suspicious activity detected, plan forensic investigation
     if network_analysis['suspicious_count'] > 0:
         forensic_plan = service.agents["forensics"].execute(
@@ -469,14 +510,14 @@ def analyze_pcap_file(pcap_path):
                 "suspicious_ips": network_analysis['suspicious_ips']
             }
         )
-        
+
         print("\nForensic Investigation Plan:")
         print(f"- Priority: {forensic_plan['priority']}")
         print(f"- Recommended tools: {', '.join(forensic_plan['tools'])}")
         print(f"- Investigation steps:")
         for i, step in enumerate(forensic_plan['steps'], 1):
             print(f"  {i}. {step}")
-    
+
     # Step 3: Generate actionable recommendations
     recommendations = service.agents["network"].execute(
         "generate_recommendations",
@@ -485,14 +526,14 @@ def analyze_pcap_file(pcap_path):
             "context": "network monitoring"
         }
     )
-    
+
     print("\nActionable Recommendations:")
     for i, rec in enumerate(recommendations['items'], 1):
         print(f"{i}. {rec['title']}")
         print(f"   Priority: {rec['priority']}")
         print(f"   {rec['description']}")
         print()
-        
+
     return {
         "analysis": network_analysis,
         "forensics": forensic_plan if network_analysis['suspicious_count'] > 0 else None,
@@ -507,17 +548,17 @@ def interpret_nmap_scan(scan_file):
     """Interpret nmap scan results with port analysis."""
     # Initialize service
     service = CyberSecurityService()
-    
+
     # Analyze nmap output
     scan_analysis = service.agents["network"].execute(
         "analyze_nmap_output",
         {"file_path": scan_file}
     )
-    
+
     print("Nmap Scan Analysis:")
     print(f"- Hosts scanned: {scan_analysis['host_count']}")
     print(f"- Open ports detected: {scan_analysis['open_port_count']}")
-    
+
     # Port analysis
     print("\nDetailed Port Analysis:")
     for host, ports in scan_analysis['hosts'].items():
@@ -527,20 +568,20 @@ def interpret_nmap_scan(scan_file):
             print(f"  - Port {port['number']}/{port['protocol']}: {port['service']}")
             print(f"    Potential vulnerabilities: {', '.join(port['potential_vulnerabilities'])}")
             print(f"    Recommendation: {port['recommendation']}")
-    
+
     # Generate security assessment
     assessment = service.agents["network"].execute(
         "assess_network_posture",
         {"scan_results": scan_analysis}
     )
-    
+
     print("\nSecurity Posture Assessment:")
     print(f"- Overall risk level: {assessment['risk_level']}")
     print(f"- Main concerns: {', '.join(assessment['main_concerns'])}")
     print("\nNext Steps:")
     for i, step in enumerate(assessment['next_steps'], 1):
         print(f"{i}. {step}")
-        
+
     return {
         "scan_analysis": scan_analysis,
         "assessment": assessment
@@ -560,7 +601,7 @@ from cybersec_agents.base_agent import BaseSecurityAgent
 class MalwareAnalysisAgent(BaseSecurityAgent):
     def __init__(self, config):
         super().__init__(config)
-        
+
     def _get_system_message(self) -> str:
         return """You are a malware analysis expert. Your task is to:
         1. Analyze suspicious files and identify malware characteristics
@@ -569,39 +610,39 @@ class MalwareAnalysisAgent(BaseSecurityAgent):
         4. Explain technical details in a clear, actionable manner
         5. Provide IOCs (Indicators of Compromise) for monitoring
         """
-    
+
     def analyze_suspicious_file(self, file_metadata: Dict) -> Dict:
         """Analyze a suspicious file based on its metadata."""
         return self.execute("analyze_file", file_metadata)
-    
+
     def generate_ioc_list(self, analysis_results: Dict) -> Dict:
         """Generate IOCs based on analysis results."""
         return self.execute("generate_iocs", {"analysis": analysis_results})
-    
+
     def _get_prompt_template(self, action: str) -> str:
         """Get prompt template for the specific action."""
         templates = {
             "analyze_file": """Analyze this potentially malicious file:
-            
+
             Filename: {filename}
             File size: {size}
             File type: {file_type}
             SHA256: {sha256}
-            
+
             Initial observations:
             {observations}
-            
+
             Provide a detailed analysis including:
             1. Likely malware classification
             2. Behavior analysis
             3. Potential damage assessment
             4. Detection methods
             """,
-            
+
             "generate_iocs": """Based on the following malware analysis:
-            
+
             {analysis}
-            
+
             Generate a comprehensive list of IOCs (Indicators of Compromise) including:
             1. File hashes (MD5, SHA1, SHA256)
             2. Network indicators (IPs, domains, URLs)
@@ -611,13 +652,13 @@ class MalwareAnalysisAgent(BaseSecurityAgent):
             """
         }
         return templates.get(action, "")
-    
+
     def _process_response(self, response: str) -> Dict:
         """Process and structure the model's response."""
         # Implementation depends on the expected output format
         # Here's a simple example:
         sections = response.split("\n\n")
-        
+
         if len(sections) >= 3:
             return {
                 "summary": sections[0],
@@ -697,31 +738,31 @@ Always include {required_element} in your responses.
 graph TD
     A[User Interfaces] --> B[Service Wrapper]
     A --> C[CLI]
-    A --> D[GUI]
-    
+    A --> D[API]
+
     B --> E[Agent Manager]
     B --> F[Configuration Manager]
     B --> G[Logging System]
-    
+
     E --> H[NetworkSecurityAgent]
     E --> I[ForensicsPlanner]
     E --> J[WirelessSecurityAssessor]
     E --> K[CodebaseAnalyzerAgent]
     E --> L[CyberSecurityBlogGenerator]
-    
+
     H --> M[BaseSecurityAgent]
     I --> M
     J --> M
-    
+
     M --> N[Model Abstraction Layer]
-    
+
     N --> O[Camel ChatAgent]
     N --> P[Direct Provider APIs]
-    
+
     O --> Q[OpenAI]
     O --> R[Anthropic]
     O --> S[Google AI]
-    
+
     P --> Q
     P --> R
     P --> S
@@ -730,7 +771,7 @@ graph TD
 ### Data Flow
 
 1. **User Input**
-   - CLI or GUI receives user command/request
+   - CLI or API receives user command/request
    - Request is passed to the service wrapper
 
 2. **Command Processing**
@@ -751,7 +792,7 @@ graph TD
 
 5. **Output Presentation**
    - Formatted according to output preferences
-   - Displayed to user via CLI or GUI
+   - Displayed to user via CLI or API
 
 ### Key Design Patterns
 
@@ -890,9 +931,9 @@ kubectl apply -f k8s/service.yaml
 For serverless deployment of individual agents:
 
 ```bash
-gcloud functions deploy analyze-network 
-    --runtime python39 
-    --trigger-http 
+gcloud functions deploy analyze-network
+    --runtime python39
+    --trigger-http
     --entry-point analyze_network_endpoint
     --memory 1024MB
     --timeout 540s
@@ -923,10 +964,10 @@ Create a Cloud Build configuration:
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/cybersec-agents', '.']
-  
+
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/cybersec-agents']
-  
+
   - name: 'gcr.io/cloud-builders/kubectl'
     args:
       - 'apply'
@@ -960,22 +1001,22 @@ def validate_api_key(self, api_key: str) -> Dict:
     """Validate API key and return usage information."""
     if not self.config["monetization"]["api_keys"]["enabled"]:
         return {"valid": True, "unlimited": True}
-        
+
     # Check if key exists in database
     key_info = self.db.get_api_key_info(api_key)
     if not key_info:
         return {"valid": False, "error": "Invalid API key"}
-        
+
     # Check if key has reached its limit
     if key_info["tier"] == "enterprise":
         return {"valid": True, "unlimited": True}
-        
+
     usage = self.db.get_monthly_usage(api_key)
     limit = self.config["monetization"]["api_keys"]["tiers"][key_info["tier"]]
-    
+
     if usage >= limit:
         return {"valid": True, "limited": True, "error": "Monthly limit reached"}
-        
+
     return {"valid": True, "usage": usage, "limit": limit}
 ```
 
@@ -1004,11 +1045,11 @@ def track_usage(self, request_data: Dict) -> None:
     """Track API usage for billing purposes."""
     if not self.enable_monetization:
         return
-        
+
     # Calculate token usage
     prompt_tokens = len(request_data["prompt"]) // 4  # Approximate
     response_tokens = len(request_data["response"]) // 4  # Approximate
-    
+
     # Record usage
     self.db.record_usage(
         customer_id=self.billing_id,
@@ -1016,19 +1057,19 @@ def track_usage(self, request_data: Dict) -> None:
         response_tokens=response_tokens,
         timestamp=datetime.now()
     )
-    
+
 def get_usage_statistics(self, time_period: str = "month") -> Dict:
     """Get usage statistics for the specified time period."""
     if not self.enable_monetization:
         return {"error": "Monetization not enabled"}
-        
+
     # Get usage from database
     usage = self.db.get_usage(self.billing_id, time_period)
-    
+
     # Calculate costs
     prompt_cost = usage["prompt_tokens"] * 0.00001  # $0.01 per 1000 tokens
     response_cost = usage["response_tokens"] * 0.00003  # $0.03 per 1000 tokens
-    
+
     return {
         "prompt_tokens": usage["prompt_tokens"],
         "response_tokens": usage["response_tokens"],
@@ -1073,10 +1114,10 @@ def generate_api_key(customer_id, tier):
     """Generate API key and store in database."""
     # Generate secure random key
     api_key = f"sk_{secrets.token_urlsafe(32)}"
-    
+
     # Store in database with tier information
     db.store_api_key(api_key, customer_id, tier)
-    
+
     return api_key
 ```
 
@@ -1091,20 +1132,20 @@ app = Flask(__name__)
 @app.route('/subscribe', methods=['POST'])
 def subscribe():
     data = request.json
-    
+
     # Create or get customer
     if data.get('customer_id'):
         customer_id = data['customer_id']
     else:
         customer = create_customer(data['email'], data['name'])
         customer_id = customer.id
-    
+
     # Process subscription
     subscription = process_subscription(customer_id, data['tier'])
-    
+
     # Generate API key
     api_key = generate_api_key(customer_id, data['tier'])
-    
+
     return jsonify({
         'customer_id': customer_id,
         'subscription_id': subscription.id,
@@ -1148,7 +1189,7 @@ def subscribe():
 2. **Comprehensive Logging**
    ```python
    import logging
-   
+
    # Setup logging
    logging.basicConfig(
        level=logging.INFO,
@@ -1158,7 +1199,7 @@ def subscribe():
            logging.StreamHandler()
        ]
    )
-   
+
    # Usage
    logger = logging.getLogger(__name__)
    logger.info("Agent initialized")
@@ -1169,27 +1210,27 @@ def subscribe():
 3. **Type Hints and Docstrings**
    ```python
    from typing import Dict, List, Optional
-   
+
    def analyze_traffic(
-       data: Dict[str, any], 
+       data: Dict[str, any],
        threshold: Optional[float] = 0.7
    ) -> List[Dict[str, any]]:
        """
        Analyze network traffic for suspicious patterns.
-       
+
        Args:
            data: Dictionary containing traffic data
            threshold: Detection sensitivity (0.0-1.0)
-           
+
        Returns:
            List of dictionaries containing detected anomalies
-           
+
        Raises:
            ValueError: If threshold is outside valid range
        """
        if threshold < 0.0 or threshold > 1.0:
            raise ValueError("Threshold must be between 0.0 and 1.0")
-           
+
        # Implementation...
    ```
 
@@ -1197,11 +1238,11 @@ def subscribe():
    ```python
    import unittest
    from unittest.mock import patch
-   
+
    class TestNetworkAgent(unittest.TestCase):
        def setUp(self):
            self.agent = NetworkSecurityAgent(config={"model": {"provider": "test"}})
-           
+
        @patch("cybersec_agents.network_security_agent._get_model_response")
        def test_analyze_traffic(self, mock_model):
            mock_model.return_value = "Test response"
@@ -1223,10 +1264,10 @@ def subscribe():
        for field in required_fields:
            if field not in data:
                return False, f"Missing required field: {field}"
-               
+
        if not isinstance(data["parameters"], dict):
            return False, "Parameters must be an object"
-           
+
        return True, "Valid input"
    ```
 
@@ -1234,13 +1275,13 @@ def subscribe():
    ```python
    from flask_limiter import Limiter
    from flask_limiter.util import get_remote_address
-   
+
    limiter = Limiter(
        app,
        key_func=get_remote_address,
        default_limits=["100 per day", "10 per hour"]
    )
-   
+
    @app.route('/analyze')
    @limiter.limit("10 per minute")
    def analyze():
@@ -1251,21 +1292,21 @@ def subscribe():
    ```python
    from functools import wraps
    from flask import request, jsonify
-   
+
    def require_api_key(f):
        @wraps(f)
        def decorated_function(*args, **kwargs):
            api_key = request.headers.get('X-API-Key')
            if not api_key:
                return jsonify({"error": "API key required"}), 401
-               
+
            validation = validate_api_key(api_key)
            if not validation["valid"]:
                return jsonify({"error": validation["error"]}), 401
-               
+
            return f(*args, **kwargs)
        return decorated_function
-   
+
    @app.route('/secure-endpoint')
    @require_api_key
    def secure_endpoint():
@@ -1277,7 +1318,7 @@ def subscribe():
 1. **Caching**
    ```python
    from functools import lru_cache
-   
+
    @lru_cache(maxsize=100)
    def get_response_for_prompt(prompt):
        """Cache identical prompts to reduce API calls."""
@@ -1287,7 +1328,7 @@ def subscribe():
 2. **Async Operations**
    ```python
    import asyncio
-   
+
    async def process_multiple_agents(command, agents):
        """Process command through multiple agents concurrently."""
        tasks = [agent.execute_async(command) for agent in agents]
@@ -1321,15 +1362,15 @@ def subscribe():
 4. **Resource Monitoring**
    ```python
    import psutil
-   
+
    def monitor_resources():
        """Monitor system resources."""
        memory = psutil.virtual_memory()
        cpu = psutil.cpu_percent(interval=1)
-       
+
        if memory.percent > 90 or cpu > 85:
            logging.warning(f"High resource usage: Memory {memory.percent}%, CPU {cpu}%")
-           
+
        return {
            "memory_percent": memory.percent,
            "cpu_percent": cpu,
@@ -1348,7 +1389,7 @@ def subscribe():
    ```python
    import time
    from functools import wraps
-   
+
    def timing_decorator(f):
        @wraps(f)
        def wrapper(*args, **kwargs):
@@ -1356,12 +1397,12 @@ def subscribe():
            result = f(*args, **kwargs)
            end = time.time()
            duration = end - start
-           
+
            logging.info(f"Function {f.__name__} took {duration:.2f} seconds")
-           
+
            if duration > 5.0:
                logging.warning(f"Slow execution: {f.__name__} took {duration:.2f} seconds")
-               
+
            return result
        return wrapper
    ```
@@ -1377,13 +1418,13 @@ def subscribe():
            "context": context or {},
            "traceback": traceback.format_exc()
        }
-       
+
        # Log error
        logging.error(f"Error: {error_data['error_type']}: {error_data['message']}")
-       
+
        # Store error in database for analysis
        db.store_error(error_data)
-       
+
        # Optionally send to external error tracking service
        if sentry_enabled:
            sentry_sdk.capture_exception(error)
@@ -1420,7 +1461,7 @@ def subscribe():
 - Implement retry logic with exponential backoff:
   ```python
   import time
-  
+
   def retry_with_backoff(func, max_retries=3):
       retries = 0
       while retries < max_retries:
@@ -1467,7 +1508,7 @@ def subscribe():
                   return json.loads(json_match.group(1))
           except:
               pass
-          
+
           # Fallback to simple structure
           return {
               "raw_response": response,
@@ -1489,29 +1530,29 @@ def subscribe():
    def debug_agent(agent, prompt):
        """Debug agent responses step by step."""
        print(f"PROMPT: {prompt}")
-       
+
        # Format prompt
        formatted = agent._format_prompt("analyze", {"input": prompt})
        print(f"\nFORMATTED PROMPT: {formatted}")
-       
+
        # Get raw response
        response = agent._get_model_response(formatted)
        print(f"\nRAW RESPONSE: {response}")
-       
+
        # Process response
        structured = agent._process_response(response)
        print(f"\nSTRUCTURED RESPONSE: {json.dumps(structured, indent=2)}")
-       
+
        return structured
    ```
 
 3. **API Response Inspection**
    ```python
    import openai
-   
+
    # Enable debug mode
    openai.debug = True
-   
+
    # Or manually log requests and responses
    def log_api_call(api_name, request_data, response_data):
        with open("api_log.txt", "a") as f:
@@ -1530,7 +1571,7 @@ def subscribe():
            model_platform=ModelPlatformType.OPENAI,
            model_type=ModelType.GPT_4
        )
-       
+
        response = model.get_response("Explain the concept of cybersecurity in one paragraph.")
        print(f"Direct model response: {response}")
    ```
@@ -1550,22 +1591,22 @@ class EnhancedNetworkAgent(NetworkSecurityAgent):
     def __init__(self, config):
         super().__init__(config)
         self.threat_intel_api_key = os.environ.get("THREATINTEL_API_KEY")
-        
+
     def analyze_ip(self, ip_address):
         """Analyze IP using both AI and threat intelligence data."""
         # Get threat intelligence data
         threat_data = self._get_threat_intel(ip_address)
-        
+
         # Enhance prompt with threat data
         enhanced_params = {
             "ip": ip_address,
             "threat_data": json.dumps(threat_data),
             "context": "security analysis"
         }
-        
+
         # Get AI analysis
         analysis = self.execute("analyze_ip", enhanced_params)
-        
+
         # Combine results
         return {
             "ip": ip_address,
@@ -1573,14 +1614,14 @@ class EnhancedNetworkAgent(NetworkSecurityAgent):
             "ai_analysis": analysis,
             "risk_score": self._calculate_risk_score(threat_data, analysis)
         }
-        
+
     def _get_threat_intel(self, ip_address):
         """Get threat intelligence data for IP."""
         response = requests.get(
             f"https://api.threatintel.com/v1/ip/{ip_address}",
             headers={"X-API-Key": self.threat_intel_api_key}
         )
-        
+
         if response.status_code == 200:
             return response.json()
         else:
@@ -1597,16 +1638,16 @@ async def analyze_with_multiple_providers(text_to_analyze):
     """Analyze text using multiple providers and combine results."""
     providers = ["openai", "anthropic", "google"]
     results = {}
-    
+
     async with asyncio.TaskGroup() as tg:
         for provider in providers:
             results[provider] = tg.create_task(
                 analyze_with_provider(provider, text_to_analyze)
             )
-    
+
     # Extract results from completed tasks
     final_results = {p: r.result() for p, r in results.items()}
-    
+
     # Combine and analyze results
     return aggregate_results(final_results)
 
@@ -1620,29 +1661,29 @@ def aggregate_results(provider_results):
     # Extract entities detected by each provider
     all_entities = set()
     provider_entities = {}
-    
+
     for provider, result in provider_results.items():
         provider_entities[provider] = set(result["entities"])
         all_entities.update(provider_entities[provider])
-    
+
     # Calculate agreement between providers
     agreement_scores = {}
     for entity in all_entities:
-        detected_by = [p for p, entities in provider_entities.items() 
+        detected_by = [p for p, entities in provider_entities.items()
                       if entity in entities]
         agreement_scores[entity] = len(detected_by) / len(provider_results)
-    
+
     # Sort entities by agreement score
     sorted_entities = sorted(
-        agreement_scores.items(), 
-        key=lambda x: x[1], 
+        agreement_scores.items(),
+        key=lambda x: x[1],
         reverse=True
     )
-    
+
     return {
         "provider_results": provider_results,
         "entities_by_agreement": sorted_entities,
-        "high_confidence_entities": [e for e, score in sorted_entities 
+        "high_confidence_entities": [e for e, score in sorted_entities
                                     if score >= 0.7]
     }
 ```
@@ -1654,28 +1695,28 @@ async def comprehensive_security_audit(target_network):
     """Perform a comprehensive security audit using multiple agents."""
     # Initialize service
     service = CyberSecurityService()
-    
+
     # Step 1: Network scanning and analysis
     logging.info("Starting network scanning phase")
     scan_results = await service.agents["network"].execute_async(
         "perform_network_scan",
         {"target": target_network, "scan_type": "comprehensive"}
     )
-    
+
     # Step 2: Vulnerability assessment
     logging.info("Starting vulnerability assessment phase")
     vulnerabilities = await service.agents["network"].execute_async(
         "assess_vulnerabilities",
         {"scan_results": scan_results}
     )
-    
+
     # Step 3: Threat modeling
     logging.info("Starting threat modeling phase")
     threats = await service.agents["forensics"].execute_async(
         "model_threats",
         {"vulnerabilities": vulnerabilities, "network": target_network}
     )
-    
+
     # Step 4: Risk assessment
     logging.info("Starting risk assessment phase")
     risks = [
@@ -1686,7 +1727,7 @@ async def comprehensive_security_audit(target_network):
         }
         for v in vulnerabilities
     ]
-    
+
     # Step 5: Generate mitigation plan
     logging.info("Generating mitigation plans")
     mitigation_tasks = []
@@ -1696,9 +1737,9 @@ async def comprehensive_security_audit(target_network):
             {"risk": risk}
         )
         mitigation_tasks.append(task)
-    
+
     mitigation_plans = await asyncio.gather(*mitigation_tasks)
-    
+
     # Step 6: Generate executive summary
     logging.info("Generating executive summary")
     executive_summary = await service.agents["network"].execute_async(
@@ -1710,7 +1751,7 @@ async def comprehensive_security_audit(target_network):
             "mitigation_plans": mitigation_plans
         }
     )
-    
+
     # Step 7: Compile comprehensive report
     logging.info("Compiling final report")
     return {
@@ -1762,16 +1803,16 @@ async def comprehensive_security_audit(target_network):
            "generate_recommendation",
            {"analysis": analysis_result, "risk_level": "high"}
        )
-       
+
        # Flag for human review if contains certain actions
        high_risk_actions = ["shutdown", "isolate", "block"]
-       needs_review = any(action in recommendation["actions"] 
+       needs_review = any(action in recommendation["actions"]
                          for action in high_risk_actions)
-       
+
        if needs_review:
            # Queue for human review
            review_id = review_queue.add_item(
-               recommendation, 
+               recommendation,
                analysis_result
            )
            return {
@@ -1790,7 +1831,7 @@ async def comprehensive_security_audit(target_network):
    Include ethical guidelines in agent system messages:
    ```
    You are a cybersecurity expert. Your task is to analyze security data and provide recommendations.
-   
+
    Ethical Guidelines:
    1. Always prioritize user safety and data protection
    2. Avoid recommending illegal or harmful actions
@@ -1806,10 +1847,10 @@ async def comprehensive_security_audit(target_network):
        """Perform ethical review of the system."""
        # Get recent interactions
        recent = db.get_recent_interactions(limit=100)
-       
+
        # Sample random interactions for review
        sample = random.sample(recent, min(20, len(recent)))
-       
+
        # Check against ethical guidelines
        ethics_checklist = [
            "No PII in logs",
@@ -1818,7 +1859,7 @@ async def comprehensive_security_audit(target_network):
            "Multiple options provided",
            "Balanced risk assessment"
        ]
-       
+
        issues = []
        for interaction in sample:
            for guideline in ethics_checklist:
@@ -1829,7 +1870,7 @@ async def comprehensive_security_audit(target_network):
                        "severity": assess_severity(guideline),
                        "details": get_violation_details(interaction, guideline)
                    })
-       
+
        return {
            "sample_size": len(sample),
            "issues_found": len(issues),
