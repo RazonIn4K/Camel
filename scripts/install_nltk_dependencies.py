@@ -30,7 +30,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 
 # Define colors for terminal output
@@ -125,7 +125,7 @@ def install_nltk(quiet: bool = False) -> Tuple[bool, Optional[str]]:
             print_info("Installing NLTK...")
 
         # Use subprocess to install NLTK
-        cmd: list[Any] = [sys.executable, "-m", "pip", "install", "nltk"]
+        cmd: List[Union[str, Any]] = [sys.executable, "-m", "pip", "install", "nltk"]
         if quiet:
             cmd.append("--quiet")
 
@@ -472,7 +472,7 @@ def update_project_dependencies() -> Dict[str, bool]:
     Returns:
         Dictionary with update status for each file
     """
-    results: list[Any] = {"requirements.txt": False, "setup.py": False}
+    results: Dict[str, bool] = {"requirements.txt": False, "setup.py": False}
 
     # Update requirements.txt
     if os.path.exists("requirements.txt"):
@@ -537,7 +537,7 @@ This module provides utilities for initializing NLTK and downloading required da
 import os
 import sys
 import logging
-from typing import List, Optional, Tuple, Dict, Any
+from typing import List, Optional, Tuple, Dict, Any, Union
 
 logger = logging.getLogger(__name__)
 
@@ -553,9 +553,9 @@ def initialize_nltk(packages: List[str] = None, quiet: bool = True) -> Dict[str,
         Dictionary with status for each package
     \"\"\"
     if packages is None:
-        packages: list[Any] = ["vader_lexicon", "punkt", "stopwords"]
+        packages: List[str] = ["vader_lexicon", "punkt", "stopwords"]
     
-    results: list[Any] = {}
+    results: Dict[str, bool] = {}
     
     try:
         import nltk
@@ -670,10 +670,10 @@ def update_affected_modules() -> Dict[str, Any]:
     Returns:
         Dictionary with update status for each module
     """
-    results: list[Any] = {"updated_modules": [], "errors": []}
+    results: Dict[str, List[Any]] = {"updated_modules": [], "errors": []}
 
     # Find affected modules
-    affected_modules: list[Any] = []
+    affected_modules: List[str] = []
     for root, _, files in os.walk("cybersec_agents"):
         for file in files:
             if file.endswith(".py"):
@@ -735,7 +735,7 @@ def run_installation(
     Returns:
         Dictionary with installation results
     """
-    results: list[Any] = {}
+    results: Dict[str, Any] = {}
 
     # Check NLTK installation
     if not quiet:
@@ -772,7 +772,7 @@ def run_installation(
     if not quiet:
         print_section("Installing NLTK Data Packages")
 
-    packages: list[Any] = ["vader_lexicon", "punkt", "stopwords"]
+    packages: List[str] = ["vader_lexicon", "punkt", "stopwords"]
     results["nltk_data"] = {}
 
     for package in packages:
@@ -955,7 +955,7 @@ def main():
         print_info(f"Platform: {platform.platform()}")
         print_info(f"System: {platform.system()} {platform.release()}")
 
-    results: list[Any] = run_installation(args.force, args.quiet, args.data_dir)
+    results: Dict[str, Any] = run_installation(args.force, args.quiet, args.data_dir)
 
     # Print summary
     if not args.quiet:
