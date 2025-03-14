@@ -15,10 +15,11 @@ setup(
         "matplotlib",
         "seaborn",
         "python-dotenv",
-        "camel-ai",
+        "camel-ai>=0.2.29",  # Updated to latest available version
         "openai",
         "flask",
         "discord.py",
+        "nltk>=3.8.1",  # Required for sentiment analysis in Gray Swan Arena
     ],
     extras_require={
         "dev": [
