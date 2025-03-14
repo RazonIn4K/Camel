@@ -19,6 +19,13 @@ from camel.agents import ChatAgent
 from camel.messages import BaseMessage
 from camel.types.enums import RoleType
 
+from ..utils.advanced_visualization_utils import (
+    create_advanced_evaluation_report,
+    create_attack_pattern_visualization,
+    create_interactive_dashboard,
+    create_prompt_similarity_network,
+    create_success_prediction_model,
+)
 from ..utils.agentops_utils import (
     initialize_agentops,
     log_agentops_event,
@@ -28,13 +35,6 @@ from ..utils.agentops_utils import (
 # Import specific utilities directly
 from ..utils.logging_utils import setup_logging
 from ..utils.visualization_utils import create_evaluation_report
-from ..utils.advanced_visualization_utils import (
-    create_attack_pattern_visualization,
-    create_prompt_similarity_network,
-    create_success_prediction_model,
-    create_interactive_dashboard,
-    create_advanced_evaluation_report
-)
 
 # Set up logging using our logging utility
 logger = setup_logging("evaluation_agent")
@@ -45,7 +45,7 @@ class EvaluationAgent:
 
     def __init__(
         self,
-        output_dir: str = "./evaluations", 
+        output_dir: str = "./evaluations",
         model_name: str = "gpt-4",
         backup_model: Optional[str] = None,
         reasoning_model: Optional[str] = None,
@@ -439,7 +439,9 @@ class EvaluationAgent:
         Returns:
             Dictionary of visualization file paths
         """
-        logger.info(f"Creating basic visualizations for {target_model} - {target_behavior}")
+        logger.info(
+            f"Creating basic visualizations for {target_model} - {target_behavior}"
+        )
 
         # Log visualization creation start
         log_agentops_event(
@@ -539,13 +541,17 @@ class EvaluationAgent:
             )
 
             return {}
-            
+
     def create_advanced_visualizations(
-        self, results: List[Dict[str, Any]], target_model: str, target_behavior: str, include_interactive: bool = True
+        self,
+        results: List[Dict[str, Any]],
+        target_model: str,
+        target_behavior: str,
+        include_interactive: bool = True,
     ) -> Dict[str, str]:
         """
         Create advanced visualizations and analytics based on exploit results.
-        
+
         This method uses the advanced visualization utilities to create sophisticated
         visualizations including attack pattern clustering, prompt similarity networks,
         success prediction models, and interactive dashboards.
@@ -559,7 +565,9 @@ class EvaluationAgent:
         Returns:
             Dictionary of visualization file paths
         """
-        logger.info(f"Creating advanced visualizations for {target_model} - {target_behavior}")
+        logger.info(
+            f"Creating advanced visualizations for {target_model} - {target_behavior}"
+        )
 
         # Log advanced visualization creation start
         log_agentops_event(
@@ -567,7 +575,7 @@ class EvaluationAgent:
             {
                 "target_model": target_model,
                 "target_behavior": target_behavior,
-                "include_interactive": include_interactive
+                "include_interactive": include_interactive,
             },
         )
 
@@ -575,18 +583,18 @@ class EvaluationAgent:
             # Create a directory for visualizations
             vis_dir = self.viz_dir / "advanced"
             vis_dir.mkdir(parents=True, exist_ok=True)
-            
+
             # Create advanced evaluation report with all visualizations
             visualization_paths = create_advanced_evaluation_report(
                 results=results,
                 output_dir=vis_dir,
-                include_interactive=include_interactive
+                include_interactive=include_interactive,
             )
-            
+
             # Add target model and behavior to the paths for reference
             visualization_paths["target_model"] = target_model
             visualization_paths["target_behavior"] = target_behavior
-            
+
             # Log advanced visualization creation completion
             log_agentops_event(
                 "advanced_visualization_creation_completed",
@@ -597,12 +605,12 @@ class EvaluationAgent:
                     "visualizations": list(visualization_paths.keys()),
                 },
             )
-            
+
             return visualization_paths
-            
+
         except Exception as e:
             logger.error(f"Advanced visualization creation failed: {str(e)}")
-            
+
             # Log advanced visualization creation failure
             log_agentops_event(
                 "advanced_visualization_creation_error",
@@ -613,7 +621,7 @@ class EvaluationAgent:
                     "error": str(e),
                 },
             )
-            
+
             return {}
 
     def _extract_sections(self, content: str) -> Dict[str, str]:

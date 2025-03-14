@@ -43,9 +43,9 @@ def initialize_agentops(api_key: Optional[str] = None) -> bool:
 
 
 def start_agentops_session(
-    agent_type: str = "generic", 
+    agent_type: str = "generic",
     model: Optional[str] = None,
-    tags: Optional[List[str]] = None
+    tags: Optional[List[str]] = None,
 ) -> bool:
     """Start a new AgentOps session.
 
@@ -79,7 +79,9 @@ def start_agentops_session(
         return False
 
 
-def log_agentops_event(event_name: str, properties: Optional[Dict[str, Any]] = None) -> bool:
+def log_agentops_event(
+    event_name: str, properties: Optional[Dict[str, Any]] = None
+) -> bool:
     """Log an event to AgentOps.
 
     Args:

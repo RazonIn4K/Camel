@@ -20,10 +20,14 @@ from ..utils.agentops_utils import (
     log_agentops_event,
     start_agentops_session,
 )
-from ..utils.model_utils import get_chat_agent, with_backup_model, with_exponential_backoff
 
 # Import specific utilities directly
 from ..utils.logging_utils import setup_logging
+from ..utils.model_utils import (
+    get_chat_agent,
+    with_backup_model,
+    with_exponential_backoff,
+)
 
 # Set up logging using our logging utility
 logger = setup_logging("recon_agent")
@@ -33,8 +37,8 @@ class ReconAgent:
     """Agent for performing reconnaissance on target AI models."""
 
     def __init__(
-        self, 
-        output_dir: str = "./reports", 
+        self,
+        output_dir: str = "./reports",
         model_name: str = "gpt-4",
         backup_model: Optional[str] = None,
         reasoning_model: Optional[str] = None,
@@ -51,13 +55,13 @@ class ReconAgent:
         self.model_name = model_name
         self.backup_model = backup_model
         self.reasoning_model = reasoning_model or model_name
-        
+
         # Create output directory if it doesn't exist
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Initialize AgentOps for monitoring
         initialize_agentops()
-        
+
         # Start a session for this agent
         start_agentops_session(agent_type="ReconAgent", model=self.model_name)
 
@@ -75,7 +79,11 @@ class ReconAgent:
         # Log initialization
         log_agentops_event(
             "agent_initialized",
-            {"agent_type": "recon", "output_dir": str(output_dir), "model_name": model_name},
+            {
+                "agent_type": "recon",
+                "output_dir": str(output_dir),
+                "model_name": model_name,
+            },
         )
 
     def run_web_search(
@@ -542,7 +550,9 @@ class ReconAgent:
 
         return sample_messages
 
-    def _get_chat_agent(self, system_prompt: str, model_name: Optional[str] = None) -> ChatAgent:
+    def _get_chat_agent(
+        self, system_prompt: str, model_name: Optional[str] = None
+    ) -> ChatAgent:
         """Get a chat agent with the specified system prompt.
 
         Args:
@@ -561,9 +571,9 @@ class ReconAgent:
     @with_backup_model
     @with_exponential_backoff
     def _generate_with_model(
-        self, 
-        system_prompt: str, 
-        user_prompt: str, 
+        self,
+        system_prompt: str,
+        user_prompt: str,
         model_name: Optional[str] = None,
         backup_model: Optional[str] = None,
     ) -> str:
@@ -580,13 +590,13 @@ class ReconAgent:
         """
         # Use the specified model or the default
         model = model_name or self.model_name
-        
+
         # Get a chat agent
         agent = self._get_chat_agent(system_prompt, model)
-        
+
         # Generate a response
         response = agent.generate_response(
             [BaseMessage(role_type=RoleType.USER, content=user_prompt)]
         )
-        
+
         return response.content

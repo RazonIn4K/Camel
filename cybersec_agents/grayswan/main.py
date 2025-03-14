@@ -5,17 +5,18 @@ This module provides the main functionality for running Gray Swan Arena agents
 and executing the full pipeline for AI safety evaluation.
 """
 
-import os
 import asyncio
+import os
 import time
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
+from cybersec_agents.grayswan.agents.evaluation_agent import EvaluationAgent
+from cybersec_agents.grayswan.agents.exploit_delivery_agent import ExploitDeliveryAgent
+from cybersec_agents.grayswan.agents.prompt_engineer_agent import PromptEngineerAgent
+
 # Import agents
 from cybersec_agents.grayswan.agents.recon_agent import ReconAgent
-from cybersec_agents.grayswan.agents.prompt_engineer_agent import PromptEngineerAgent
-from cybersec_agents.grayswan.agents.exploit_delivery_agent import ExploitDeliveryAgent
-from cybersec_agents.grayswan.agents.evaluation_agent import EvaluationAgent
 
 # Import utilities
 from cybersec_agents.grayswan.utils.agentops_utils import (
@@ -40,7 +41,7 @@ async def run_parallel_reconnaissance(
 ) -> Dict[str, Any]:
     """
     Run reconnaissance tasks in parallel.
-    
+
     Args:
         target_model: The target model to test
         target_behavior: The behavior to target
@@ -48,12 +49,14 @@ async def run_parallel_reconnaissance(
         model_name: Name of the model to use for the agent
         reasoning_model: Model to use for reasoning tasks
         backup_model: Backup model to use if primary fails
-        
+
     Returns:
         Dictionary containing reconnaissance results and report path
     """
-    logger.info(f"Starting parallel reconnaissance for {target_model} - {target_behavior}")
-    
+    logger.info(
+        f"Starting parallel reconnaissance for {target_model} - {target_behavior}"
+    )
+
     # Log phase start
     log_agentops_event(
         "phase_started",
@@ -66,35 +69,27 @@ async def run_parallel_reconnaissance(
             "backup_model": backup_model,
         },
     )
-    
+
     # Initialize the ReconAgent
     recon_agent = ReconAgent(
-        output_dir=output_dir, 
+        output_dir=output_dir,
         model_name=model_name,
         reasoning_model=reasoning_model,
         backup_model=backup_model,
     )
-    
+
     # Create tasks for concurrent execution
     web_task = asyncio.create_task(
-        asyncio.to_thread(
-            recon_agent.run_web_search,
-            target_model,
-            target_behavior
-        )
+        asyncio.to_thread(recon_agent.run_web_search, target_model, target_behavior)
     )
-    
+
     discord_task = asyncio.create_task(
-        asyncio.to_thread(
-            recon_agent.run_discord_search,
-            target_model,
-            target_behavior
-        )
+        asyncio.to_thread(recon_agent.run_discord_search, target_model, target_behavior)
     )
-    
+
     # Wait for all tasks to complete
     web_results, discord_results = await asyncio.gather(web_task, discord_task)
-    
+
     # Generate and save report
     report = recon_agent.generate_report(
         target_model=target_model,
@@ -102,13 +97,13 @@ async def run_parallel_reconnaissance(
         web_results=web_results,
         discord_results=discord_results,
     )
-    
+
     report_path = recon_agent.save_report(
         report=report, target_model=target_model, target_behavior=target_behavior
     )
-    
+
     logger.info(f"Parallel reconnaissance completed, report saved to {report_path}")
-    
+
     # Log completion event
     log_agentops_event(
         "phase_completed",
@@ -120,12 +115,12 @@ async def run_parallel_reconnaissance(
             "report_path": report_path,
         },
     )
-    
+
     return {
         "report": report,
         "path": report_path,
         "web_results": web_results,
-        "discord_results": discord_results
+        "discord_results": discord_results,
     }
 
 
@@ -169,7 +164,7 @@ def run_reconnaissance(
     try:
         # Initialize the ReconAgent
         recon_agent = ReconAgent(
-            output_dir=output_dir, 
+            output_dir=output_dir,
             model_name=model_name,
             reasoning_model=reasoning_model,
             backup_model=backup_model,
@@ -248,7 +243,7 @@ def run_prompt_engineering(
 ) -> Dict[str, Any]:
     """
     Run the prompt engineering phase of the Gray Swan Arena pipeline.
-    
+
     Args:
         target_model: The target model to test
         target_behavior: The behavior to target
@@ -258,12 +253,14 @@ def run_prompt_engineering(
         reasoning_model: Model to use for reasoning tasks
         backup_model: Backup model to use if primary fails
         num_prompts: Number of prompts to generate
-        
+
     Returns:
         Dictionary containing the generated prompts and file path
     """
-    logger.info(f"Starting prompt engineering phase for {target_model} - {target_behavior}")
-    
+    logger.info(
+        f"Starting prompt engineering phase for {target_model} - {target_behavior}"
+    )
+
     # Log phase start
     log_agentops_event(
         "phase_started",
@@ -276,16 +273,16 @@ def run_prompt_engineering(
             "backup_model": backup_model,
         },
     )
-    
+
     try:
         # Initialize the PromptEngineerAgent
         prompt_agent = PromptEngineerAgent(
-            output_dir=output_dir, 
+            output_dir=output_dir,
             model_name=model_name,
             reasoning_model=reasoning_model,
             backup_model=backup_model,
         )
-        
+
         # Generate prompts
         prompts = prompt_agent.generate_prompts(
             target_model=target_model,
@@ -293,16 +290,18 @@ def run_prompt_engineering(
             recon_report=recon_report,
             num_prompts=num_prompts,
         )
-        
+
         # Save prompts
         prompts_path = prompt_agent.save_prompts(
             prompts=prompts,
             target_model=target_model,
             target_behavior=target_behavior,
         )
-        
-        logger.info(f"Prompt engineering phase completed, {len(prompts)} prompts saved to {prompts_path}")
-        
+
+        logger.info(
+            f"Prompt engineering phase completed, {len(prompts)} prompts saved to {prompts_path}"
+        )
+
         # Log completion event
         log_agentops_event(
             "phase_completed",
@@ -315,15 +314,15 @@ def run_prompt_engineering(
                 "prompts_path": prompts_path,
             },
         )
-        
+
         return {
             "prompts": prompts,
             "path": prompts_path,
         }
-        
+
     except Exception as e:
         logger.error(f"Prompt engineering phase failed: {str(e)}")
-        
+
         # Log error event
         log_agentops_event(
             "phase_error",
@@ -335,7 +334,7 @@ def run_prompt_engineering(
                 "error": str(e),
             },
         )
-        
+
         return {
             "error": str(e),
             "target_model": target_model,
@@ -357,7 +356,7 @@ async def run_parallel_exploits(
 ) -> Dict[str, Any]:
     """
     Run exploit delivery in parallel batches.
-    
+
     Args:
         prompts: List of prompts to test
         target_model: The target model to test
@@ -367,24 +366,26 @@ async def run_parallel_exploits(
         backup_model: Backup model to use if primary fails
         method: Method to use (api, web)
         max_concurrent: Maximum number of concurrent operations
-        
+
     Returns:
         Dictionary containing exploit results and file path
     """
-    logger.info(f"Starting parallel exploit delivery for {target_model} with {len(prompts)} prompts")
-    
+    logger.info(
+        f"Starting parallel exploit delivery for {target_model} with {len(prompts)} prompts"
+    )
+
     # Initialize the ExploitDeliveryAgent
     exploit_agent = ExploitDeliveryAgent(output_dir=output_dir, model_name=model_name)
-    
+
     # Split prompts into batches
     batch_size = max_concurrent
-    batches = [prompts[i:i+batch_size] for i in range(0, len(prompts), batch_size)]
-    
+    batches = [prompts[i : i + batch_size] for i in range(0, len(prompts), batch_size)]
+
     all_results = []
-    
+
     for batch_idx, batch in enumerate(batches):
         logger.info(f"Processing batch {batch_idx+1}/{len(batches)}")
-        
+
         # Create tasks for concurrent execution
         tasks = []
         for prompt in batch:
@@ -395,28 +396,28 @@ async def run_parallel_exploits(
                     prompt,
                     target_model,
                     target_behavior,
-                    method
+                    method,
                 )
             )
             tasks.append(task)
-        
+
         # Wait for batch to complete
         batch_results = await asyncio.gather(*tasks)
         all_results.extend(batch_results)
-        
+
         # Small delay between batches to avoid rate limiting
         if batch_idx < len(batches) - 1:
             await asyncio.sleep(2)
-    
+
     # Save results
     results_path = exploit_agent.save_results(
         results=all_results,
         target_model=target_model,
         target_behavior=target_behavior,
     )
-    
+
     logger.info(f"Parallel exploit delivery completed, results saved to {results_path}")
-    
+
     # Log completion event
     log_agentops_event(
         "phase_completed",
@@ -429,7 +430,7 @@ async def run_parallel_exploits(
             "results_path": results_path,
         },
     )
-    
+
     return {
         "results": all_results,
         "path": results_path,
@@ -441,18 +442,18 @@ def _execute_single_prompt(
     prompt: str,
     target_model: str,
     target_behavior: str,
-    method: str
+    method: str,
 ) -> Dict[str, Any]:
     """
     Execute a single prompt and return the result.
-    
+
     Args:
         agent: The ExploitDeliveryAgent instance
         prompt: The prompt to test
         target_model: The target model
         target_behavior: The behavior to target
         method: Method to use (api, web)
-        
+
     Returns:
         Dictionary containing the result
     """
@@ -464,10 +465,10 @@ def _execute_single_prompt(
             response = agent._execute_via_web(prompt, target_model)
         else:
             response = agent._execute_via_api(prompt, target_model)
-        
+
         # Analyze the response
         success, reason = agent._analyze_response(response, target_behavior)
-        
+
         return {
             "prompt": prompt,
             "target_model": target_model,
@@ -477,7 +478,7 @@ def _execute_single_prompt(
             "success": success,
             "reason": reason,
             "response": response,
-            "error": None
+            "error": None,
         }
     except Exception as e:
         return {
@@ -488,7 +489,7 @@ def _execute_single_prompt(
             "timestamp": datetime.now().isoformat(),
             "success": False,
             "response": None,
-            "error": str(e)
+            "error": str(e),
         }
 
 
@@ -503,7 +504,7 @@ def run_exploit_delivery(
 ) -> Dict[str, Any]:
     """
     Run the exploit delivery phase of the Gray Swan Arena pipeline.
-    
+
     Args:
         prompts: List of prompts to test
         target_model: The target model to test
@@ -512,12 +513,14 @@ def run_exploit_delivery(
         model_name: Name of the model to use for the agent
         backup_model: Backup model to use if primary fails
         method: Method to use (api, web)
-        
+
     Returns:
         Dictionary containing the exploit results
     """
-    logger.info(f"Starting exploit delivery phase for {target_model} - {target_behavior}")
-    
+    logger.info(
+        f"Starting exploit delivery phase for {target_model} - {target_behavior}"
+    )
+
     # Log phase start
     log_agentops_event(
         "phase_started",
@@ -528,11 +531,13 @@ def run_exploit_delivery(
             "method": method,
         },
     )
-    
+
     try:
         # Initialize the ExploitDeliveryAgent
-        exploit_agent = ExploitDeliveryAgent(output_dir=output_dir, model_name=model_name)
-        
+        exploit_agent = ExploitDeliveryAgent(
+            output_dir=output_dir, model_name=model_name
+        )
+
         # Run prompts
         results = exploit_agent.run_prompts(
             prompts=prompts,
@@ -540,16 +545,18 @@ def run_exploit_delivery(
             target_behavior=target_behavior,
             method=method,
         )
-        
+
         # Save results
         results_path = exploit_agent.save_results(
             results=results,
             target_model=target_model,
             target_behavior=target_behavior,
         )
-        
-        logger.info(f"Exploit delivery phase completed, results saved to {results_path}")
-        
+
+        logger.info(
+            f"Exploit delivery phase completed, results saved to {results_path}"
+        )
+
         # Log completion event
         log_agentops_event(
             "phase_completed",
@@ -562,15 +569,15 @@ def run_exploit_delivery(
                 "results_path": results_path,
             },
         )
-        
+
         return {
             "results": results,
             "path": results_path,
         }
-        
+
     except Exception as e:
         logger.error(f"Exploit delivery phase failed: {str(e)}")
-        
+
         # Log error event
         log_agentops_event(
             "phase_error",
@@ -582,7 +589,7 @@ def run_exploit_delivery(
                 "error": str(e),
             },
         )
-        
+
         return {
             "error": str(e),
             "target_model": target_model,
@@ -603,7 +610,7 @@ def run_evaluation(
 ) -> Dict[str, Any]:
     """
     Run the evaluation phase of the Gray Swan Arena pipeline.
-    
+
     Args:
         exploit_results: Results from the exploit delivery phase
         target_model: The target model that was tested
@@ -612,12 +619,12 @@ def run_evaluation(
         model_name: Name of the model to use for the agent
         reasoning_model: Model to use for reasoning tasks
         backup_model: Backup model to use if primary fails
-        
+
     Returns:
         Dictionary containing the evaluation results
     """
     logger.info(f"Starting evaluation phase for {target_model} - {target_behavior}")
-    
+
     # Log phase start
     log_agentops_event(
         "phase_started",
@@ -630,52 +637,52 @@ def run_evaluation(
             "backup_model": backup_model,
         },
     )
-    
+
     try:
         # Initialize the EvaluationAgent
         eval_agent = EvaluationAgent(
-            output_dir=output_dir, 
+            output_dir=output_dir,
             model_name=model_name,
             reasoning_model=reasoning_model,
             backup_model=backup_model,
         )
-        
+
         # Evaluate results
         evaluation = eval_agent.evaluate_results(
             results=exploit_results,
             target_model=target_model,
             target_behavior=target_behavior,
         )
-        
+
         # Create visualizations
         visualizations = eval_agent.create_visualizations(
             evaluation=evaluation,
             target_model=target_model,
             target_behavior=target_behavior,
         )
-        
+
         # Generate summary
         summary = eval_agent.generate_summary(
             evaluation=evaluation,
             target_model=target_model,
             target_behavior=target_behavior,
         )
-        
+
         # Save evaluation and summary
         eval_path = eval_agent.save_evaluation(
             evaluation=evaluation,
             target_model=target_model,
             target_behavior=target_behavior,
         )
-        
+
         summary_path = eval_agent.save_summary(
             summary=summary,
             target_model=target_model,
             target_behavior=target_behavior,
         )
-        
+
         logger.info(f"Evaluation phase completed, results saved to {eval_path}")
-        
+
         # Log completion event
         log_agentops_event(
             "phase_completed",
@@ -688,7 +695,7 @@ def run_evaluation(
                 "summary_path": summary_path,
             },
         )
-        
+
         return {
             "evaluation": evaluation,
             "visualizations": visualizations,
@@ -698,10 +705,10 @@ def run_evaluation(
                 "summary": summary_path,
             },
         }
-        
+
     except Exception as e:
         logger.error(f"Evaluation phase failed: {str(e)}")
-        
+
         # Log error event
         log_agentops_event(
             "phase_error",
@@ -713,7 +720,7 @@ def run_evaluation(
                 "error": str(e),
             },
         )
-        
+
         return {
             "error": str(e),
             "target_model": target_model,
@@ -736,7 +743,7 @@ async def run_full_pipeline_async(
 ) -> Dict[str, Any]:
     """
     Run the complete Gray Swan Arena pipeline asynchronously.
-    
+
     Args:
         target_model: The target model to test
         target_behavior: The behavior to target
@@ -748,32 +755,31 @@ async def run_full_pipeline_async(
         test_method: Method for testing (api or web)
         max_concurrent: Maximum concurrent operations
         complexity_threshold: Threshold for using backup model (0.0-1.0)
-        
+
     Returns:
         Dictionary containing results from all phases
     """
     results = {}
     skip_phases = skip_phases or []
-    
+
     # Initialize AgentOps session
     api_key = os.getenv("AGENTOPS_API_KEY")
     if api_key:
         initialize_agentops(api_key)
         start_agentops_session(tags=["full_pipeline"])
-    
+
     # Create output directories
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(os.path.join(output_dir, "reports"), exist_ok=True)
     os.makedirs(os.path.join(output_dir, "prompts"), exist_ok=True)
     os.makedirs(os.path.join(output_dir, "exploits"), exist_ok=True)
     os.makedirs(os.path.join(output_dir, "evaluations"), exist_ok=True)
-    
+
     # Initialize model manager
     if not backup_model:
         # Create a model manager instance
         model_manager = ModelManager(
-            primary_model=model_name,
-            complexity_threshold=complexity_threshold
+            primary_model=model_name, complexity_threshold=complexity_threshold
         )
         # Try to get a suitable backup model
         backup_model = model_manager.get_backup_model(model_name)
@@ -782,18 +788,18 @@ async def run_full_pipeline_async(
             model_manager = ModelManager(
                 primary_model=model_name,
                 backup_model=backup_model,
-                complexity_threshold=complexity_threshold
+                complexity_threshold=complexity_threshold,
             )
     else:
         # Use the provided backup model
         model_manager = ModelManager(
             primary_model=model_name,
             backup_model=backup_model,
-            complexity_threshold=complexity_threshold
+            complexity_threshold=complexity_threshold,
         )
-    
+
     logger.info(f"Using model manager with primary={model_name}, backup={backup_model}")
-    
+
     # Log pipeline start
     log_agentops_event(
         "pipeline_started",
@@ -808,7 +814,7 @@ async def run_full_pipeline_async(
             "max_concurrent": max_concurrent,
         },
     )
-    
+
     try:
         # Phase 1: Reconnaissance
         if "recon" not in skip_phases:
@@ -822,7 +828,7 @@ async def run_full_pipeline_async(
                 backup_model=backup_model,
             )
             results["reconnaissance"] = recon_results
-        
+
         # Phase 2: Prompt Engineering
         if "prompt" not in skip_phases:
             logger.info("Starting prompt engineering phase")
@@ -838,7 +844,7 @@ async def run_full_pipeline_async(
                 num_prompts=max_prompts,
             )
             results["prompt_engineering"] = prompt_results
-        
+
         # Phase 3: Exploit Delivery
         if "exploit" not in skip_phases and "prompt_engineering" in results:
             logger.info("Starting exploit delivery phase")
@@ -854,7 +860,7 @@ async def run_full_pipeline_async(
                 max_concurrent=max_concurrent,
             )
             results["exploit_delivery"] = exploit_results
-        
+
         # Phase 4: Evaluation
         if "eval" not in skip_phases and "exploit_delivery" in results:
             logger.info("Starting evaluation phase")
@@ -869,10 +875,10 @@ async def run_full_pipeline_async(
                 backup_model=backup_model,
             )
             results["evaluation"] = eval_results
-        
+
         # Add model manager metrics to results
         results["model_metrics"] = model_manager.get_metrics()
-        
+
         # Log pipeline completion
         log_agentops_event(
             "pipeline_completed",
@@ -884,12 +890,12 @@ async def run_full_pipeline_async(
                 "model_metrics": results["model_metrics"],
             },
         )
-        
+
         return results
-        
+
     except Exception as e:
         logger.error(f"Pipeline execution failed: {str(e)}")
-        
+
         # Log pipeline error
         log_agentops_event(
             "pipeline_error",
@@ -902,7 +908,7 @@ async def run_full_pipeline_async(
                 "model_metrics": model_manager.get_metrics(),
             },
         )
-        
+
         return {
             "error": str(e),
             "target_model": target_model,
@@ -927,7 +933,7 @@ def run_full_pipeline(
 ) -> Dict[str, Any]:
     """
     Run the complete Gray Swan Arena pipeline.
-    
+
     Args:
         target_model: The target model to test
         target_behavior: The behavior to target
@@ -939,22 +945,24 @@ def run_full_pipeline(
         test_method: Method for testing (api or web)
         max_concurrent: Maximum concurrent operations
         complexity_threshold: Threshold for using backup model (0.0-1.0)
-        
+
     Returns:
         Dictionary containing results from all phases
     """
-    return asyncio.run(run_full_pipeline_async(
-        target_model=target_model,
-        target_behavior=target_behavior,
-        output_dir=output_dir,
-        model_name=model_name,
-        backup_model=backup_model,
-        skip_phases=skip_phases,
-        max_prompts=max_prompts,
-        test_method=test_method,
-        max_concurrent=max_concurrent,
-        complexity_threshold=complexity_threshold,
-    ))
+    return asyncio.run(
+        run_full_pipeline_async(
+            target_model=target_model,
+            target_behavior=target_behavior,
+            output_dir=output_dir,
+            model_name=model_name,
+            backup_model=backup_model,
+            skip_phases=skip_phases,
+            max_prompts=max_prompts,
+            test_method=test_method,
+            max_concurrent=max_concurrent,
+            complexity_threshold=complexity_threshold,
+        )
+    )
 
 
 def main():
@@ -985,7 +993,9 @@ def main():
         "--agent-model", type=str, default="gpt-4", help="Model to use for agents"
     )
     parser.add_argument(
-        "--reasoning-model", type=str, help="Model to use for reasoning tasks (e.g., o3-mini)"
+        "--reasoning-model",
+        type=str,
+        help="Model to use for reasoning tasks (e.g., o3-mini)",
     )
     parser.add_argument(
         "--backup-model", type=str, help="Backup model to use if primary fails"
@@ -994,7 +1004,7 @@ def main():
         "--complexity-threshold",
         type=float,
         default=0.7,
-        help="Threshold for using backup model (0.0-1.0)"
+        help="Threshold for using backup model (0.0-1.0)",
     )
     parser.add_argument(
         "--skip-phases",
@@ -1004,7 +1014,10 @@ def main():
         help="Phases to skip",
     )
     parser.add_argument(
-        "--max-prompts", type=int, default=10, help="Maximum number of prompts to generate"
+        "--max-prompts",
+        type=int,
+        default=10,
+        help="Maximum number of prompts to generate",
     )
     parser.add_argument(
         "--test-method",
@@ -1032,6 +1045,7 @@ def main():
     # Configure logging
     if args.verbose:
         import logging
+
         logging.getLogger().setLevel(logging.DEBUG)
 
     # Create output directories
@@ -1043,10 +1057,10 @@ def main():
 
     # Initialize AgentOps
     initialize_agentops()
-    
+
     # Start a session
     start_agentops_session(agent_type="GraySwanPipeline", model=args.agent_model)
-    
+
     # Log pipeline start
     log_agentops_event(
         "pipeline_started",
@@ -1068,7 +1082,7 @@ def main():
         if "recon" not in (args.skip_phases or []):
             logger.info("Starting reconnaissance phase")
             start_time = time.time()
-            
+
             if args.parallel:
                 report = asyncio.run(
                     run_parallel_reconnaissance(
@@ -1089,18 +1103,18 @@ def main():
                     reasoning_model=args.reasoning_model,
                     backup_model=args.backup_model,
                 )
-            
+
             recon_time = time.time() - start_time
             logger.info(f"Reconnaissance phase completed in {recon_time:.2f} seconds")
         else:
             logger.info("Skipping reconnaissance phase")
-            
+
         # Step 2: Prompt Engineering (if not skipped)
         prompts = None
         if "prompt" not in (args.skip_phases or []) and report:
             logger.info("Starting prompt engineering phase")
             start_time = time.time()
-            
+
             prompts = run_prompt_engineering(
                 target_model=args.target_model,
                 target_behavior=args.target_behavior,
@@ -1111,18 +1125,20 @@ def main():
                 backup_model=args.backup_model,
                 max_prompts=args.max_prompts,
             )
-            
+
             prompt_time = time.time() - start_time
-            logger.info(f"Prompt engineering phase completed in {prompt_time:.2f} seconds")
+            logger.info(
+                f"Prompt engineering phase completed in {prompt_time:.2f} seconds"
+            )
         else:
             logger.info("Skipping prompt engineering phase")
-            
+
         # Step 3: Exploit Delivery (if not skipped)
         results = None
         if "exploit" not in (args.skip_phases or []) and prompts:
             logger.info("Starting exploit delivery phase")
             start_time = time.time()
-            
+
             results = run_exploit_delivery(
                 target_model=args.target_model,
                 target_behavior=args.target_behavior,
@@ -1133,17 +1149,19 @@ def main():
                 method=args.test_method,
                 max_concurrent=args.max_concurrent,
             )
-            
+
             exploit_time = time.time() - start_time
-            logger.info(f"Exploit delivery phase completed in {exploit_time:.2f} seconds")
+            logger.info(
+                f"Exploit delivery phase completed in {exploit_time:.2f} seconds"
+            )
         else:
             logger.info("Skipping exploit delivery phase")
-            
+
         # Step 4: Evaluation (if not skipped)
         if "eval" not in (args.skip_phases or []) and results:
             logger.info("Starting evaluation phase")
             start_time = time.time()
-            
+
             evaluation = run_evaluation(
                 target_model=args.target_model,
                 target_behavior=args.target_behavior,
@@ -1153,14 +1171,14 @@ def main():
                 reasoning_model=args.reasoning_model,
                 backup_model=args.backup_model,
             )
-            
+
             eval_time = time.time() - start_time
             logger.info(f"Evaluation phase completed in {eval_time:.2f} seconds")
         else:
             logger.info("Skipping evaluation phase")
-            
+
         logger.info(f"Gray Swan Arena pipeline completed successfully")
-        
+
         # Log pipeline completion
         log_agentops_event(
             "pipeline_completed",
@@ -1170,10 +1188,10 @@ def main():
                 "status": "success",
             },
         )
-        
+
     except Exception as e:
         logger.error(f"Pipeline failed: {str(e)}")
-        
+
         # Log pipeline error
         log_agentops_event(
             "pipeline_error",

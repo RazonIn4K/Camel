@@ -30,8 +30,8 @@ class PromptEngineerAgent:
     """Agent for generating attack prompts for target AI models."""
 
     def __init__(
-        self, 
-        output_dir: str = "./prompts", 
+        self,
+        output_dir: str = "./prompts",
         model_name: str = "gpt-4",
         reasoning_model: Optional[str] = None,
     ):
@@ -45,13 +45,13 @@ class PromptEngineerAgent:
         self.output_dir = Path(output_dir)
         self.model_name = model_name
         self.reasoning_model = reasoning_model or model_name
-        
+
         # Create output directory if it doesn't exist
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Initialize AgentOps for monitoring
         initialize_agentops()
-        
+
         # Start a session for this agent
         start_agentops_session(agent_type="PromptEngineerAgent", model=self.model_name)
 

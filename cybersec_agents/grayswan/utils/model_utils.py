@@ -3,11 +3,12 @@
 import logging
 import os
 import time
-from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
+from typing import Any, Callable, Dict, List, Optional, Type, TypeVar, Union
 
+import openai
+from camel.agents import ChatAgent
 from camel.models import ModelFactory
 from camel.types import ModelPlatformType, ModelType
-from camel.agents import ChatAgent
 
 from ..exceptions import ModelBackupError, ModelError, RateLimitError
 from .logging_utils import setup_logging
@@ -23,7 +24,7 @@ def create_model(
     model_type: ModelType,
     model_platform: ModelPlatformType = ModelPlatformType.OPENAI,
     model_config_dict: Optional[Dict[str, Any]] = None,
-):
+) -> Optional[Any]:
     """Create a model using Camel's ModelFactory with standardized settings.
 
     Args:
@@ -120,15 +121,15 @@ def get_api_key(model_name: str) -> Optional[str]:
     # Handle OpenAI models
     if model_name.startswith("gpt-") or model_name.endswith("-o"):
         return os.getenv("OPENAI_API_KEY")
-    
+
     # Handle Anthropic models
     if model_name.startswith("claude-"):
         return os.getenv("ANTHROPIC_API_KEY")
-    
+
     # Handle o3-mini
     if model_name == "o3-mini":
         return os.getenv("O3_MINI_API_KEY")
-    
+
     # Default to OpenAI key
     return os.getenv("OPENAI_API_KEY")
 
@@ -150,6 +151,7 @@ def with_exponential_backoff(
     Returns:
         Decorated function with exponential backoff
     """
+
     def wrapper(*args: Any, **kwargs: Any) -> T:
         retries = 0
         while True:
@@ -159,10 +161,10 @@ def with_exponential_backoff(
                 if retries >= max_retries:
                     raise RateLimitError(
                         f"Rate limit exceeded after {max_retries} retries",
-                        retry_after=int(base_delay * (2 ** retries)),
+                        retry_after=int(base_delay * (2**retries)),
                     )
-                
-                delay = base_delay * (2 ** retries)
+
+                delay = base_delay * (2**retries)
                 logger.warning(
                     f"Rate limit exceeded, retrying in {delay:.2f} seconds (retry {retries + 1}/{max_retries})"
                 )
@@ -170,7 +172,7 @@ def with_exponential_backoff(
                 retries += 1
             except Exception as e:
                 raise e
-    
+
     return wrapper
 
 
@@ -189,15 +191,16 @@ def with_backup_model(
     Returns:
         Decorated function with backup model functionality
     """
+
     def wrapper(*args: Any, **kwargs: Any) -> T:
         # Get the model names from the arguments
         primary_model = kwargs.get(primary_model_param)
         backup_model = kwargs.get(backup_model_param)
-        
+
         # If there's no backup model, just call the function
         if not backup_model:
             return func(*args, **kwargs)
-        
+
         try:
             # Try with the primary model
             return func(*args, **kwargs)
@@ -207,10 +210,10 @@ def with_backup_model(
                 f"Primary model {primary_model} failed: {str(e)}. "
                 f"Falling back to backup model {backup_model}."
             )
-            
+
             # Swap the models
             kwargs[primary_model_param] = backup_model
-            
+
             try:
                 # Try with the backup model
                 return func(*args, **kwargs)
@@ -218,7 +221,7 @@ def with_backup_model(
                 # If both models fail, raise a ModelBackupError
                 raise ModelBackupError(
                     f"Both primary and backup models failed",
-                    primary_model=primary_model,
+                    primary_model=str(primary_model),
                     backup_model=backup_model,
                     operation=e.operation,
                     details={
@@ -226,12 +229,12 @@ def with_backup_model(
                         "backup_error": str(backup_error),
                     },
                 )
-    
+
     return wrapper
 
 
 def get_chat_agent(
-    model_name: str,
+    model_type: ModelType,
     system_prompt: str,
     temperature: float = 0.7,
     max_tokens: Optional[int] = None,
@@ -239,7 +242,7 @@ def get_chat_agent(
     """Create a ChatAgent with the specified model.
 
     Args:
-        model_name: Name of the model
+        model_type: Type of the model.
         system_prompt: System prompt for the ChatAgent
         temperature: Temperature for model generation
         max_tokens: Maximum tokens for model generation
@@ -252,27 +255,38 @@ def get_chat_agent(
     """
     try:
         # Get the API key for the model
+        model_name = str(model_type)
         api_key = get_api_key(model_name)
+
         if not api_key:
             raise ModelError(
                 f"No API key found for model {model_name}",
                 model_name=model_name,
                 operation="initialization",
             )
-        
+
         # Create the ChatAgent
-        agent = ChatAgent(
-            model_name=model_name,
-            system_message=system_prompt,
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
-        
+        model_config = {
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        }
+
+        model = create_model(model_type, model_config_dict=model_config)
+
+        if model is None:
+            raise ModelError(
+                f"Failed to create model for ChatAgent with model type {model_type}",
+                model_name=str(model_type),
+                operation="initialization",
+            )
+
+        agent = ChatAgent(system_prompt, model)
+
         return agent
     except Exception as e:
         raise ModelError(
-            f"Failed to initialize ChatAgent with model {model_name}: {str(e)}",
-            model_name=model_name,
+            f"Failed to initialize ChatAgent with model {model_type}: {str(e)}",
+            model_name=str(model_type),
             operation="initialization",
             details={"error": str(e)},
         )
