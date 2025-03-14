@@ -1,0 +1,50 @@
+models:
+  o3-mini:
+    name: o3-mini
+    api_key_env: O3_MINI_API_KEY
+    base_url: https://api.o3.ai/v1
+    timeout: 60
+    max_retries: 5
+    temperature: 0.7
+    max_tokens: 2048
+
+  gpt-4o:
+    name: gpt-4o
+    api_key_env: GPT4O_API_KEY
+    base_url: https://api.gpt4o.ai/v1
+    timeout: 90
+    max_retries: 7
+    temperature: 0.8
+    max_tokens: 4096
+
+agents:
+  recon:
+    output_dir: /var/log/grayswan/recon
+    model_name: o3-mini
+    backup_model: gpt-4o
+    reasoning_model: o3-mini
+    complexity_threshold: 0.7
+
+  prompt_engineer:
+    output_dir: /var/log/grayswan/prompts
+    model_name: gpt-4o
+    reasoning_model: o3-mini
+    complexity_threshold: 0.8
+
+  exploit_delivery:
+    output_dir: /var/log/grayswan/exploits
+    model_name: o3-mini
+    backup_model: gpt-4o
+    reasoning_model: o3-mini
+    complexity_threshold: 0.7
+
+  evaluation:
+    output_dir: /var/log/grayswan/evaluations
+    model_name: o3-mini
+    backup_model: gpt-4o
+    reasoning_model: o3-mini
+    complexity_threshold: 0.7
+
+api:
+  rate_limit_delay: 2.0
+  max_concurrent: 3
