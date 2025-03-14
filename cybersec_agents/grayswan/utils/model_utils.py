@@ -1,12 +1,22 @@
 """Utility functions for model management."""
 
 import logging
-from typing import Any, Dict, Optional
+import os
+import time
+from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
 
 from camel.models import ModelFactory
 from camel.types import ModelPlatformType, ModelType
+from camel.agents import ChatAgent
 
-logger = logging.getLogger(__name__)
+from ..exceptions import ModelBackupError, ModelError, RateLimitError
+from .logging_utils import setup_logging
+
+# Set up logging
+logger = setup_logging("model_utils")
+
+# Type variable for the return value of model operations
+T = TypeVar("T")
 
 
 def create_model(
@@ -96,3 +106,173 @@ def get_model_info(
             model_platform_str, model_platform_str
         ),
     }
+
+
+def get_api_key(model_name: str) -> Optional[str]:
+    """Get the API key for a specific model.
+
+    Args:
+        model_name: Name of the model
+
+    Returns:
+        API key if found, None otherwise
+    """
+    # Handle OpenAI models
+    if model_name.startswith("gpt-") or model_name.endswith("-o"):
+        return os.getenv("OPENAI_API_KEY")
+    
+    # Handle Anthropic models
+    if model_name.startswith("claude-"):
+        return os.getenv("ANTHROPIC_API_KEY")
+    
+    # Handle o3-mini
+    if model_name == "o3-mini":
+        return os.getenv("O3_MINI_API_KEY")
+    
+    # Default to OpenAI key
+    return os.getenv("OPENAI_API_KEY")
+
+
+def with_exponential_backoff(
+    func: Callable[..., T],
+    max_retries: int = 5,
+    base_delay: float = 1.0,
+    rate_limit_error_codes: List[int] = [429, 500, 503],
+) -> Callable[..., T]:
+    """Decorator to add exponential backoff to a function.
+
+    Args:
+        func: Function to decorate
+        max_retries: Maximum number of retries
+        base_delay: Base delay in seconds
+        rate_limit_error_codes: HTTP error codes to retry on
+
+    Returns:
+        Decorated function with exponential backoff
+    """
+    def wrapper(*args: Any, **kwargs: Any) -> T:
+        retries = 0
+        while True:
+            try:
+                return func(*args, **kwargs)
+            except openai.RateLimitError as e:
+                if retries >= max_retries:
+                    raise RateLimitError(
+                        f"Rate limit exceeded after {max_retries} retries",
+                        retry_after=int(base_delay * (2 ** retries)),
+                    )
+                
+                delay = base_delay * (2 ** retries)
+                logger.warning(
+                    f"Rate limit exceeded, retrying in {delay:.2f} seconds (retry {retries + 1}/{max_retries})"
+                )
+                time.sleep(delay)
+                retries += 1
+            except Exception as e:
+                raise e
+    
+    return wrapper
+
+
+def with_backup_model(
+    func: Callable[..., T],
+    primary_model_param: str = "model_name",
+    backup_model_param: str = "backup_model",
+) -> Callable[..., T]:
+    """Decorator to add backup model functionality to a function.
+
+    Args:
+        func: Function to decorate
+        primary_model_param: Name of the parameter containing the primary model
+        backup_model_param: Name of the parameter containing the backup model
+
+    Returns:
+        Decorated function with backup model functionality
+    """
+    def wrapper(*args: Any, **kwargs: Any) -> T:
+        # Get the model names from the arguments
+        primary_model = kwargs.get(primary_model_param)
+        backup_model = kwargs.get(backup_model_param)
+        
+        # If there's no backup model, just call the function
+        if not backup_model:
+            return func(*args, **kwargs)
+        
+        try:
+            # Try with the primary model
+            return func(*args, **kwargs)
+        except ModelError as e:
+            # If we have a backup model, try with that
+            logger.warning(
+                f"Primary model {primary_model} failed: {str(e)}. "
+                f"Falling back to backup model {backup_model}."
+            )
+            
+            # Swap the models
+            kwargs[primary_model_param] = backup_model
+            
+            try:
+                # Try with the backup model
+                return func(*args, **kwargs)
+            except ModelError as backup_error:
+                # If both models fail, raise a ModelBackupError
+                raise ModelBackupError(
+                    f"Both primary and backup models failed",
+                    primary_model=primary_model,
+                    backup_model=backup_model,
+                    operation=e.operation,
+                    details={
+                        "primary_error": str(e),
+                        "backup_error": str(backup_error),
+                    },
+                )
+    
+    return wrapper
+
+
+def get_chat_agent(
+    model_name: str,
+    system_prompt: str,
+    temperature: float = 0.7,
+    max_tokens: Optional[int] = None,
+) -> ChatAgent:
+    """Create a ChatAgent with the specified model.
+
+    Args:
+        model_name: Name of the model
+        system_prompt: System prompt for the ChatAgent
+        temperature: Temperature for model generation
+        max_tokens: Maximum tokens for model generation
+
+    Returns:
+        Initialized ChatAgent
+
+    Raises:
+        ModelError: If the ChatAgent initialization fails
+    """
+    try:
+        # Get the API key for the model
+        api_key = get_api_key(model_name)
+        if not api_key:
+            raise ModelError(
+                f"No API key found for model {model_name}",
+                model_name=model_name,
+                operation="initialization",
+            )
+        
+        # Create the ChatAgent
+        agent = ChatAgent(
+            model_name=model_name,
+            system_message=system_prompt,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+        
+        return agent
+    except Exception as e:
+        raise ModelError(
+            f"Failed to initialize ChatAgent with model {model_name}: {str(e)}",
+            model_name=model_name,
+            operation="initialization",
+            details={"error": str(e)},
+        )

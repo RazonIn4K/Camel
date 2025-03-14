@@ -1,14 +1,15 @@
 """
-Prompt Engineering Agent for Gray Swan Arena.
+Prompt Engineer Agent for Gray Swan Arena.
 
-This agent is responsible for generating effective prompts to test target models
-based on reconnaissance data and red-teaming strategies.
+This agent is responsible for generating effective attack prompts
+based on reconnaissance data about target AI models.
 """
 
 import json
 import os
 from datetime import datetime
-from typing import Any, Dict, List
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from camel.agents import ChatAgent
 from camel.messages import BaseMessage
@@ -19,48 +20,45 @@ from ..utils.agentops_utils import (
     log_agentops_event,
     start_agentops_session,
 )
-
-# Import specific utilities directly
 from ..utils.logging_utils import setup_logging
 
-# Set up logging using our logging utility
+# Set up logging
 logger = setup_logging("prompt_engineer_agent")
 
 
 class PromptEngineerAgent:
-    """Agent responsible for generating attack prompts based on reconnaissance data."""
+    """Agent for generating attack prompts for target AI models."""
 
-    def __init__(self, output_dir: str = "./prompts", model_name: str = "gpt-4"):
-        """
-        Initialize the PromptEngineerAgent.
+    def __init__(
+        self, 
+        output_dir: str = "./prompts", 
+        model_name: str = "gpt-4",
+        reasoning_model: Optional[str] = None,
+    ):
+        """Initialize the PromptEngineerAgent.
 
         Args:
-            output_dir: Directory to save prompts
+            output_dir: Directory to save generated prompts to
             model_name: Name of the model to use for prompt generation
+            reasoning_model: Name of the model to use for reasoning tasks
         """
-        self.output_dir = output_dir
+        self.output_dir = Path(output_dir)
         self.model_name = model_name
-
+        self.reasoning_model = reasoning_model or model_name
+        
         # Create output directory if it doesn't exist
-        os.makedirs(self.output_dir, exist_ok=True)
-
-        # Initialize AgentOps
-        api_key = os.getenv("AGENTOPS_API_KEY")
-        if api_key:
-            initialize_agentops(api_key)
-            start_agentops_session(tags=["prompt_engineer_agent"])
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Initialize AgentOps for monitoring
+        initialize_agentops()
+        
+        # Start a session for this agent
+        start_agentops_session(agent_type="PromptEngineerAgent", model=self.model_name)
 
         # Log initialization
-        log_agentops_event(
-            "agent_initialized",
-            {
-                "agent_type": "prompt_engineer",
-                "output_dir": output_dir,
-                "model_name": model_name,
-            },
-        )
-
-        logger.info(f"PromptEngineerAgent initialized with model {model_name}")
+        logger.info(f"PromptEngineerAgent initialized with model: {self.model_name}")
+        if self.reasoning_model != self.model_name:
+            logger.info(f"Reasoning model configured: {self.reasoning_model}")
 
     def generate_prompts(
         self,
@@ -183,10 +181,10 @@ class PromptEngineerAgent:
             # Create filename
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"prompts_{target_model.lower().replace(' ', '_')}_{target_behavior.lower().replace(' ', '_')}_{timestamp}.json"
-            filepath = os.path.join(self.output_dir, filename)
+            filepath = self.output_dir / filename
 
             # Ensure output directory exists
-            os.makedirs(self.output_dir, exist_ok=True)
+            self.output_dir.mkdir(parents=True, exist_ok=True)
 
             # Save the prompts
             with open(filepath, "w") as f:
@@ -205,7 +203,7 @@ class PromptEngineerAgent:
                 },
             )
 
-            return filepath
+            return str(filepath)
 
         except Exception as e:
             logger.error(f"Failed to save prompts: {str(e)}")

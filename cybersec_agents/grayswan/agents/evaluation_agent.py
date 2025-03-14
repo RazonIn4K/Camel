@@ -8,10 +8,12 @@ and producing comprehensive evaluation reports.
 import json
 import os
 from datetime import datetime
-from typing import Any, Dict, List
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 from camel.agents import ChatAgent
 from camel.messages import BaseMessage
@@ -25,6 +27,14 @@ from ..utils.agentops_utils import (
 
 # Import specific utilities directly
 from ..utils.logging_utils import setup_logging
+from ..utils.visualization_utils import create_evaluation_report
+from ..utils.advanced_visualization_utils import (
+    create_attack_pattern_visualization,
+    create_prompt_similarity_network,
+    create_success_prediction_model,
+    create_interactive_dashboard,
+    create_advanced_evaluation_report
+)
 
 # Set up logging using our logging utility
 logger = setup_logging("evaluation_agent")
@@ -33,19 +43,33 @@ logger = setup_logging("evaluation_agent")
 class EvaluationAgent:
     """Agent responsible for evaluating exploit results and producing reports."""
 
-    def __init__(self, output_dir: str = "./evaluations", model_name: str = "gpt-4"):
+    def __init__(
+        self,
+        output_dir: str = "./evaluations", 
+        model_name: str = "gpt-4",
+        backup_model: Optional[str] = None,
+        reasoning_model: Optional[str] = None,
+    ):
         """
         Initialize the EvaluationAgent.
 
         Args:
             output_dir: Directory to save evaluations
             model_name: Name of the model to use for analysis
+            backup_model: Name of the backup model to use if the primary model fails
+            reasoning_model: Name of the model to use for reasoning tasks
         """
-        self.output_dir = output_dir
+        self.output_dir = Path(output_dir)
         self.model_name = model_name
+        self.backup_model = backup_model
+        self.reasoning_model = reasoning_model or model_name
 
         # Create output directory if it doesn't exist
-        os.makedirs(self.output_dir, exist_ok=True)
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Create visualizations directory
+        self.viz_dir = self.output_dir / "visualizations"
+        self.viz_dir.mkdir(parents=True, exist_ok=True)
 
         # Initialize AgentOps
         api_key = os.getenv("AGENTOPS_API_KEY")
@@ -63,7 +87,11 @@ class EvaluationAgent:
             },
         )
 
-        logger.info(f"EvaluationAgent initialized with model {model_name}")
+        logger.info(f"EvaluationAgent initialized with model: {self.model_name}")
+        if self.backup_model:
+            logger.info(f"Backup model configured: {self.backup_model}")
+        if self.reasoning_model != self.model_name:
+            logger.info(f"Reasoning model configured: {self.reasoning_model}")
 
     def evaluate_results(
         self, results: List[Dict[str, Any]], target_model: str, target_behavior: str
@@ -192,10 +220,10 @@ class EvaluationAgent:
             # Create filename
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"evaluation_{target_model.lower().replace(' ', '_')}_{target_behavior.lower().replace(' ', '_')}_{timestamp}.json"
-            filepath = os.path.join(self.output_dir, filename)
+            filepath = self.output_dir / filename
 
             # Ensure output directory exists
-            os.makedirs(self.output_dir, exist_ok=True)
+            self.output_dir.mkdir(parents=True, exist_ok=True)
 
             # Save the evaluation
             with open(filepath, "w") as f:
@@ -347,10 +375,10 @@ class EvaluationAgent:
             # Create filename
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"summary_{target_model.lower().replace(' ', '_')}_{target_behavior.lower().replace(' ', '_')}_{timestamp}.json"
-            filepath = os.path.join(self.output_dir, filename)
+            filepath = self.output_dir / filename
 
             # Ensure output directory exists
-            os.makedirs(self.output_dir, exist_ok=True)
+            self.output_dir.mkdir(parents=True, exist_ok=True)
 
             # Save the summary
             with open(filepath, "w") as f:
@@ -360,7 +388,7 @@ class EvaluationAgent:
 
             # Also create a more readable markdown version
             md_filename = f"summary_{target_model.lower().replace(' ', '_')}_{target_behavior.lower().replace(' ', '_')}_{timestamp}.md"
-            md_filepath = os.path.join(self.output_dir, md_filename)
+            md_filepath = self.output_dir / md_filename
 
             with open(md_filepath, "w") as f:
                 f.write(f"# Summary Report: {target_model}\n\n")
@@ -401,7 +429,7 @@ class EvaluationAgent:
         self, evaluation: Dict[str, Any], target_model: str, target_behavior: str
     ) -> Dict[str, str]:
         """
-        Create visualizations based on evaluation results.
+        Create basic visualizations based on evaluation results.
 
         Args:
             evaluation: Evaluation results
@@ -411,7 +439,7 @@ class EvaluationAgent:
         Returns:
             Dictionary of visualization file paths
         """
-        logger.info(f"Creating visualizations for {target_model} - {target_behavior}")
+        logger.info(f"Creating basic visualizations for {target_model} - {target_behavior}")
 
         # Log visualization creation start
         log_agentops_event(
@@ -421,8 +449,8 @@ class EvaluationAgent:
 
         try:
             # Create a directory for visualizations
-            vis_dir = os.path.join(self.output_dir, "visualizations")
-            os.makedirs(vis_dir, exist_ok=True)
+            vis_dir = self.viz_dir
+            vis_dir.mkdir(parents=True, exist_ok=True)
 
             # Generate timestamp for filenames
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -454,7 +482,7 @@ class EvaluationAgent:
             )
             plt.title(f"Success Rate: {target_model} - {target_behavior}", fontsize=14)
 
-            pie_chart_path = os.path.join(vis_dir, f"{base_filename}_pie.png")
+            pie_chart_path = vis_dir / f"{base_filename}_pie.png"
             plt.savefig(pie_chart_path)
             plt.close()
 
@@ -477,9 +505,7 @@ class EvaluationAgent:
                 for i, v in enumerate(success_rates):
                     plt.text(i, v + 0.02, f"{v:.2%}", ha="center")
 
-                method_chart_path = os.path.join(
-                    vis_dir, f"{base_filename}_methods.png"
-                )
+                method_chart_path = vis_dir / f"{base_filename}_methods.png"
                 plt.savefig(method_chart_path)
                 plt.close()
 
@@ -512,6 +538,82 @@ class EvaluationAgent:
                 },
             )
 
+            return {}
+            
+    def create_advanced_visualizations(
+        self, results: List[Dict[str, Any]], target_model: str, target_behavior: str, include_interactive: bool = True
+    ) -> Dict[str, str]:
+        """
+        Create advanced visualizations and analytics based on exploit results.
+        
+        This method uses the advanced visualization utilities to create sophisticated
+        visualizations including attack pattern clustering, prompt similarity networks,
+        success prediction models, and interactive dashboards.
+
+        Args:
+            results: List of exploit results (raw results, not the evaluation summary)
+            target_model: The target model
+            target_behavior: The behavior targeted
+            include_interactive: Whether to include interactive dashboard
+
+        Returns:
+            Dictionary of visualization file paths
+        """
+        logger.info(f"Creating advanced visualizations for {target_model} - {target_behavior}")
+
+        # Log advanced visualization creation start
+        log_agentops_event(
+            "advanced_visualization_creation_started",
+            {
+                "target_model": target_model,
+                "target_behavior": target_behavior,
+                "include_interactive": include_interactive
+            },
+        )
+
+        try:
+            # Create a directory for visualizations
+            vis_dir = self.viz_dir / "advanced"
+            vis_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Create advanced evaluation report with all visualizations
+            visualization_paths = create_advanced_evaluation_report(
+                results=results,
+                output_dir=vis_dir,
+                include_interactive=include_interactive
+            )
+            
+            # Add target model and behavior to the paths for reference
+            visualization_paths["target_model"] = target_model
+            visualization_paths["target_behavior"] = target_behavior
+            
+            # Log advanced visualization creation completion
+            log_agentops_event(
+                "advanced_visualization_creation_completed",
+                {
+                    "target_model": target_model,
+                    "target_behavior": target_behavior,
+                    "status": "success",
+                    "visualizations": list(visualization_paths.keys()),
+                },
+            )
+            
+            return visualization_paths
+            
+        except Exception as e:
+            logger.error(f"Advanced visualization creation failed: {str(e)}")
+            
+            # Log advanced visualization creation failure
+            log_agentops_event(
+                "advanced_visualization_creation_error",
+                {
+                    "target_model": target_model,
+                    "target_behavior": target_behavior,
+                    "status": "failed",
+                    "error": str(e),
+                },
+            )
+            
             return {}
 
     def _extract_sections(self, content: str) -> Dict[str, str]:

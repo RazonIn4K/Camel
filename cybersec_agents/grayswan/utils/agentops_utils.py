@@ -1,17 +1,18 @@
 """Utility functions for AgentOps integration."""
 
 import logging
+import os
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 _agentops_initialized = False
 
 
-def initialize_agentops(api_key: str) -> bool:
+def initialize_agentops(api_key: Optional[str] = None) -> bool:
     """Initialize AgentOps with the provided API key.
 
     Args:
-        api_key: The AgentOps API key
+        api_key: The AgentOps API key (optional, will use environment variable if not provided)
 
     Returns:
         True if initialization is successful, False otherwise
@@ -21,6 +22,13 @@ def initialize_agentops(api_key: str) -> bool:
         logger.debug("AgentOps already initialized")
         return True
 
+    # If api_key not provided, try to get from environment
+    if not api_key:
+        api_key = os.getenv("AGENTOPS_API_KEY")
+        if not api_key:
+            logger.warning("No AgentOps API key found, tracking will be disabled")
+            return False
+
     try:
         import agentops
 
@@ -29,70 +37,70 @@ def initialize_agentops(api_key: str) -> bool:
         _agentops_initialized = True
         logger.info("AgentOps initialized successfully")
         return True
-    except ImportError:
-        logger.warning("AgentOps not installed. Install with 'pip install agentops'")
-        return False
     except Exception as e:
         logger.warning(f"Failed to initialize AgentOps: {str(e)}")
         return False
 
 
 def start_agentops_session(
-    session_id: Optional[str] = None,
-    tags: Optional[List[str]] = None,
-    inherited_session_id: Optional[str] = None,
+    agent_type: str = "generic", 
+    model: Optional[str] = None,
+    tags: Optional[List[str]] = None
 ) -> bool:
-    """Start an AgentOps session.
+    """Start a new AgentOps session.
 
     Args:
-        session_id: Optional session ID
-        tags: Optional list of tags for the session
-        inherited_session_id: Optional ID of a parent session to inherit from
+        agent_type: Type of agent (e.g., "ReconAgent", "PromptEngineerAgent")
+        model: Name of the primary model being used
+        tags: List of additional tags
 
     Returns:
-        True if session start is successful, False otherwise
+        True if session started successfully, False otherwise
     """
+    if not _agentops_initialized:
+        logger.debug("AgentOps not initialized, can't start session")
+        return False
+
     try:
         import agentops
 
-        logger.info(f"Starting AgentOps session (ID: {session_id}, Tags: {tags})")
+        # Create a list of all tags
+        all_tags = [agent_type.lower()]
+        if model:
+            all_tags.append(f"model:{model}")
+        if tags:
+            all_tags.extend(tags)
 
-        # Start the session with the appropriate parameters based on the AgentOps API
-        agentops.start_session(tags=tags, inherited_session_id=inherited_session_id)
-
-        logger.info("AgentOps session started successfully")
+        agentops.start_session(tags=all_tags)
+        logger.debug(f"Started AgentOps session with tags: {all_tags}")
         return True
-    except ImportError:
-        logger.warning("AgentOps not installed. Install with 'pip install agentops'")
-        return False
     except Exception as e:
         logger.warning(f"Failed to start AgentOps session: {str(e)}")
         return False
 
 
-def log_agentops_event(
-    event_name: str, event_data: Optional[Dict[str, Any]] = None
-) -> bool:
+def log_agentops_event(event_name: str, properties: Optional[Dict[str, Any]] = None) -> bool:
     """Log an event to AgentOps.
 
     Args:
-        event_name: The name of the event
-        event_data: Optional data for the event
+        event_name: Name of the event
+        properties: Properties of the event
 
     Returns:
-        True if event logging is successful, False otherwise
+        True if event logged successfully, False otherwise
     """
+    if not _agentops_initialized:
+        logger.debug("AgentOps not initialized, can't log event")
+        return False
+
     try:
         import agentops
 
-        agentops.log_event(event_name, event_data or {})
+        agentops.record_event(event_name, properties or {})
         logger.debug(f"Logged AgentOps event: {event_name}")
         return True
-    except ImportError:
-        # Don't log a warning for every event, just silently fail
-        return False
     except Exception as e:
-        logger.debug(f"Failed to log AgentOps event: {str(e)}")
+        logger.warning(f"Failed to log AgentOps event: {str(e)}")
         return False
 
 

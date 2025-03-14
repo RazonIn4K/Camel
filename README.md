@@ -1,292 +1,199 @@
-# Camel AI Cybersecurity Agents
+# Cybersecurity Agents
 
-This repository contains specialized AI agents built on the Camel AI framework for cybersecurity tasks.
+Specialized AI agents built on the Camel AI framework for cybersecurity tasks, particularly within the Gray Swan Arena for AI safety and security testing.
 
 ## Table of Contents
 
-1. [Setup](#setup)
-2. [Gray Swan Arena Agents](#gray-swan-arena-agents)
-   - [ReconAgent](#reconagent)
-   - [PromptEngineerAgent](#promptengineeragent)
-   - [ExploitDeliveryAgent](#exploitdeliveryagent)
-   - [EvaluationAgent](#evaluationagent)
-3. [Advanced Usage](#advanced-usage)
-4. [Optimized Model Configuration](#optimized-model-configuration)
-5. [Documentation](#documentation)
+- [Setup](#setup)
+- [Gray Swan Arena Agents](#gray-swan-arena-agents)
+  - [ReconAgent](#reconagent)
+  - [PromptEngineerAgent](#promptengineeragent)
+  - [ExploitDeliveryAgent](#exploitdeliveryagent)
+  - [EvaluationAgent](#evaluationagent)
+- [Model Configuration](#model-configuration)
+- [Advanced Usage](#advanced-usage)
 
 ## Setup
 
-### Requirements
+### Environment Variables
 
-1. Set up the following environment variables:
-   ```bash
-   OPENAI_API_KEY=your_openai_api_key
-   AGENTOPS_API_KEY=your_agentops_api_key
-   LOG_LEVEL=INFO
-   MAX_TOKENS=2048
-   TEMPERATURE=0.7
-   ```
+The following environment variables are required:
 
-2. Clone the repository and install dependencies:
-   ```bash
-   git clone https://github.com/yourusername/camel-cybersec-agents.git
-   cd camel-cybersec-agents
-   pip install -e .
-   ```
+- `OPENAI_API_KEY`: Your OpenAI API key
+- `AGENTOPS_API_KEY`: Your AgentOps API key (optional)
+- `LOG_LEVEL`: Logging level (default: INFO)
+- `MAX_TOKENS`: Maximum tokens for model responses (default: 1000)
+- `TEMPERATURE`: Temperature for model responses (default: 0.7)
+- `O3_MINI_API_KEY`: Your API key for o3-mini model (if using o3-mini)
 
-   Dependencies include:
-   - openai>=1.0.0
-   - camelai>=0.3.0
-   - agentops>=0.1.0
-   - pandas>=1.3.0
-   - matplotlib>=3.5.0
-   - seaborn>=0.12.0
+### Installation
 
-3. Configure your environment:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your API keys and preferences
-   ```
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/yourusername/cybersec-agents.git
+cd cybersec-agents
+pip install -e .
+```
 
 ## Gray Swan Arena Agents
 
-The Gray Swan Arena is a framework for testing AI safety and security, focusing on identifying and mitigating potential vulnerabilities in language models.
+The Gray Swan Arena provides a set of specialized agents for testing AI safety and security.
 
 ### ReconAgent
 
-This agent performs reconnaissance on target models, gathering information about their capabilities, limitations, and potential vulnerabilities.
-
-#### Programmatic Usage
+The Reconnaissance Agent gathers information about target AI models, including their architecture, vulnerabilities, and community knowledge.
 
 ```python
-from cybersec_agents import ReconAgent
+from cybersec_agents.grayswan.agents import ReconAgent
 
-# Initialize the agent
+# Basic initialization
+agent = ReconAgent(output_dir="./reports", model_name="gpt-4")
+
+# Using o3-mini for reasoning tasks and GPT-4o as a backup
 agent = ReconAgent(
     output_dir="./reports",
-    model_name="gpt-4"  # Can also use "o3-mini" for efficient processing
+    model_name="gpt-4o",
+    reasoning_model="o3-mini",
+    backup_model="gpt-4"
 )
 
 # Run web search
 web_results = agent.run_web_search(
-    target_model="claude-3",
-    target_behavior="jailbreak",
-    num_results=5
+    target_model="GPT-4",
+    target_behavior="bypass content filters"
 )
 
-# Run Discord search
-discord_results = agent.run_discord_search(
-    target_model="claude-3",
-    target_behavior="jailbreak",
-    channels=["ai-ethics", "red-teaming"]
-)
-
-# Generate a comprehensive report
+# Generate report
 report = agent.generate_report(
-    target_model="claude-3",
-    target_behavior="jailbreak",
-    web_results=web_results,
-    discord_results=discord_results
+    target_model="GPT-4",
+    target_behavior="bypass content filters",
+    web_results=web_results
 )
-
-# Save the report
-report_path = agent.save_report(
-    report=report,
-    target_model="claude-3",
-    target_behavior="jailbreak"
-)
-print(f"Report saved to: {report_path}")
 ```
 
 ### PromptEngineerAgent
 
-This agent generates attack prompts based on reconnaissance data, designed to test the target model's resilience against specific behaviors.
-
-#### Programmatic Usage
+The Prompt Engineer Agent generates effective prompts to test target models based on reconnaissance data.
 
 ```python
-from cybersec_agents import PromptEngineerAgent
+from cybersec_agents.grayswan.agents import PromptEngineerAgent
 
-# Initialize the agent
+# Basic initialization
+agent = PromptEngineerAgent(output_dir="./prompts", model_name="gpt-4")
+
+# Using o3-mini for reasoning tasks
 agent = PromptEngineerAgent(
     output_dir="./prompts",
-    model_name="gpt-4",  # Can use "gpt-4o" for enhanced creative capabilities
-    reasoning_model="o3-mini"  # Efficient model for reasoning tasks
+    model_name="gpt-4o",
+    reasoning_model="o3-mini"
 )
 
-# Generate attack prompts
+# Generate prompts
 prompts = agent.generate_prompts(
-    target_model="claude-3",
-    target_behavior="jailbreak",
-    recon_report=report,  # Report from ReconAgent
-    num_prompts=10
+    target_model="GPT-4",
+    target_behavior="bypass content filters",
+    recon_report=report
 )
-
-# Save the prompts
-prompts_path = agent.save_prompts(
-    prompts=prompts,
-    target_model="claude-3",
-    target_behavior="jailbreak"
-)
-print(f"Prompts saved to: {prompts_path}")
 ```
 
 ### ExploitDeliveryAgent
 
-This agent executes attacks against target models using prompts generated by the Prompt Engineer Agent, documenting the results.
-
-#### Programmatic Usage
+The Exploit Delivery Agent is responsible for delivering prompts to target models and recording responses.
 
 ```python
-from cybersec_agents import ExploitDeliveryAgent
+from cybersec_agents.grayswan.agents import ExploitDeliveryAgent
 
-# Initialize the agent
+# Basic initialization
+agent = ExploitDeliveryAgent(output_dir="./exploits", model_name="gpt-4")
+
+# Using GPT-4o as a backup model
 agent = ExploitDeliveryAgent(
     output_dir="./exploits",
-    model_name="o3-mini",  # Efficient for delivery tasks
-    backup_model="gpt-4o"  # Backup for complex scenarios
+    model_name="gpt-4",
+    backup_model="gpt-4o"
 )
 
-# Run prompts against the target model
+# Run prompts
 results = agent.run_prompts(
-    prompts=prompts,  # Prompts from PromptEngineerAgent
-    target_model="claude-3",
-    target_behavior="jailbreak",
-    method="api",
-    max_tries=3,
-    delay_between_tries=2
+    prompts=prompts,
+    target_model="GPT-4",
+    method="api"
 )
-
-# Save the results
-results_path = agent.save_results(
-    results=results,
-    target_model="claude-3",
-    target_behavior="jailbreak"
-)
-print(f"Results saved to: {results_path}")
 ```
 
 ### EvaluationAgent
 
-This agent analyzes exploit results, generates visualizations, and produces comprehensive evaluation reports.
-
-#### Programmatic Usage
+The Evaluation Agent analyzes exploit results, generates visualizations, and produces evaluation reports.
 
 ```python
-from cybersec_agents import EvaluationAgent
+from cybersec_agents.grayswan.agents import EvaluationAgent
 
-# Initialize the agent
+# Basic initialization
+agent = EvaluationAgent(output_dir="./evaluations", model_name="gpt-4")
+
+# Using o3-mini for reasoning tasks and GPT-4o as a backup
 agent = EvaluationAgent(
     output_dir="./evaluations",
-    model_name="o3-mini",  # Highly efficient for analysis tasks
-    visualization_model="gpt-4o"  # Better for complex visualization planning
+    model_name="gpt-4o",
+    reasoning_model="o3-mini",
+    backup_model="gpt-4"
 )
 
-# Evaluate the results
+# Evaluate results
 evaluation = agent.evaluate_results(
-    results=results,  # Results from ExploitDeliveryAgent
-    target_model="claude-3",
-    target_behavior="jailbreak"
+    results=results,
+    target_model="GPT-4",
+    target_behavior="bypass content filters"
 )
+```
 
-# Save the evaluation
-eval_path = agent.save_evaluation(
-    evaluation=evaluation,
-    target_model="claude-3",
-    target_behavior="jailbreak"
-)
-print(f"Evaluation saved to: {eval_path}")
+## Model Configuration
 
-# Generate a summary report
-summary = agent.generate_summary(
-    evaluation=evaluation,
-    target_model="claude-3",
-    target_behavior="jailbreak"
-)
+The Gray Swan Arena agents support different models for different tasks:
 
-# Save the summary
-summary_path = agent.save_summary(
-    summary=summary,
-    target_model="claude-3",
-    target_behavior="jailbreak"
-)
-print(f"Summary saved to: {summary_path}")
+### Primary Model
 
-# Create visualizations
-viz_paths = agent.create_visualizations(
-    evaluation=evaluation,
-    target_model="claude-3",
-    target_behavior="jailbreak"
+The primary model is used for most operations and is specified with the `model_name` parameter:
+
+```python
+agent = ReconAgent(model_name="gpt-4o")
+```
+
+### Reasoning Model
+
+The reasoning model is used for tasks that require complex reasoning, such as generating reports and evaluations:
+
+```python
+agent = ReconAgent(
+    model_name="gpt-4o",
+    reasoning_model="o3-mini"  # Use o3-mini for reasoning tasks
 )
-print(f"Visualizations saved to: {viz_paths}")
+```
+
+### Backup Model
+
+The backup model is used if the primary model fails:
+
+```python
+agent = ExploitDeliveryAgent(
+    model_name="gpt-4o",
+    backup_model="gpt-4"  # Fall back to GPT-4 if GPT-4o fails
+)
+```
+
+### Recommended Configuration
+
+For optimal performance, we recommend the following configuration:
+
+```python
+agent = ReconAgent(
+    model_name="gpt-4o",       # Use GPT-4o as the primary model
+    reasoning_model="o3-mini", # Use o3-mini for reasoning tasks
+    backup_model="gpt-4"       # Fall back to GPT-4 if needed
+)
 ```
 
 ## Advanced Usage
 
-### Complete Pipeline Example
-
-```python
-from cybersec_agents import ReconAgent, PromptEngineerAgent, ExploitDeliveryAgent, EvaluationAgent
-
-# Define target parameters
-target_model = "claude-3"
-target_behavior = "jailbreak"
-output_base_dir = "./gray_swan_results"
-
-# Initialize agents with optimized model configuration
-recon_agent = ReconAgent(output_dir=f"{output_base_dir}/reports", model_name="o3-mini")
-prompt_agent = PromptEngineerAgent(output_dir=f"{output_base_dir}/prompts", model_name="gpt-4o")
-exploit_agent = ExploitDeliveryAgent(output_dir=f"{output_base_dir}/exploits", model_name="o3-mini")
-eval_agent = EvaluationAgent(output_dir=f"{output_base_dir}/evaluations", model_name="o3-mini")
-
-# Step 1: Reconnaissance
-web_results = recon_agent.run_web_search(target_model, target_behavior)
-discord_results = recon_agent.run_discord_search(target_model, target_behavior)
-report = recon_agent.generate_report(target_model, target_behavior, web_results, discord_results)
-recon_agent.save_report(report, target_model, target_behavior)
-
-# Step 2: Prompt Engineering
-prompts = prompt_agent.generate_prompts(target_model, target_behavior, report)
-prompt_agent.save_prompts(prompts, target_model, target_behavior)
-
-# Step 3: Exploit Delivery
-results = exploit_agent.run_prompts(prompts, target_model, target_behavior)
-exploit_agent.save_results(results, target_model, target_behavior)
-
-# Step 4: Evaluation
-evaluation = eval_agent.evaluate_results(results, target_model, target_behavior)
-eval_agent.save_evaluation(evaluation, target_model, target_behavior)
-summary = eval_agent.generate_summary(evaluation, target_model, target_behavior)
-eval_agent.save_summary(summary, target_model, target_behavior)
-viz_paths = eval_agent.create_visualizations(evaluation, target_model, target_behavior)
-
-print("Gray Swan Arena pipeline completed successfully!")
-```
-
-## Optimized Model Configuration
-
-The Gray Swan Arena agents support multiple models to optimize performance and cost:
-
-- **o3-mini**: Recommended for reasoning and analysis tasks, offering an excellent balance of performance and efficiency
-- **GPT-4o**: Ideal for creative tasks and as a backup for complex scenarios requiring advanced capabilities
-
-Each agent can be configured with different models for specific tasks:
-
-```python
-# Example: Configuring the EvaluationAgent with optimized models
-agent = EvaluationAgent(
-    output_dir="./evaluations",
-    model_name="o3-mini",         # Default model for most tasks
-    reasoning_model="o3-mini",    # Model for classification and reasoning
-    visualization_model="gpt-4o", # Model for complex visualization planning
-    backup_model="gpt-4o"         # Backup model for challenging cases
-)
-```
-
-## Documentation
-
-For more detailed information on the Gray Swan Arena framework, please refer to the following documentation:
-
-- [API Reference](docs/api_reference.md) - Detailed information about agent interfaces and methods
-- [Agent Usage Guide](docs/agent_usage_guide.md) - Comprehensive guide for using the Gray Swan Arena agents
-- [Model Configuration Guide](docs/model_configuration_guide.md) - Guide for optimizing model usage with o3-mini and GPT-4o
+For more detailed usage instructions, see the [Agent Usage Guide](docs/agent_usage_guide.md).

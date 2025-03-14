@@ -3,7 +3,8 @@
 import logging
 import os
 from datetime import datetime
-from typing import Optional
+from pathlib import Path
+from typing import Optional, Union
 
 
 def setup_logging(
@@ -11,6 +12,7 @@ def setup_logging(
     log_level: int = logging.INFO,
     log_to_file: bool = True,
     log_filename: Optional[str] = None,
+    log_dir: Union[str, Path] = Path("data") / "logs",
 ) -> logging.Logger:
     """Set up logging for the Gray Swan Arena project.
 
@@ -19,13 +21,14 @@ def setup_logging(
         log_level: Logging level (default: INFO)
         log_to_file: Whether to log to a file (default: True)
         log_filename: Name of the log file (default: None, will generate a timestamped filename)
+        log_dir: Directory to store log files (default: data/logs)
 
     Returns:
         logging.Logger: Configured logger instance
     """
     # Create logs directory if it doesn't exist
-    log_dir = os.path.join("data", "logs")
-    os.makedirs(log_dir, exist_ok=True)
+    log_dir = Path(log_dir)
+    log_dir.mkdir(parents=True, exist_ok=True)
 
     # Get or create the logger
     logger = logging.getLogger(name)
@@ -51,7 +54,7 @@ def setup_logging(
                 current_date = datetime.now().strftime("%Y-%m-%d")
                 log_filename = f"grayswan_{current_date}.log"
 
-            file_handler = logging.FileHandler(os.path.join(log_dir, log_filename))
+            file_handler = logging.FileHandler(log_dir / log_filename)
             file_handler.setFormatter(formatter)
             file_handler.setLevel(log_level)
             logger.addHandler(file_handler)
