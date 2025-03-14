@@ -24,10 +24,7 @@ repos:
             - types-setuptools
         args: [
             --ignore-missing-imports,
-            --strict,
-            --explicit-package-bases,
-            --namespace-packages,
-            --python-version=3.12
+            --config-file=mypy.ini
         ]
         exclude: ^venv/|^\.venv/|^\.env/
         files: ^(cybersec_agents|tests)/.*\.py$
