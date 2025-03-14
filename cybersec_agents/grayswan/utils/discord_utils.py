@@ -16,9 +16,9 @@ logger = setup_logging("discord_utils")
 try:
     import discord
 
-    DISCORD_AVAILABLE = True
+    DISCORD_AVAILABLE: bool = True
 except ImportError:
-    DISCORD_AVAILABLE = False
+    DISCORD_AVAILABLE: bool = False
     logger.warning("Discord.py not installed. Install with 'pip install discord.py'")
 
 
@@ -93,14 +93,14 @@ class DiscordScraper:
             try:
                 # If no channel IDs provided, search all accessible channels
                 if not channel_ids:
-                    channels_to_search = [
+                    channels_to_search: list[Any] = [
                         channel
                         for guild in client.guilds
                         for channel in guild.text_channels
                         if channel.permissions_for(guild.me).read_messages
                     ]
                 else:
-                    channels_to_search = []
+                    channels_to_search: list[Any] = []
                     for channel_id in channel_ids:
                         try:
                             channel = client.get_channel(int(channel_id))
@@ -131,7 +131,7 @@ class DiscordScraper:
                         async for message in channel.history(limit=limit):
                             if query.lower() in message.content.lower():
                                 # Extract attachments
-                                attachments = []
+                                attachments: list[Any] = []
                                 for attachment in message.attachments:
                                     attachments.append(
                                         {
@@ -143,7 +143,7 @@ class DiscordScraper:
                                     )
 
                                 # Extract mentioned users
-                                mentions = [user.name for user in message.mentions]
+                                mentions: list[Any] = [user.name for user in message.mentions]
 
                                 matching_messages.append(
                                     {
@@ -315,7 +315,7 @@ if __name__ == "__main__":
     discord_scraper = DiscordScraper()
 
     if discord_scraper.available:
-        results = discord_scraper.search("jailbreak technique", limit=20)
+        results: list[Any] = discord_scraper.search("jailbreak technique", limit=20)
         print(discord_scraper.format_results(results, include_metadata=True))
 
         # Save results

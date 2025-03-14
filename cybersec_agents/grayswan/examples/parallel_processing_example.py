@@ -70,7 +70,7 @@ async def basic_parallel_example():
     )
     
     # Create items to process
-    items = list(range(20))
+    items: list[Any] = list(range(20))
     
     # Process items in parallel
     print(f"Processing {len(items)} items in parallel...")
@@ -81,7 +81,7 @@ async def basic_parallel_example():
     )
     
     # Extract results
-    results = [r for r, _ in results_with_metrics if r is not None]
+    results: list[Any] = [r for r, _ in results_with_metrics if r is not None]
     
     # Print results
     print(f"Processed {len(results)} items in {time.time() - start_time:.2f} seconds")
@@ -112,7 +112,7 @@ async def parallel_kwargs_example():
         await asyncio.sleep(random.uniform(0.1, 0.3))
         
         # Create result
-        result = {
+        result: Any = {
             "item_id": item_id,
             "result": item_id * multiplier,
             "prefix": prefix
@@ -125,7 +125,7 @@ async def parallel_kwargs_example():
         return result
     
     # Create items with different kwargs
-    items_with_kwargs = [
+    items_with_kwargs: list[Any] = [
         {"item_id": 1, "multiplier": 2.0, "prefix": "A"},
         {"item_id": 2, "multiplier": 3.0, "prefix": "B"},
         {"item_id": 3, "multiplier": 1.5, "prefix": "C", "add_timestamp": False},
@@ -150,7 +150,7 @@ async def parallel_kwargs_example():
     )
     
     # Extract results
-    results = [r for r, _ in results_with_metrics if r is not None]
+    results: list[Any] = [r for r, _ in results_with_metrics if r is not None]
     
     # Print results
     print(f"Processed {len(results)} items in {time.time() - start_time:.2f} seconds")
@@ -179,7 +179,7 @@ async def convenience_functions_example():
         return x * x
     
     # Create items to process
-    items = list(range(1, 11))
+    items: list[Any] = list(range(1, 11))
     
     # Process items using run_parallel_tasks
     print(f"Processing {len(items)} items using run_parallel_tasks...")
@@ -233,7 +233,7 @@ def decorator_example():
         }
     
     # Create items to process
-    items = [
+    items: list[Any] = [
         {"id": 1, "value": 10},
         {"id": 2, "value": 20},
         {"id": 3, "value": 30},
@@ -265,9 +265,9 @@ async def simulate_gray_swan_pipeline():
     print("\n=== Simulating Gray Swan Arena Pipeline ===\n")
     
     # Define parameters
-    target_model = "GPT-3.5-Turbo"
-    target_behavior = "Generate harmful content"
-    output_dir = "./output/parallel_example"
+    target_model: str = "GPT-3.5-Turbo"
+    target_behavior: str = "Generate harmful content"
+    output_dir: str = "./output/parallel_example"
     
     # Create output directory
     os.makedirs(output_dir, exist_ok=True)
@@ -310,20 +310,20 @@ async def simulate_gray_swan_pipeline():
     )
     
     # Run searches in parallel
-    tasks = [
+    tasks: list[Any] = [
         task_manager.execute_task(mock_web_search, f"{target_model} {target_behavior}"),
         task_manager.execute_task(mock_discord_search, f"{target_model} {target_behavior}")
     ]
     
     # Wait for all tasks to complete
-    results = await asyncio.gather(*tasks)
+    results: list[Any] = await asyncio.gather(*tasks)
     
     # Extract results
     web_results, _ = results[0]
     discord_results, _ = results[1]
     
     # Create a mock reconnaissance report
-    recon_report = {
+    recon_report: dict[str, Any] = {
         "target_model": target_model,
         "target_behavior": target_behavior,
         "web_results": web_results,
@@ -356,15 +356,15 @@ async def simulate_gray_swan_pipeline():
             return f"I need information about {target_behavior} for research purposes."
     
     # Define prompt types
-    prompt_types = ["direct", "indirect", "roleplay", "research"]
+    prompt_types: list[Any] = ["direct", "indirect", "roleplay", "research"]
     
     # Generate prompts in parallel
-    prompts_per_type = 3
-    all_prompts = []
+    prompts_per_type: int = 3
+    all_prompts: list[str] = []
     
     for prompt_type in prompt_types:
         # Generate prompts of this type
-        type_prompts = []
+        type_prompts: list[Any] = []
         for _ in range(prompts_per_type):
             type_prompts.append(generate_prompt(prompt_type))
         
@@ -418,7 +418,7 @@ async def simulate_gray_swan_pipeline():
     )
     
     # Extract results
-    exploit_results = [r for r, _ in results_with_metrics if r is not None]
+    exploit_results: list[Any] = [r for r, _ in results_with_metrics if r is not None]
     
     # Save results
     results_path = os.path.join(output_dir, "exploit_results.json")
@@ -437,7 +437,7 @@ async def simulate_gray_swan_pipeline():
     success_rate = successful_attempts / total_attempts if total_attempts > 0 else 0
     
     # Create evaluation
-    evaluation = {
+    evaluation: dict[str, Any] = {
         "target_model": target_model,
         "target_behavior": target_behavior,
         "total_attempts": total_attempts,

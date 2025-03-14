@@ -52,13 +52,13 @@ try:
                 "Sentiment analyzer not available. Some features will be limited."
             )
     else:
-        NLP_AVAILABLE = False
-        missing_packages = [pkg for pkg, status in nltk_status.items() if not status]
+        NLP_AVAILABLE: bool = False
+        missing_packages: list[Any] = [pkg for pkg, status in nltk_status.items() if not status]
         logger.warning(
             f"NLTK initialization incomplete. Missing packages: {', '.join(missing_packages)}"
         )
 except ImportError:
-    NLP_AVAILABLE = False
+    NLP_AVAILABLE: bool = False
     logger.warning("NLP capabilities not available. Install with 'pip install nltk'")
 
 
@@ -145,24 +145,24 @@ class EnhancedDiscordScraper(DiscordScraper):
             cache_entry = self.result_cache[cache_key]
             if time.time() - cache_entry["timestamp"] < self.cache_expiry:
                 logger.info(f"Using cached results for query: {query}")
-                results = cache_entry["results"]
+                results: list[Any] = cache_entry["results"]
 
                 # Apply sentiment filter if needed (this is done here because sentiment might not be in cached results)
                 if sentiment_filter and self.nlp_available:
-                    results = self._filter_by_sentiment(
+                    results: list[Any] = self._filter_by_sentiment(
                         results, sentiment_filter, include_sentiment
                     )
 
                 return results
 
         # Get base results
-        results = self.search(query, channel_ids, limit)
+        results: list[Any] = self.search(query, channel_ids, limit)
 
         # Apply filters
         if min_date:
             try:
                 min_datetime = datetime.fromisoformat(min_date)
-                results = [
+                results: list[Any] = [
                     r
                     for r in results
                     if datetime.fromisoformat(r["timestamp"].split("T")[0])
@@ -176,7 +176,7 @@ class EnhancedDiscordScraper(DiscordScraper):
         if max_date:
             try:
                 max_datetime = datetime.fromisoformat(max_date)
-                results = [
+                results: list[Any] = [
                     r
                     for r in results
                     if datetime.fromisoformat(r["timestamp"].split("T")[0])
@@ -189,7 +189,7 @@ class EnhancedDiscordScraper(DiscordScraper):
 
         if author_filter:
             author_filter_lower = author_filter.lower()
-            results = [
+            results: list[Any] = [
                 r
                 for r in results
                 if author_filter_lower in r["author"].lower()
@@ -199,21 +199,21 @@ class EnhancedDiscordScraper(DiscordScraper):
         if content_filter:
             try:
                 pattern = re.compile(content_filter, re.IGNORECASE)
-                results = [r for r in results if pattern.search(r["content"])]
+                results: list[Any] = [r for r in results if pattern.search(r["content"])]
             except re.error:
                 logger.warning(f"Invalid content_filter regex: {content_filter}")
 
         if has_attachments is not None:
-            results = [
+            results: list[Any] = [
                 r for r in results if (len(r["attachments"]) > 0) == has_attachments
             ]
 
         if has_mentions is not None:
-            results = [r for r in results if (len(r["mentions"]) > 0) == has_mentions]
+            results: list[Any] = [r for r in results if (len(r["mentions"]) > 0) == has_mentions]
 
         # Apply sentiment analysis if needed
         if (sentiment_filter or include_sentiment) and self.nlp_available:
-            results = self._filter_by_sentiment(
+            results: list[Any] = self._filter_by_sentiment(
                 results, sentiment_filter, include_sentiment
             )
 
@@ -242,7 +242,7 @@ class EnhancedDiscordScraper(DiscordScraper):
         if not self.nlp_available:
             return results
 
-        filtered_results = []
+        filtered_results: list[Any] = []
 
         for result in results:
             # Skip if already has sentiment analysis
@@ -256,11 +256,11 @@ class EnhancedDiscordScraper(DiscordScraper):
 
             # Determine sentiment classification
             if sentiment_scores["compound"] >= 0.05:
-                classification = "positive"
+                classification: str = "positive"
             elif sentiment_scores["compound"] <= -0.05:
-                classification = "negative"
+                classification: str = "negative"
             else:
-                classification = "neutral"
+                classification: str = "neutral"
 
             # Add sentiment to result if requested
             if include_sentiment:
@@ -302,7 +302,7 @@ class EnhancedDiscordScraper(DiscordScraper):
             return []
 
         # Extract all content
-        all_content = " ".join([r.get("content", "") for r in results])
+        all_content: str = " ".join([r.get("content", "") for r in results])
 
         # Tokenize and clean
         tokens = word_tokenize(all_content.lower())
@@ -313,7 +313,7 @@ class EnhancedDiscordScraper(DiscordScraper):
             stop_words.update(set(w.lower() for w in exclude_words))
 
         # Filter tokens
-        filtered_tokens = [
+        filtered_tokens: list[Any] = [
             w for w in tokens if w.isalpha() and w not in stop_words and len(w) > 3
         ]
 
@@ -336,7 +336,7 @@ class EnhancedDiscordScraper(DiscordScraper):
         Returns:
             Dictionary mapping user names to message counts
         """
-        user_counts = {}
+        user_counts: dict[str, int] = {}
 
         for result in results:
             author = result.get("author", "Unknown")
@@ -354,7 +354,7 @@ class EnhancedDiscordScraper(DiscordScraper):
         Returns:
             Dictionary mapping channel names to message counts
         """
-        channel_counts = {}
+        channel_counts: dict[str, int] = {}
 
         for result in results:
             channel = result.get("channel", "Unknown")
@@ -375,7 +375,7 @@ class EnhancedDiscordScraper(DiscordScraper):
         Returns:
             Dictionary mapping time intervals to message counts
         """
-        time_counts = {}
+        time_counts: dict[str, int] = {}
 
         for result in results:
             try:
@@ -483,7 +483,7 @@ class EnhancedDiscordScraper(DiscordScraper):
 
             # Load the file
             with open(filepath, "r", encoding="utf-8") as f:
-                results = json.load(f)
+                results: list[Any] = json.load(f)
 
             logger.info(f"Loaded {len(results)} Discord messages from {filepath}")
             return results
@@ -582,7 +582,7 @@ if __name__ == "__main__":
 
     if discord_scraper.available:
         # Search with filters
-        results = discord_scraper.search_with_filters(
+        results: list[Any] = discord_scraper.search_with_filters(
             query="jailbreak technique",
             limit=50,
             min_date="2023-01-01",

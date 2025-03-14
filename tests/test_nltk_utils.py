@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 """
 Tests for NLTK utilities.
 
@@ -76,7 +77,7 @@ class TestNLTKInitialization(unittest.TestCase):
         ]
         
         # Call initialize_nltk
-        results = initialize_nltk(["vader_lexicon", "punkt", "stopwords"])
+        results: list[Any] = initialize_nltk(["vader_lexicon", "punkt", "stopwords"])
         
         # Check that download was called for each package
         self.assertEqual(mock_download.call_count, 3)
@@ -96,7 +97,7 @@ class TestNLTKInitialization(unittest.TestCase):
         mock_find.return_value = None
         
         # Call initialize_nltk
-        results = initialize_nltk(["vader_lexicon", "punkt"])
+        results: list[Any] = initialize_nltk(["vader_lexicon", "punkt"])
         
         # Check that download was not called
         mock_download.assert_not_called()
@@ -118,7 +119,7 @@ class TestNLTKInitialization(unittest.TestCase):
         mock_download.side_effect = Exception("Download failed")
         
         # Call initialize_nltk
-        results = initialize_nltk(["vader_lexicon"])
+        results: list[Any] = initialize_nltk(["vader_lexicon"])
         
         # Check results
         self.assertEqual(results, {
@@ -133,7 +134,7 @@ class TestNLTKInitialization(unittest.TestCase):
         mock_find.return_value = None
         
         # Call ensure_vader_lexicon
-        result = ensure_vader_lexicon()
+        result: Any = ensure_vader_lexicon()
         
         # Check that initialize_nltk was not called
         mock_initialize.assert_not_called()
@@ -155,7 +156,7 @@ class TestNLTKInitialization(unittest.TestCase):
         mock_initialize.return_value = {'vader_lexicon': True}
         
         # Call ensure_vader_lexicon
-        result = ensure_vader_lexicon()
+        result: Any = ensure_vader_lexicon()
         
         # Check that initialize_nltk was called
         mock_initialize.assert_called_once_with(['vader_lexicon'])
@@ -185,7 +186,7 @@ class TestNLTKInitialization(unittest.TestCase):
         # Mock os.makedirs to avoid creating directories
         with patch('os.makedirs'):
             # Call ensure_vader_lexicon
-            result = ensure_vader_lexicon()
+            result: Any = ensure_vader_lexicon()
         
         # Check that initialize_nltk was called
         mock_initialize.assert_called_once_with(['vader_lexicon'])
@@ -212,7 +213,7 @@ class TestSentimentAnalysis(unittest.TestCase):
         mock_sia.return_value = mock_sia_instance
         
         # Call get_sentiment_analyzer
-        result = get_sentiment_analyzer()
+        result: Any = get_sentiment_analyzer()
         
         # Check that ensure_vader_lexicon was called
         mock_ensure.assert_called_once()
@@ -230,7 +231,7 @@ class TestSentimentAnalysis(unittest.TestCase):
         mock_ensure.return_value = False
         
         # Call get_sentiment_analyzer
-        result = get_sentiment_analyzer()
+        result: Any = get_sentiment_analyzer()
         
         # Check that ensure_vader_lexicon was called
         mock_ensure.assert_called_once()
@@ -252,7 +253,7 @@ class TestSentimentAnalysis(unittest.TestCase):
         mock_get_analyzer.return_value = mock_analyzer
         
         # Call analyze_sentiment
-        result = analyze_sentiment("This is a test.")
+        result: Any = analyze_sentiment("This is a test.")
         
         # Check that get_sentiment_analyzer was called
         mock_get_analyzer.assert_called_once()
@@ -275,7 +276,7 @@ class TestSentimentAnalysis(unittest.TestCase):
         mock_get_analyzer.return_value = None
         
         # Call analyze_sentiment
-        result = analyze_sentiment("This is a test.")
+        result: Any = analyze_sentiment("This is a test.")
         
         # Check that get_sentiment_analyzer was called
         mock_get_analyzer.assert_called_once()
@@ -292,7 +293,7 @@ class TestSentimentAnalysis(unittest.TestCase):
         mock_get_analyzer.return_value = mock_analyzer
         
         # Call analyze_sentiment
-        result = analyze_sentiment("This is a test.")
+        result: Any = analyze_sentiment("This is a test.")
         
         # Check that get_sentiment_analyzer was called
         mock_get_analyzer.assert_called_once()
@@ -329,7 +330,7 @@ class TestNLTKInfo(unittest.TestCase):
             )
         }):
             # Call get_nltk_info
-            result = get_nltk_info()
+            result: Any = get_nltk_info()
         
         # Check result
         self.assertTrue(result['installed'])
@@ -345,7 +346,7 @@ class TestNLTKInfo(unittest.TestCase):
         with patch.dict('sys.modules', {'nltk': None}):
             with patch('builtins.__import__', side_effect=ImportError):
                 # Call get_nltk_info
-                result = get_nltk_info()
+                result: Any = get_nltk_info()
         
         # Check result
         self.assertFalse(result['installed'])

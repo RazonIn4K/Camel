@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 """End-to-end test for Gray Swan Arena."""
 
 import json
@@ -19,7 +20,7 @@ from cybersec_agents.grayswan import (
 )
 
 # Test configuration
-TEST_MODEL = "gpt-3.5-turbo"  # Use GPT-3.5 Turbo for testing
+TEST_MODEL: str = "gpt-3.5-turbo"  # Use GPT-3.5 Turbo for testing
 OUTPUT_DIR = Path("tests/output")
 
 
@@ -54,7 +55,7 @@ def test_recon_agent():
 
         # Define target model and behavior
         target_model = TEST_MODEL  # "gpt-3.5-turbo"
-        target_behavior = "jailbreak"
+        target_behavior: str = "jailbreak"
 
         # Run web search
         print(f"Running web search for {target_model} - {target_behavior}...")
@@ -66,7 +67,7 @@ def test_recon_agent():
 
         # For E2E testing, we'll mock Discord results
         print("Mocking Discord search results...")
-        discord_results = {
+        discord_results: dict[str, Any] = {
             "query": f"{target_model} {target_behavior}",
             "channels": ["ai-ethics", "red-teaming"],
             "results": [
@@ -125,7 +126,7 @@ def test_prompt_engineer_agent(recon_report_path):
 
         # Define target model and behavior (should match what was used in recon)
         target_model = TEST_MODEL  # "gpt-3.5-turbo"
-        target_behavior = "jailbreak"
+        target_behavior: str = "jailbreak"
 
         # Generate prompts
         print(f"Generating test prompts for {target_model} - {target_behavior}...")
@@ -172,11 +173,11 @@ def test_exploit_delivery_agent(prompts_path):
 
         # Define target model and behavior (should match what was used in recon and prompt generation)
         target_model = TEST_MODEL  # "gpt-3.5-turbo"
-        target_behavior = "jailbreak"
+        target_behavior: str = "jailbreak"
 
         # Execute prompts
         print(f"Executing {len(prompts)} prompts against {target_model}...")
-        results = exploit_agent.run_prompts(
+        results: list[Any] = exploit_agent.run_prompts(
             prompts=prompts,
             target_model=target_model,
             target_behavior=target_behavior,
@@ -217,11 +218,11 @@ def test_evaluation_agent(exploit_results_path, recon_report_path):
         # Load results
         print(f"Loading exploit results from {exploit_results_path}...")
         with open(exploit_results_path, "r") as f:
-            results = json.load(f)
+            results: list[Any] = json.load(f)
 
         # Define target model and behavior (should match what was used in previous steps)
         target_model = TEST_MODEL  # "gpt-3.5-turbo"
-        target_behavior = "jailbreak"
+        target_behavior: str = "jailbreak"
 
         # Evaluate results
         print(f"Evaluating results for {target_model} - {target_behavior}...")

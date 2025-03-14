@@ -199,7 +199,7 @@ class ModelManager:
             Name of an appropriate backup model or None
         """
         # Define backup pairs
-        backup_pairs = {
+        backup_pairs: dict[str, Any] = {
             "gpt-4": "gpt-3.5-turbo",
             "gpt-4-turbo": "gpt-4",
             "gpt-3.5-turbo": "gpt-3.5-turbo-instruct",
@@ -410,7 +410,7 @@ class ModelManager:
         length_score = min(len(prompt) / 4000, 1.0) * 0.7
 
         # Check for complex instructions
-        complex_indicators = [
+        complex_indicators: list[Any] = [
             "step by step",
             "explain in detail",
             "analyze",
@@ -424,7 +424,7 @@ class ModelManager:
             "optimize",
         ]
 
-        indicator_score = 0.0
+        indicator_score: float = 0.0
         for indicator in complex_indicators:
             if indicator in prompt.lower():
                 indicator_score += 0.1

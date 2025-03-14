@@ -13,7 +13,7 @@ from typing import Dict, List, Optional
 sys.path.append(str(Path(__file__).parent.parent))
 
 # Define available test modules
-TEST_MODULES = {
+TEST_MODULES: dict[str, Any] = {
     "camel": {
         "script": "test_camel_integration.py",
         "description": "Test integration with Camel AI framework",
@@ -57,7 +57,7 @@ def setup_environment() -> Dict[str, bool]:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Check for required API keys
-    api_keys = {
+    api_keys: dict[str, Any] = {
         "OPENAI_API_KEY": os.environ.get("OPENAI_API_KEY") is not None,
         "AGENTOPS_API_KEY": os.environ.get("AGENTOPS_API_KEY") is not None,
         "DISCORD_TOKEN": os.environ.get("DISCORD_TOKEN") is not None,
@@ -66,7 +66,7 @@ def setup_environment() -> Dict[str, bool]:
     # Print available API keys
     print("\nAPI Key Status:")
     for key, available in api_keys.items():
-        status = "✅ Available" if available else "❌ Not Available"
+        status: str = "✅ Available" if available else "❌ Not Available"
         print(f"- {key}: {status}")
 
     return api_keys
@@ -74,8 +74,8 @@ def setup_environment() -> Dict[str, bool]:
 
 def validate_test_modules(modules: List[str], api_keys: Dict[str, bool]) -> List[str]:
     """Validate the test modules and filter out those that can't run."""
-    valid_modules = []
-    invalid_modules = []
+    valid_modules: list[Any] = []
+    invalid_modules: list[Any] = []
 
     for module in modules:
         if module not in TEST_MODULES:
@@ -83,7 +83,7 @@ def validate_test_modules(modules: List[str], api_keys: Dict[str, bool]) -> List
             continue
 
         # Check if required API keys are available
-        missing_keys = []
+        missing_keys: list[Any] = []
         for key in TEST_MODULES[module]["requires_api_key"]:
             if not api_keys.get(key, False):
                 missing_keys.append(key)
@@ -114,12 +114,12 @@ def run_test_module(module: str) -> bool:
         return False
 
     try:
-        result = subprocess.run(
+        result: Any = subprocess.run(
             [sys.executable, str(script_path)], check=False, capture_output=False
         )
 
         success = result.returncode == 0
-        status = "✅ PASSED" if success else "❌ FAILED"
+        status: str = "✅ PASSED" if success else "❌ FAILED"
 
         print("\n" + "=" * 80)
         print(f"TEST MODULE RESULT: {module} - {status}")
@@ -144,7 +144,7 @@ def run_benchmark(
         return False
 
     # Build command with arguments
-    command = [sys.executable, str(script_path)]
+    command: list[Any] = [sys.executable, str(script_path)]
 
     if topics:
         command.extend(["--topics"] + topics)
@@ -160,10 +160,10 @@ def run_benchmark(
     print("=" * 80)
 
     try:
-        result = subprocess.run(command, check=False, capture_output=False)
+        result: Any = subprocess.run(command, check=False, capture_output=False)
 
         success = result.returncode == 0
-        status = "✅ COMPLETED" if success else "❌ FAILED"
+        status: str = "✅ COMPLETED" if success else "❌ FAILED"
 
         print("\n" + "=" * 80)
         print(f"BENCHMARK RESULT: {status}")
@@ -179,7 +179,7 @@ def run_benchmark(
 
 def run_all_tests(modules: List[str]) -> Dict[str, bool]:
     """Run all specified test modules and return results."""
-    results = {}
+    results: list[Any] = {}
 
     for module in modules:
         results[module] = run_test_module(module)
@@ -192,12 +192,12 @@ def generate_report(results: Dict[str, bool]) -> str:
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # Calculate statistics
-    total = len(results)
+    total: int = len(results)
     passed = sum(1 for success in results.values() if success)
     failed = total - passed
 
     # Build report
-    report = [
+    report: list[Any] = [
         "# Gray Swan Arena Test Report",
         f"\nGenerated: {timestamp}",
         f"\n## Summary",
@@ -209,7 +209,7 @@ def generate_report(results: Dict[str, bool]) -> str:
     ]
 
     for module, success in results.items():
-        status = "✅ PASSED" if success else "❌ FAILED"
+        status: str = "✅ PASSED" if success else "❌ FAILED"
         description = TEST_MODULES[module]["description"]
         report.append(f"\n- {module}: {status}")
         report.append(f"  - {description}")
@@ -257,7 +257,7 @@ def main():
 
     # Determine which modules to run
     if args.benchmark_only:
-        modules = ["benchmark"]
+        modules: list[Any] = ["benchmark"]
     elif "all" in args.modules:
         modules = list(TEST_MODULES.keys())
     else:
@@ -279,7 +279,7 @@ def main():
         success = run_benchmark(args.benchmark_topics, args.benchmark_models)
         results = {"benchmark": success}
     else:
-        results = run_all_tests(valid_modules)
+        results: list[Any] = run_all_tests(valid_modules)
 
     # Generate and save report
     report = generate_report(results)

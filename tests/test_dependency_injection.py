@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 """
 Tests for the dependency injection implementation in Gray Swan Arena.
 
@@ -48,7 +49,7 @@ class TestGraySwanContainer(unittest.TestCase):
     
     def test_configuration_from_dict(self):
         """Test that the container can be configured from a dictionary."""
-        config_dict = {
+        config_dict: dict[str, Any] = {
             'output_dir': './dict_output',
             'agents': {
                 'recon': {
@@ -112,7 +113,7 @@ class TestGraySwanPipeline(unittest.TestCase):
         self.mock_recon_agent.save_report.return_value = "/path/to/report.json"
         
         # Run the method being tested
-        result = self.pipeline.run_reconnaissance("GPT-4", "generate harmful content")
+        result: Any = self.pipeline.run_reconnaissance("GPT-4", "generate harmful content")
         
         # Assert expected behavior
         self.mock_recon_agent.run_web_search.assert_called_once_with("GPT-4", "generate harmful content")
@@ -130,7 +131,7 @@ class TestGraySwanPipeline(unittest.TestCase):
         self.mock_prompt_agent.save_prompts.return_value = "/path/to/prompts.json"
         
         # Run the method being tested
-        result = self.pipeline.run_prompt_engineering(
+        result: Any = self.pipeline.run_prompt_engineering(
             "GPT-4", 
             "generate harmful content", 
             {"report": "test report"},
@@ -161,7 +162,7 @@ class TestGraySwanPipeline(unittest.TestCase):
         self.mock_eval_agent.save_summary.return_value = "/path/to/summary.json"
         
         # Run the method being tested
-        result = self.pipeline.run_evaluation(
+        result: Any = self.pipeline.run_evaluation(
             [{"result": "test result"}],
             "GPT-4",
             "generate harmful content",

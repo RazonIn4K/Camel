@@ -9,7 +9,7 @@ import pytest
 
 def run_tests(providers: List[str], verbose: bool = False) -> bool:
     """Run integration tests for specified providers."""
-    test_args = [
+    test_args: list[Any] = [
         "tests/test_model_integration.py",
         "-v" if verbose else "",
         "-m",
@@ -17,7 +17,7 @@ def run_tests(providers: List[str], verbose: bool = False) -> bool:
     ]
 
     if providers:
-        provider_params = [f"provider=={p}" for p in providers]
+        provider_params: list[Any] = [f"provider=={p}" for p in providers]
         test_args.extend(["-k", " or ".join(provider_params)])
 
     return pytest.main(test_args) == 0
@@ -25,8 +25,8 @@ def run_tests(providers: List[str], verbose: bool = False) -> bool:
 
 def validate_environment() -> List[str]:
     """Validate environment variables and return available providers."""
-    available_providers = []
-    required_vars = {
+    available_providers: list[Any] = []
+    required_vars: dict[str, Any] = {
         "anthropic": "ANTHROPIC_API_KEY",
         "openai": "OPENAI_API_KEY",
         "google": ["GOOGLE_APPLICATION_CREDENTIALS", "GCP_PROJECT_ID"],
@@ -34,7 +34,7 @@ def validate_environment() -> List[str]:
 
     for provider, vars in required_vars.items():
         if isinstance(vars, str):
-            vars = [vars]
+            vars: list[Any] = [vars]
         if all(os.environ.get(var) for var in vars):
             available_providers.append(provider)
 

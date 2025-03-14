@@ -1,6 +1,7 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 """Gray Swan Arena module."""
 
-__version__ = "0.2.0"
+__version__: str = "0.2.0"
 
 from .agents.evaluation_agent import EvaluationAgent
 from .agents.exploit_delivery_agent import ExploitDeliveryAgent
@@ -12,7 +13,7 @@ from .agents.recon_agent import ReconAgent
 # Make main function available at package level
 from .main import main
 
-__all__ = [
+__all__: list[Any] = [
     "ReconAgent",
     "PromptEngineerAgent",
     "ExploitDeliveryAgent",

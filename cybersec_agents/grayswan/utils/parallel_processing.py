@@ -76,7 +76,7 @@ class RateLimiter:
 
             # Calculate delay if we're out of tokens
             if self.tokens < 1:
-                delay = (1 - self.tokens) / self.token_rate
+                delay: tuple[Any, ...] = (1 - self.tokens) / self.token_rate
                 if self.jitter:
                     # Add up to 20% random jitter
                     delay *= 0.9 + random.random() * 0.2
@@ -157,9 +157,9 @@ class TaskManager:
             await asyncio.sleep(delay)
 
         # Execute with retries
-        retries = 0
-        last_error = None
-        task_metrics = {
+        retries: int = 0
+        last_error: Optional[Any] = None
+        task_metrics: dict[str, Any] = {
             "start_time": datetime.now().isoformat(),
             "retries": 0,
             "success": False,
@@ -172,17 +172,17 @@ class TaskManager:
                 # Execute the function
                 if asyncio.iscoroutinefunction(func):
                     # If the function is a coroutine function
-                    result = await func(*args, **kwargs)
+                    result: Any = await func(*args, **kwargs)
                 else:
                     # If the function is a regular function, run it in a thread pool
                     loop = asyncio.get_event_loop()
-                    executor = (
+                    executor: tuple[Any, ...] = (
                         ProcessPoolExecutor
                         if self.use_processes
                         else ThreadPoolExecutor
                     )
                     with executor(max_workers=1) as pool:
-                        result = await loop.run_in_executor(
+                        result: Any = await loop.run_in_executor(
                             pool, lambda: func(*args, **kwargs)
                         )
 
@@ -271,7 +271,7 @@ class TaskManager:
             f"Processing {len(items)} items in {len(batches)} batches of up to {batch_size} items each"
         )
 
-        all_results = []
+        all_results: list[Any] = []
 
         for batch_idx, batch in enumerate(batches):
             logger.info(
@@ -279,7 +279,7 @@ class TaskManager:
             )
 
             # Create tasks for concurrent execution
-            tasks = []
+            tasks: list[Any] = []
             for item in batch:
                 # Create a wrapper function that applies the item as the first argument
                 task = self.execute_task(func, item, *args, **kwargs)
@@ -289,7 +289,7 @@ class TaskManager:
             batch_results = await asyncio.gather(*tasks, return_exceptions=True)
 
             # Process results
-            processed_results = []
+            processed_results: list[Any] = []
             for result in batch_results:
                 if isinstance(result, Exception):
                     # Handle exception
@@ -349,7 +349,7 @@ class TaskManager:
             batch_size = self.max_workers
 
         # Split items into batches
-        batches = [
+        batches: list[Any] = [
             items_with_kwargs[i : i + batch_size]
             for i in range(0, len(items_with_kwargs), batch_size)
         ]
@@ -357,7 +357,7 @@ class TaskManager:
             f"Processing {len(items_with_kwargs)} items in {len(batches)} batches of up to {batch_size} items each"
         )
 
-        all_results = []
+        all_results: list[Any] = []
 
         for batch_idx, batch in enumerate(batches):
             logger.info(
@@ -365,10 +365,10 @@ class TaskManager:
             )
 
             # Create tasks for concurrent execution
-            tasks = []
+            tasks: list[Any] = []
             for item_kwargs in batch:
                 # Merge common kwargs with item-specific kwargs
-                kwargs = {**common_kwargs, **item_kwargs}
+                kwargs: dict[str, Any] = {**common_kwargs, **item_kwargs}
                 task = self.execute_task(func, *args, **kwargs)
                 tasks.append(task)
 
@@ -376,7 +376,7 @@ class TaskManager:
             batch_results = await asyncio.gather(*tasks, return_exceptions=True)
 
             # Process results
-            processed_results = []
+            processed_results: list[Any] = []
             for result in batch_results:
                 if isinstance(result, Exception):
                     # Handle exception
@@ -486,7 +486,7 @@ async def run_parallel_tasks(
     )
 
     # Extract results and metrics
-    results = [r for r, _ in results_with_metrics]
+    results: list[Any] = [r for r, _ in results_with_metrics]
     metrics = task_manager.get_metrics()
 
     return results, metrics
@@ -546,7 +546,7 @@ async def run_parallel_tasks_with_kwargs(
     )
 
     # Extract results and metrics
-    results = [r for r, _ in results_with_metrics]
+    results: list[Any] = [r for r, _ in results_with_metrics]
     metrics = task_manager.get_metrics()
 
     return results, metrics
@@ -767,7 +767,7 @@ async def run_parallel_reconnaissance(
     recon_agent = ReconAgent(output_dir=output_dir, model_name=model_name)
 
     # Define tasks to run
-    tasks = []
+    tasks: list[Any] = []
 
     if include_web_search:
         tasks.append(
@@ -806,11 +806,11 @@ async def run_parallel_reconnaissance(
         )
 
     # Wait for all tasks to complete
-    results = await asyncio.gather(*tasks, return_exceptions=True)
+    results: list[Any] = await asyncio.gather(*tasks, return_exceptions=True)
 
     # Process results
-    search_results = {}
-    errors = []
+    search_results: dict[str, Any] = {}
+    errors: list[Any] = []
 
     for i, result in enumerate(results):
         if isinstance(result, Exception):
@@ -818,7 +818,7 @@ async def run_parallel_reconnaissance(
             logger.error(f"Reconnaissance task failed: {str(result)}")
         else:
             # Determine the type of result based on the task index
-            task_idx = 0
+            task_idx: int = 0
             if include_web_search:
                 if task_idx == i:
                     search_results["web"] = result
@@ -950,7 +950,7 @@ async def run_parallel_prompt_engineering(
     )
 
     # Extract results
-    all_prompts = []
+    all_prompts: list[str] = []
     for prompts, _ in results_with_metrics:
         if prompts:
             all_prompts.extend(prompts)
@@ -1086,7 +1086,7 @@ async def run_parallel_exploits(
     )
 
     # Extract results
-    all_results = [r for r, _ in results_with_metrics if r is not None]
+    all_results: list[Any] = [r for r, _ in results_with_metrics if r is not None]
 
     # Save results
     results_path = exploit_agent.save_results(
@@ -1167,7 +1167,7 @@ async def run_parallel_evaluation(
     )
 
     # Define tasks to run
-    tasks = []
+    tasks: list[Any] = []
 
     # Task 1: Evaluate results
     tasks.append(
@@ -1182,11 +1182,11 @@ async def run_parallel_evaluation(
     )
 
     # Wait for evaluation to complete
-    results = await asyncio.gather(*tasks)
+    results: list[Any] = await asyncio.gather(*tasks)
     evaluation = results[0]
 
     # Create visualizations
-    visualization_paths = {}
+    visualization_paths: dict[str, Any] = {}
 
     if include_visualizations:
         # Create basic visualizations
@@ -1320,7 +1320,7 @@ async def run_full_pipeline_parallel(
     )
     from cybersec_agents.grayswan.utils.model_manager import ModelManager
 
-    results = {}
+    results: list[Any] = {}
     skip_phases = skip_phases or []
 
     # Initialize AgentOps session
@@ -1520,7 +1520,7 @@ async def run_full_pipeline_parallel(
         results["model_metrics"] = model_manager.get_metrics()
 
         # Add parallel processing metrics
-        parallel_metrics = {}
+        parallel_metrics: dict[str, Any] = {}
         for phase in [
             "reconnaissance",
             "prompt_engineering",

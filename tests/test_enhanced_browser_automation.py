@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 """
 Tests for the enhanced browser automation utilities.
 """
@@ -101,7 +102,7 @@ class TestEnhancedBrowserAutomation(unittest.TestCase):
             return f"Action performed on {selector}"
         
         # Test with a selector that works on the first try
-        result = driver.try_selectors("model_select", test_action)
+        result: Any = driver.try_selectors("model_select", test_action)
         
         # Check that the result is correct
         self.assertEqual(result, "Action performed on #model-select")
@@ -122,7 +123,7 @@ class TestEnhancedBrowserAutomation(unittest.TestCase):
             return f"Action performed on {selector}"
         
         # Test with a selector that fails on the first try but works on the second
-        result = driver.try_selectors("model_select", test_action_with_exception)
+        result: Any = driver.try_selectors("model_select", test_action_with_exception)
         
         # Check that the result is correct and metrics were updated
         self.assertTrue(result.startswith("Action performed on"))

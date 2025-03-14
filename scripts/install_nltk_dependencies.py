@@ -34,14 +34,14 @@ from typing import Dict, List, Optional, Tuple, Any, Set
 
 # Define colors for terminal output
 class Colors:
-    HEADER = '\033[95m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+    HEADER: str = '\033[95m'
+    BLUE: str = '\033[94m'
+    GREEN: str = '\033[92m'
+    YELLOW: str = '\033[93m'
+    RED: str = '\033[91m'
+    ENDC: str = '\033[0m'
+    BOLD: str = '\033[1m'
+    UNDERLINE: str = '\033[4m'
 
 # Check if we're running in a terminal that supports colors
 def supports_color() -> bool:
@@ -113,7 +113,7 @@ def install_nltk(quiet: bool = False) -> Tuple[bool, Optional[str]]:
             print_info("Installing NLTK...")
         
         # Use subprocess to install NLTK
-        cmd = [sys.executable, "-m", "pip", "install", "nltk"]
+        cmd: list[Any] = [sys.executable, "-m", "pip", "install", "nltk"]
         if quiet:
             cmd.append("--quiet")
         
@@ -357,7 +357,7 @@ def manual_download_nltk_data(package: str, target_dir: str, quiet: bool = False
         os.makedirs(target_dir, exist_ok=True)
         
         # Map package names to URLs
-        package_urls = {
+        package_urls: dict[str, Any] = {
             "vader_lexicon": "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/sentiment/vader_lexicon.zip",
             "punkt": "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/tokenizers/punkt.zip",
             "stopwords": "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/stopwords.zip"
@@ -376,7 +376,7 @@ def manual_download_nltk_data(package: str, target_dir: str, quiet: bool = False
         urllib.request.urlretrieve(url, zip_path)
         
         # Extract the zip file
-        package_type = "sentiment" if package == "vader_lexicon" else "tokenizers" if package == "punkt" else "corpora"
+        package_type: str = "sentiment" if package == "vader_lexicon" else "tokenizers" if package == "punkt" else "corpora"
         extract_dir = os.path.join(target_dir, package_type)
         os.makedirs(extract_dir, exist_ok=True)
         
@@ -432,7 +432,7 @@ def update_project_dependencies() -> Dict[str, bool]:
     Returns:
         Dictionary with update status for each file
     """
-    results = {
+    results: list[Any] = {
         "requirements.txt": False,
         "setup.py": False
     }
@@ -512,9 +512,9 @@ def initialize_nltk(packages: List[str] = None, quiet: bool = True) -> Dict[str,
         Dictionary with status for each package
     \"\"\"
     if packages is None:
-        packages = ["vader_lexicon", "punkt", "stopwords"]
+        packages: list[Any] = ["vader_lexicon", "punkt", "stopwords"]
     
-    results = {}
+    results: list[Any] = {}
     
     try:
         import nltk
@@ -627,13 +627,13 @@ def update_affected_modules() -> Dict[str, Any]:
     Returns:
         Dictionary with update status for each module
     """
-    results = {
+    results: list[Any] = {
         "updated_modules": [],
         "errors": []
     }
     
     # Find affected modules
-    affected_modules = []
+    affected_modules: list[Any] = []
     for root, _, files in os.walk("cybersec_agents"):
         for file in files:
             if file.endswith(".py"):
@@ -692,7 +692,7 @@ def run_installation(force: bool = False, quiet: bool = False, data_dir: Optiona
     Returns:
         Dictionary with installation results
     """
-    results = {}
+    results: list[Any] = {}
     
     # Check NLTK installation
     if not quiet:
@@ -729,7 +729,7 @@ def run_installation(force: bool = False, quiet: bool = False, data_dir: Optiona
     if not quiet:
         print_section("Installing NLTK Data Packages")
     
-    packages = ["vader_lexicon", "punkt", "stopwords"]
+    packages: list[Any] = ["vader_lexicon", "punkt", "stopwords"]
     results["nltk_data"] = {}
     
     for package in packages:
@@ -901,7 +901,7 @@ def main():
         print_info(f"Platform: {platform.platform()}")
         print_info(f"System: {platform.system()} {platform.release()}")
     
-    results = run_installation(args.force, args.quiet, args.data_dir)
+    results: list[Any] = run_installation(args.force, args.quiet, args.data_dir)
     
     # Print summary
     if not args.quiet:

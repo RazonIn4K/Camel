@@ -45,7 +45,7 @@ def create_success_rate_chart(
         Path to the saved chart file
     """
     # Process results
-    data = []
+    data: dict[str, Any] = []
     for result in results:
         model = result.get("model_name", "Unknown")
         prompt_type = result.get("prompt_type", "Unknown")
@@ -115,7 +115,7 @@ def create_response_time_chart(
         Path to the saved chart file
     """
     # Process results
-    data = []
+    data: dict[str, Any] = []
     for result in results:
         model = result.get("model_name", "Unknown")
         response_time = result.get("response_time", 0)
@@ -167,7 +167,7 @@ def create_prompt_type_effectiveness_chart(
         Path to the saved chart file
     """
     # Process results
-    data = []
+    data: dict[str, Any] = []
     for result in results:
         prompt_type = result.get("prompt_type", "Unknown")
         success = result.get("success", False)
@@ -202,7 +202,7 @@ def create_prompt_type_effectiveness_chart(
 
     # Add values on top of bars
     for i, p in enumerate(ax.patches):
-        count = counts.iloc[i]["Count"]
+        count: int = counts.iloc[i]["Count"]
         ax.annotate(
             f"{p.get_height():.2f} (n={count})",
             (p.get_x() + p.get_width() / 2.0, p.get_height()),
@@ -236,7 +236,7 @@ def create_vulnerability_heatmap(
         Path to the saved chart file
     """
     # Process results
-    data = []
+    data: dict[str, Any] = []
     for result in results:
         model = result.get("model_name", "Unknown")
         attack_vector = result.get("attack_vector", "Unknown")
@@ -257,7 +257,7 @@ def create_vulnerability_heatmap(
     df = pd.DataFrame(data)
 
     # Calculate success rates
-    success_rates = (
+    success_rates: tuple[Any, ...] = (
         df.groupby(["Model", "Attack Vector"])["Success"].mean().reset_index()
     )
 
@@ -304,7 +304,7 @@ def create_evaluation_report(
     ensure_output_dir(output_dir)
 
     # Create visualizations
-    report_files = {
+    report_files: dict[str, Any] = {
         "success_rate": create_success_rate_chart(results, output_dir),
         "response_time": create_response_time_chart(results, output_dir),
         "prompt_effectiveness": create_prompt_type_effectiveness_chart(
@@ -346,8 +346,8 @@ def generate_html_report(
     success_rate = successful_tests / total_tests if total_tests > 0 else 0
 
     # Count unique models and prompt types
-    models = {r.get("model_name", "Unknown") for r in results}
-    prompt_types = {r.get("prompt_type", "Unknown") for r in results}
+    models: dict[str, Any] = {r.get("model_name", "Unknown") for r in results}
+    prompt_types: dict[str, Any] = {r.get("prompt_type", "Unknown") for r in results}
 
     # Generate HTML
     html = f"""
@@ -483,8 +483,8 @@ def generate_html_report(
         success = result.get("success", False)
         response_time = result.get("response_time", 0)
 
-        success_class = "success" if success else "failure"
-        success_text = "Yes" if success else "No"
+        success_class: str = "success" if success else "failure"
+        success_text: str = "Yes" if success else "No"
 
         html += f"""
                 <tr>

@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 import asyncio
 import statistics
 import tempfile
@@ -58,7 +59,7 @@ class TestPerformance:
     @pytest.mark.asyncio
     async def test_analysis_performance(self, detector, large_nmap_xml):
         """Test performance of the analysis pipeline."""
-        mock_response = {
+        mock_response: dict[str, Any] = {
             "threats": ["Sample threat"],
             "vulnerabilities": ["Sample vulnerability"],
             "recommendations": ["Sample recommendation"],
@@ -72,7 +73,7 @@ class TestPerformance:
             await detector.analyze_nmap_output(large_nmap_xml)
 
             # Measure multiple runs
-            times = []
+            times: list[Any] = []
             for _ in range(5):
                 execution_time = await self.measure_execution_time(
                     detector.analyze_nmap_output(large_nmap_xml)
@@ -93,7 +94,7 @@ class TestPerformance:
     @pytest.mark.asyncio
     async def test_concurrent_performance(self, detector, large_nmap_xml):
         """Test performance under concurrent load."""
-        mock_response = {
+        mock_response: dict[str, Any] = {
             "threats": ["Sample threat"],
             "vulnerabilities": ["Sample vulnerability"],
             "recommendations": ["Sample recommendation"],
@@ -104,10 +105,10 @@ class TestPerformance:
             mock_chat.return_value = mock_response
 
             # Create multiple concurrent requests
-            concurrent_requests = 5
+            concurrent_requests: int = 5
             start_time = time.perf_counter()
 
-            tasks = [
+            tasks: list[Any] = [
                 detector.analyze_nmap_output(large_nmap_xml)
                 for _ in range(concurrent_requests)
             ]
@@ -123,7 +124,7 @@ class TestPerformance:
 
     def test_config_load_performance(self):
         """Test configuration loading performance."""
-        times = []
+        times: list[Any] = []
         for _ in range(100):
             start_time = time.perf_counter()
             Config()
@@ -139,8 +140,8 @@ class TestPerformance:
     async def test_rate_limiter_performance(self, detector):
         """Test rate limiter performance under load."""
         start_time = time.perf_counter()
-        request_count = 100
-        success_count = 0
+        request_count: int = 100
+        success_count: int = 0
 
         for _ in range(request_count):
             try:
@@ -171,7 +172,7 @@ class TestPerformance:
             detector.file_validator.validate(test_file)
 
         # Run benchmark
-        result = benchmark(validate_file)
+        result: Any = benchmark(validate_file)
 
         # Cleanup
         test_file.unlink()
@@ -190,7 +191,7 @@ class TestPerformance:
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss / 1024 / 1024  # MB
 
-        mock_response = {
+        mock_response: dict[str, Any] = {
             "threats": ["Sample threat"],
             "vulnerabilities": ["Sample vulnerability"],
             "recommendations": ["Sample recommendation"],

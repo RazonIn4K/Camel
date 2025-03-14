@@ -332,13 +332,13 @@ class GraySwanPipeline:
         batch_size = max_concurrent
         batches = [prompts[i:i+batch_size] for i in range(0, len(prompts), batch_size)]
         
-        all_results = []
+        all_results: list[Any] = []
         
         for batch_idx, batch in enumerate(batches):
             self.logger.info(f"Processing batch {batch_idx+1}/{len(batches)}")
             
             # Create tasks for concurrent execution
-            tasks = []
+            tasks: list[Any] = []
             for prompt in batch:
                 task = asyncio.create_task(
                     asyncio.to_thread(
@@ -480,7 +480,7 @@ class GraySwanPipeline:
             exploit_agent = self.container.exploit_delivery_agent()
             
             # Run prompts
-            results = exploit_agent.run_prompts(
+            results: list[Any] = exploit_agent.run_prompts(
                 prompts=prompts,
                 target_model=target_model,
                 target_behavior=target_behavior,
@@ -589,7 +589,7 @@ class GraySwanPipeline:
             )
             
             # Create advanced visualizations if requested
-            advanced_visualizations = {}
+            advanced_visualizations: dict[str, Any] = {}
             if include_advanced_visualizations:
                 advanced_visualizations = eval_agent.create_advanced_visualizations(
                     results=exploit_results,
@@ -599,7 +599,7 @@ class GraySwanPipeline:
                 )
             
             # Combine visualizations
-            visualizations = {**basic_visualizations, **advanced_visualizations}
+            visualizations: dict[str, Any] = {**basic_visualizations, **advanced_visualizations}
             
             # Generate summary
             summary = eval_agent.generate_summary(
@@ -697,7 +697,7 @@ class GraySwanPipeline:
         Returns:
             Dictionary containing results from all phases
         """
-        results = {}
+        results: list[Any] = {}
         skip_phases = skip_phases or []
         
         # Start AgentOps session
@@ -923,7 +923,7 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
     
     # Create configuration dictionary
-    config_dict = {
+    config_dict: dict[str, Any] = {
         "output_dir": args.output_dir,
         "agents": {
             "recon": {
@@ -1007,7 +1007,7 @@ def main():
         print(f"Reconnaissance complete. Report generated for {args.target_model}.")
     else:
         # Run full pipeline
-        results = pipeline.run_full_pipeline(
+        results: list[Any] = pipeline.run_full_pipeline(
             target_model=args.target_model,
             target_behavior=args.target_behavior,
             skip_phases=args.skip_phases,

@@ -5,7 +5,7 @@ import os
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
-_agentops_initialized = False
+_agentops_initialized: bool = False
 
 
 def initialize_agentops(api_key: Optional[str] = None) -> bool:
@@ -34,7 +34,7 @@ def initialize_agentops(api_key: Optional[str] = None) -> bool:
 
         logger.info("Initializing AgentOps...")
         agentops.init(api_key=api_key)
-        _agentops_initialized = True
+        _agentops_initialized: bool = True
         logger.info("AgentOps initialized successfully")
         return True
     except Exception as e:
@@ -65,7 +65,7 @@ def start_agentops_session(
         import agentops
 
         # Create a list of all tags
-        all_tags = [agent_type.lower()]
+        all_tags: list[Any] = [agent_type.lower()]
         if model:
             all_tags.append(f"model:{model}")
         if tags:
@@ -149,7 +149,7 @@ def track_llm_usage(
     try:
         import agentops
 
-        event_data = {
+        event_data: dict[str, Any] = {
             "model": model,
             "prompt_tokens": prompt_tokens,
             "completion_tokens": completion_tokens,

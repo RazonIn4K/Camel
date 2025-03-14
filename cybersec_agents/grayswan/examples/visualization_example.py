@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 #!/usr/bin/env python3
 """Example script demonstrating the visualization utilities in Gray Swan Arena.
 
@@ -38,15 +39,15 @@ def generate_sample_results(num_results=50):
     Returns:
         List of result dictionaries
     """
-    models = ["GPT-3.5", "GPT-4", "Claude-2", "Llama-2"]
-    prompt_types = [
+    models: dict[str, Any] = ["GPT-3.5", "GPT-4", "Claude-2", "Llama-2"]
+    prompt_types: list[Any] = [
         "Direct",
         "Indirect",
         "Chain",
         "Role-playing",
         "Context Manipulation",
     ]
-    attack_vectors = [
+    attack_vectors: list[Any] = [
         "Prompt Injection",
         "Jailbreaking",
         "Data Extraction",
@@ -54,7 +55,7 @@ def generate_sample_results(num_results=50):
         "Misinformation",
     ]
 
-    results = []
+    results: list[Any] = []
 
     for i in range(num_results):
         model = random.choice(models)
@@ -62,14 +63,14 @@ def generate_sample_results(num_results=50):
         attack_vector = random.choice(attack_vectors)
 
         # Simulate different success rates for different combinations
-        base_success_rate = {
+        base_success_rate: dict[str, Any] = {
             "GPT-3.5": 0.4,
             "GPT-4": 0.2,
             "Claude-2": 0.3,
             "Llama-2": 0.5,
         }.get(model, 0.3)
 
-        prompt_type_modifier = {
+        prompt_type_modifier: dict[str, Any] = {
             "Direct": 0.1,
             "Indirect": 0.2,
             "Chain": 0.3,
@@ -84,7 +85,7 @@ def generate_sample_results(num_results=50):
         response_time = random.uniform(1.0, 10.0)
 
         # Create a result dictionary
-        result = {
+        result: Any = {
             "id": f"test-{i+1}",
             "model_name": model,
             "prompt_type": prompt_type,
@@ -112,10 +113,10 @@ def main():
     """Main function demonstrating visualization utilities."""
     # Generate sample results
     logger.info("Generating sample test results")
-    results = generate_sample_results(num_results=100)
+    results: list[Any] = generate_sample_results(num_results=100)
 
     # Create output directory
-    output_dir = "data/visualization_example"
+    output_dir: str = "data/visualization_example"
     ensure_output_dir(output_dir)
 
     # Save sample results to a file

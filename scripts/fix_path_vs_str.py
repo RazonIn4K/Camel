@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 #!/usr/bin/env python3
 """
 Script to fix Path vs str compatibility issues in the codebase.
@@ -20,7 +21,7 @@ def process_file(file_path):
             content = f.read()
         
         # Keep track of whether we modified the file
-        modified = False
+        modified: bool = False
         
         # Track functions that return Path but are annotated to return str
         return_matches = list(PATH_RETURN_PATTERN.finditer(content))
@@ -49,7 +50,7 @@ def process_file(file_path):
             
             if modified_func_content != func_content:
                 content = content[:func_start] + modified_func_content + content[func_start + len(func_content):]
-                modified = True
+                modified: bool = True
         
         # Fix function calls with Path arguments to str parameters
         # This is more complex and may require manual fixing
@@ -67,8 +68,8 @@ def process_file(file_path):
 
 def process_directory(directory, extensions=('.py',), skip_dirs=('venv', '.venv', '.git')):
     """Process all Python files in a directory recursively."""
-    modified_count = 0
-    file_count = 0
+    modified_count: int = 0
+    file_count: int = 0
     
     for root, dirs, files in os.walk(directory):
         # Skip specified directories

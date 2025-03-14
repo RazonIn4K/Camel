@@ -44,8 +44,8 @@ def test_model_interface(
     logger.info(f"Testing model interface for {model} with prompt: {prompt[:50]}...")
     
     # Create an enhanced browser driver
-    driver = None
-    result = {
+    driver: Optional[Any] = None
+    result: Any = {
         "model": model,
         "prompt": prompt,
         "response": None,
@@ -151,7 +151,7 @@ def main():
     args = parser.parse_args()
     
     # Test the model interface
-    result = test_model_interface(
+    result: Any = test_model_interface(
         model=args.model,
         prompt=args.prompt,
         headless=not args.visible,

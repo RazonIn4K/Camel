@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 #!/usr/bin/env python
 """
 Benchmark script for Gray Swan Arena agents.
@@ -51,8 +52,8 @@ def test_recon_agent():
     agent = ReconAgent(output_dir="./test_outputs/reports")
 
     # Run web search
-    target_model = "GPT3.5"
-    target_behavior = "bypassing content filters"
+    target_model: str = "GPT3.5"
+    target_behavior: str = "bypassing content filters"
 
     web_results = agent.run_web_search(
         target_model=target_model, target_behavior=target_behavior
@@ -81,9 +82,9 @@ def test_prompt_engineer_agent(recon_report):
     agent = PromptEngineerAgent(output_dir="./test_outputs/prompts")
 
     # Generate prompts
-    target_model = "GPT3.5"
-    target_behavior = "bypassing content filters"
-    num_prompts = 3
+    target_model: str = "GPT3.5"
+    target_behavior: str = "bypassing content filters"
+    num_prompts: int = 3
 
     prompts = agent.generate_prompts(
         target_model=target_model,
@@ -109,10 +110,10 @@ def test_exploit_delivery_agent(prompts):
     agent = ExploitDeliveryAgent(output_dir="./test_outputs/exploits")
 
     # Run prompts
-    target_model = "GPT3.5"
-    target_behavior = "bypassing content filters"
+    target_model: str = "GPT3.5"
+    target_behavior: str = "bypassing content filters"
 
-    results = agent.run_prompts(
+    results: list[Any] = agent.run_prompts(
         prompts=prompts,
         target_model="gpt-3.5-turbo",  # Using the model name directly
         target_behavior=target_behavior,
@@ -136,8 +137,8 @@ def test_evaluation_agent(results):
     agent = EvaluationAgent(output_dir="./test_outputs/evaluations")
 
     # Evaluate results
-    target_model = "GPT3.5"
-    target_behavior = "bypassing content filters"
+    target_model: str = "GPT3.5"
+    target_behavior: str = "bypassing content filters"
 
     evaluation = agent.evaluate_results(
         results=results, target_model=target_model, target_behavior=target_behavior
@@ -185,7 +186,7 @@ def run_benchmark():
     try:
         recon_report = test_recon_agent()
         prompts = test_prompt_engineer_agent(recon_report)
-        results = test_exploit_delivery_agent(prompts)
+        results: list[Any] = test_exploit_delivery_agent(prompts)
         test_evaluation_agent(results)
 
         logger.info("Benchmark completed successfully!")

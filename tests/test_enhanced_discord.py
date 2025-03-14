@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 """
 Tests for the Enhanced Discord Integration.
 
@@ -127,7 +128,7 @@ class TestEnhancedDiscordScraper(unittest.TestCase):
     def test_search_with_filters_no_filters(self):
         """Test search_with_filters with no filters."""
         # Call the method
-        results = self.scraper.search_with_filters("test query")
+        results: list[Any] = self.scraper.search_with_filters("test query")
         
         # Assert that the search method was called with the correct arguments
         self.mock_search.assert_called_once_with("test query", None, 100)
@@ -138,7 +139,7 @@ class TestEnhancedDiscordScraper(unittest.TestCase):
     def test_search_with_filters_date_filter(self):
         """Test search_with_filters with date filters."""
         # Call the method with date filters
-        results = self.scraper.search_with_filters(
+        results: list[Any] = self.scraper.search_with_filters(
             "test query",
             min_date="2023-06-16",
             max_date="2023-06-18"
@@ -156,7 +157,7 @@ class TestEnhancedDiscordScraper(unittest.TestCase):
     def test_search_with_filters_author_filter(self):
         """Test search_with_filters with author filter."""
         # Call the method with author filter
-        results = self.scraper.search_with_filters(
+        results: list[Any] = self.scraper.search_with_filters(
             "test query",
             author_filter="User1"
         )
@@ -172,7 +173,7 @@ class TestEnhancedDiscordScraper(unittest.TestCase):
     def test_search_with_filters_content_filter(self):
         """Test search_with_filters with content filter."""
         # Call the method with content filter
-        results = self.scraper.search_with_filters(
+        results: list[Any] = self.scraper.search_with_filters(
             "test query",
             content_filter=r"jailbreak|alignment"
         )
@@ -188,7 +189,7 @@ class TestEnhancedDiscordScraper(unittest.TestCase):
     def test_search_with_filters_has_attachments(self):
         """Test search_with_filters with has_attachments filter."""
         # Call the method with has_attachments filter
-        results = self.scraper.search_with_filters(
+        results: list[Any] = self.scraper.search_with_filters(
             "test query",
             has_attachments=True
         )
@@ -203,7 +204,7 @@ class TestEnhancedDiscordScraper(unittest.TestCase):
     def test_search_with_filters_has_mentions(self):
         """Test search_with_filters with has_mentions filter."""
         # Call the method with has_mentions filter
-        results = self.scraper.search_with_filters(
+        results: list[Any] = self.scraper.search_with_filters(
             "test query",
             has_mentions=True
         )
@@ -219,7 +220,7 @@ class TestEnhancedDiscordScraper(unittest.TestCase):
     def test_search_with_filters_sentiment_filter(self):
         """Test search_with_filters with sentiment filter."""
         # Call the method with sentiment filter
-        results = self.scraper.search_with_filters(
+        results: list[Any] = self.scraper.search_with_filters(
             "test query",
             sentiment_filter="positive",
             include_sentiment=True
@@ -236,7 +237,7 @@ class TestEnhancedDiscordScraper(unittest.TestCase):
     def test_search_with_filters_include_sentiment(self):
         """Test search_with_filters with include_sentiment."""
         # Call the method with include_sentiment
-        results = self.scraper.search_with_filters(
+        results: list[Any] = self.scraper.search_with_filters(
             "test query",
             include_sentiment=True
         )
@@ -256,7 +257,7 @@ class TestEnhancedDiscordScraper(unittest.TestCase):
     def test_search_with_filters_combined(self):
         """Test search_with_filters with combined filters."""
         # Call the method with combined filters
-        results = self.scraper.search_with_filters(
+        results: list[Any] = self.scraper.search_with_filters(
             "test query",
             min_date="2023-06-16",
             author_filter="User1",
@@ -407,7 +408,7 @@ class TestEnhancedDiscordScraper(unittest.TestCase):
         mock_open = unittest.mock.mock_open()
         with patch('builtins.open', mock_open):
             # Call the method
-            results = self.scraper.load_results("test_results.json")
+            results: list[Any] = self.scraper.load_results("test_results.json")
             
             # Assert that the mocks were called
             mock_os.path.join.assert_called_with("data", "discord_searches", "test_results.json")

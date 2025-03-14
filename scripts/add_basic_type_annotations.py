@@ -14,7 +14,7 @@ from pathlib import Path
 VAR_PATTERN = re.compile(r'^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$')
 
 # Common variable types based on their names and values
-COMMON_TYPES = {
+COMMON_TYPES: dict[str, Any] = {
     'count': 'int',
     'total': 'int',
     'index': 'int',
@@ -58,15 +58,15 @@ def add_type_annotation(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
         
-        modified_lines = []
-        modified = False
+        modified_lines: list[Any] = []
+        modified: bool = False
         
-        imported_typing = False
+        imported_typing: bool = False
         
         for i, line in enumerate(lines):
             # Check if typing is already imported
             if 'from typing import' in line or 'import typing' in line:
-                imported_typing = True
+                imported_typing: bool = True
             
             # Skip lines that already have type annotations or are comments
             if has_type_annotation(line) or line.strip().startswith('#'):
@@ -79,28 +79,28 @@ def add_type_annotation(file_path):
                 var_value = match.group(2).strip()
                 
                 # Determine variable type
-                var_type = None
+                var_type: Optional[Any] = None
                 
                 # Check in common types dictionary
                 if var_name in COMMON_TYPES:
                     var_type = COMMON_TYPES[var_name]
                 # Infer type from value
                 elif var_value.startswith('{'):
-                    var_type = 'dict[str, Any]'
+                    var_type: str = 'dict[str, Any]'
                 elif var_value.startswith('['):
-                    var_type = 'list[Any]'
+                    var_type: str = 'list[Any]'
                 elif var_value.startswith('('):
-                    var_type = 'tuple[Any, ...]'
+                    var_type: str = 'tuple[Any, ...]'
                 elif var_value.isdigit():
-                    var_type = 'int'
+                    var_type: str = 'int'
                 elif var_value.startswith('0.') or '.' in var_value and var_value.replace('.', '').isdigit():
-                    var_type = 'float'
+                    var_type: str = 'float'
                 elif var_value.startswith('"') or var_value.startswith("'"):
-                    var_type = 'str'
+                    var_type: str = 'str'
                 elif var_value in ('True', 'False'):
-                    var_type = 'bool'
+                    var_type: str = 'bool'
                 elif var_value == 'None':
-                    var_type = 'None'
+                    var_type: str = 'None'
                 
                 if var_type:
                     if var_type != 'None':
@@ -108,7 +108,7 @@ def add_type_annotation(file_path):
                     else:
                         new_line = line.replace(f"{var_name} =", f"{var_name}: Optional[Any] =")
                     modified_lines.append(new_line)
-                    modified = True
+                    modified: bool = True
                 else:
                     modified_lines.append(line)
             else:
@@ -132,8 +132,8 @@ def add_type_annotation(file_path):
 
 def process_directory(directory, extensions=('.py',), skip_dirs=('venv', '.venv', '.git')):
     """Process all Python files in a directory recursively."""
-    modified_count = 0
-    file_count = 0
+    modified_count: int = 0
+    file_count: int = 0
     
     for root, dirs, files in os.walk(directory):
         # Skip specified directories

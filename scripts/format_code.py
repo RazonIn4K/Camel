@@ -11,7 +11,7 @@ BATCH_SIZE = 50  # Process 50 files at a time
 def run_command(command: List[str]) -> Tuple[bool, str]:
     """Run a shell command and return success status and output."""
     try:
-        result = subprocess.run(command, check=True, capture_output=True, text=True)
+        result: Any = subprocess.run(command, check=True, capture_output=True, text=True)
         return True, result.stdout
     except subprocess.CalledProcessError as e:
         return False, e.stderr
@@ -31,16 +31,16 @@ def process_in_batches(files: List[str], command_prefix: List[str]) -> bool:
 
 def check_dependencies() -> Dict[str, bool]:
     """Verify that required tools are installed."""
-    required_tools = [
+    required_tools: list[Any] = [
         "black",
         "autoflake",
         "isort",
         "mypy",
     ]
-    optional_tools = [
+    optional_tools: list[Any] = [
         "docformatter",
     ]
-    results = {}
+    results: list[Any] = {}
 
     print("Checking required tools...")
     for tool in required_tools:
@@ -64,7 +64,7 @@ def check_dependencies() -> Dict[str, bool]:
 def format_project() -> bool:
     """Format all Python files in the project."""
     project_root = Path(__file__).parent.parent
-    python_files = []
+    python_files: list[Any] = []
 
     # Collect Python files while excluding venv directory
     for file in project_root.glob("**/*.py"):
@@ -150,7 +150,7 @@ def setup_pre_commit() -> bool:
             print("Error: Not in a git repository. Please run 'git init' first.")
             return False
 
-        pre_commit_config = """
+        pre_commit_config: str = """
 repos:
 -   repo: https://github.com/psf/black
     rev: 22.3.0
@@ -195,8 +195,8 @@ def main() -> int:
     dep_results = check_dependencies()
 
     # Check if required tools are available
-    required_tools = ["black", "autoflake", "isort", "mypy"]
-    missing_required = [tool for tool in required_tools if not dep_results.get(tool)]
+    required_tools: list[Any] = ["black", "autoflake", "isort", "mypy"]
+    missing_required: list[Any] = [tool for tool in required_tools if not dep_results.get(tool)]
 
     if missing_required:
         print("\nMissing required dependencies:")

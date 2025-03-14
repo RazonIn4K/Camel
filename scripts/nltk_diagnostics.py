@@ -32,14 +32,14 @@ from typing import Dict, List, Optional, Tuple, Any, Set
 
 # Define colors for terminal output
 class Colors:
-    HEADER = '\033[95m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+    HEADER: str = '\033[95m'
+    BLUE: str = '\033[94m'
+    GREEN: str = '\033[92m'
+    YELLOW: str = '\033[93m'
+    RED: str = '\033[91m'
+    ENDC: str = '\033[0m'
+    BOLD: str = '\033[1m'
+    UNDERLINE: str = '\033[4m'
 
 # Check if we're running in a terminal that supports colors
 def supports_color() -> bool:
@@ -166,7 +166,7 @@ def check_vader_lexicon() -> Dict[str, Any]:
     Returns:
         Dictionary with status information
     """
-    result = {
+    result: Any = {
         "available": False,
         "location": None,
         "error": None,
@@ -229,7 +229,7 @@ def check_sentiment_analyzer() -> Dict[str, Any]:
     Returns:
         Dictionary with status information
     """
-    result = {
+    result: Any = {
         "can_import": False,
         "can_initialize": False,
         "can_analyze": False,
@@ -246,7 +246,7 @@ def check_sentiment_analyzer() -> Dict[str, Any]:
             result["can_initialize"] = True
             
             try:
-                sample_text = "This is a test sentence for sentiment analysis."
+                sample_text: str = "This is a test sentence for sentiment analysis."
                 sentiment = sia.polarity_scores(sample_text)
                 result["can_analyze"] = True
                 result["sample_result"] = sentiment
@@ -271,7 +271,7 @@ def check_environment_variables() -> Dict[str, Any]:
     Returns:
         Dictionary with environment variable information
     """
-    env_vars = {
+    env_vars: dict[str, Any] = {
         "NLTK_DATA": os.environ.get("NLTK_DATA"),
         "PYTHONPATH": os.environ.get("PYTHONPATH"),
         "HOME": os.environ.get("HOME"),
@@ -292,7 +292,7 @@ def check_disk_space(directory: str) -> Dict[str, Any]:
     Returns:
         Dictionary with disk space information
     """
-    result = {
+    result: Any = {
         "directory": directory,
         "total_space": None,
         "available_space": None,
@@ -331,7 +331,7 @@ def test_write_permissions(directory: str) -> Dict[str, Any]:
     Returns:
         Dictionary with test results
     """
-    result = {
+    result: Any = {
         "directory": directory,
         "can_write": False,
         "error": None
@@ -360,7 +360,7 @@ def check_project_dependencies() -> Dict[str, Any]:
     Returns:
         Dictionary with dependency information
     """
-    result = {
+    result: Any = {
         "requirements_txt": False,
         "setup_py": False,
         "pyproject_toml": False,
@@ -403,7 +403,7 @@ def check_affected_modules() -> Dict[str, List[str]]:
     Returns:
         Dictionary with affected modules
     """
-    affected_modules = {
+    affected_modules: dict[str, Any] = {
         "nltk_import": [],
         "vader_lexicon": [],
         "sentiment_analyzer": []
@@ -438,7 +438,7 @@ def attempt_fix_nltk_installation(verbose: bool = False) -> Dict[str, Any]:
     Returns:
         Dictionary with fix results
     """
-    result = {
+    result: Any = {
         "nltk_installed": False,
         "vader_downloaded": False,
         "errors": []
@@ -538,7 +538,7 @@ def run_diagnostics(verbose: bool = False, fix: bool = False) -> Dict[str, Any]:
     Returns:
         Dictionary with all diagnostic results
     """
-    results = {}
+    results: list[Any] = {}
     
     # Check NLTK installation
     print_section("Checking NLTK Installation")
@@ -638,7 +638,7 @@ def run_diagnostics(verbose: bool = False, fix: bool = False) -> Dict[str, Any]:
     
     # Check write permissions
     print_section("Testing Write Permissions")
-    write_test_results = []
+    write_test_results: list[Any] = []
     for directory in nltk_data_dirs:
         if os.path.exists(directory) or os.path.exists(os.path.dirname(directory)):
             write_test = test_write_permissions(directory)
@@ -721,7 +721,7 @@ def main():
     print_info(f"Platform: {platform.platform()}")
     print_info(f"System: {platform.system()} {platform.release()}")
     
-    results = run_diagnostics(args.verbose, args.fix)
+    results: list[Any] = run_diagnostics(args.verbose, args.fix)
     
     # Print summary
     print_section("Summary")

@@ -38,11 +38,11 @@ def generate_sample_data(num_samples: int = 50) -> List[Dict[str, Any]]:
     Returns:
         List of sample result dictionaries
     """
-    models = ["GPT-4", "GPT-3.5-Turbo", "Claude-2", "Claude-Instant", "Llama-2-70B"]
-    prompt_types = ["Direct", "Indirect", "Role-Playing", "Few-Shot", "Chain-of-Thought"]
-    attack_vectors = ["Jailbreak", "Prompt Injection", "Context Manipulation", "Refusal Bypass", "Policy Evasion"]
+    models: dict[str, Any] = ["GPT-4", "GPT-3.5-Turbo", "Claude-2", "Claude-Instant", "Llama-2-70B"]
+    prompt_types: list[Any] = ["Direct", "Indirect", "Role-Playing", "Few-Shot", "Chain-of-Thought"]
+    attack_vectors: list[Any] = ["Jailbreak", "Prompt Injection", "Context Manipulation", "Refusal Bypass", "Policy Evasion"]
     
-    results = []
+    results: list[Any] = []
     
     for i in range(num_samples):
         # Select model with weighted probabilities
@@ -62,7 +62,7 @@ def generate_sample_data(num_samples: int = 50) -> List[Dict[str, Any]]:
         
         # Determine success based on model and technique
         # Different models have different vulnerabilities to different techniques
-        base_success_rate = {
+        base_success_rate: dict[str, Any] = {
             "GPT-4": 0.2,
             "GPT-3.5-Turbo": 0.4,
             "Claude-2": 0.3,
@@ -71,7 +71,7 @@ def generate_sample_data(num_samples: int = 50) -> List[Dict[str, Any]]:
         }.get(model, 0.3)
         
         # Adjust for prompt type
-        prompt_type_factor = {
+        prompt_type_factor: dict[str, Any] = {
             "Direct": 0.5,
             "Indirect": 0.7,
             "Role-Playing": 0.9,
@@ -80,7 +80,7 @@ def generate_sample_data(num_samples: int = 50) -> List[Dict[str, Any]]:
         }.get(prompt_type, 0.7)
         
         # Adjust for attack vector
-        attack_vector_factor = {
+        attack_vector_factor: dict[str, Any] = {
             "Jailbreak": 0.8,
             "Prompt Injection": 0.7,
             "Context Manipulation": 0.6,
@@ -100,7 +100,7 @@ def generate_sample_data(num_samples: int = 50) -> List[Dict[str, Any]]:
             response_time = base_response_time * random.uniform(0.5, 1.0)
         
         # Create result dictionary
-        result = {
+        result: Any = {
             "model_name": model,
             "prompt_type": prompt_type,
             "attack_vector": attack_vector,
@@ -166,14 +166,14 @@ def main():
     if args.load_data:
         try:
             with open(args.load_data, "r") as f:
-                results = json.load(f)
+                results: list[Any] = json.load(f)
             logger.info(f"Loaded {len(results)} results from {args.load_data}")
         except Exception as e:
             logger.error(f"Error loading data: {e}")
             logger.info("Generating sample data instead")
-            results = generate_sample_data(args.num_samples)
+            results: list[Any] = generate_sample_data(args.num_samples)
     else:
-        results = generate_sample_data(args.num_samples)
+        results: list[Any] = generate_sample_data(args.num_samples)
         logger.info(f"Generated {len(results)} sample results")
     
     # Save data if requested

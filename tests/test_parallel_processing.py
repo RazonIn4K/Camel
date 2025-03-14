@@ -132,7 +132,7 @@ class TestTaskManager(unittest.TestCase):
         task_manager = TaskManager(max_workers=1, requests_per_minute=60, max_retries=2, retry_delay=0.1)
         
         # Define a task function that fails on first attempt but succeeds on retry
-        attempt = [0]
+        attempt: list[Any] = [0]
         async def task_func(x):
             attempt[0] += 1
             if attempt[0] == 1:
@@ -164,11 +164,11 @@ class TestTaskManager(unittest.TestCase):
             return x * 2
         
         # Map the function over items
-        items = [1, 2, 3, 4, 5]
+        items: list[Any] = [1, 2, 3, 4, 5]
         results_with_metrics = await task_manager.map(task_func, items, batch_size=2)
         
         # Extract results
-        results = [r for r, _ in results_with_metrics]
+        results: list[Any] = [r for r, _ in results_with_metrics]
         
         # Check the results
         self.assertEqual(results, [2, 4, 6, 8, 10])
@@ -189,7 +189,7 @@ class TestTaskManager(unittest.TestCase):
             return x * multiplier + add
         
         # Create items with kwargs
-        items_with_kwargs = [
+        items_with_kwargs: list[Any] = [
             {"x": 1, "multiplier": 2, "add": 1},
             {"x": 2, "multiplier": 3, "add": 2},
             {"x": 3, "multiplier": 4, "add": 3},
@@ -199,7 +199,7 @@ class TestTaskManager(unittest.TestCase):
         results_with_metrics = await task_manager.map_with_kwargs(task_func, items_with_kwargs)
         
         # Extract results
-        results = [r for r, _ in results_with_metrics]
+        results: list[Any] = [r for r, _ in results_with_metrics]
         
         # Check the results
         self.assertEqual(results, [3, 8, 15])
@@ -216,7 +216,7 @@ class TestConvenienceFunctions(unittest.TestCase):
             return x * 2
         
         # Run tasks in parallel
-        items = [1, 2, 3, 4, 5]
+        items: list[Any] = [1, 2, 3, 4, 5]
         results, metrics = await run_parallel_tasks(task_func, items, max_workers=2)
         
         # Check the results
@@ -235,7 +235,7 @@ class TestConvenienceFunctions(unittest.TestCase):
             return x * multiplier + add
         
         # Create items with kwargs
-        items_with_kwargs = [
+        items_with_kwargs: list[Any] = [
             {"x": 1, "multiplier": 2, "add": 1},
             {"x": 2, "multiplier": 3, "add": 2},
             {"x": 3, "multiplier": 4, "add": 3},
@@ -260,7 +260,7 @@ class TestConvenienceFunctions(unittest.TestCase):
             return x * 2
         
         # Run tasks in parallel
-        items = [1, 2, 3, 4, 5]
+        items: list[Any] = [1, 2, 3, 4, 5]
         results, metrics = run_parallel_sync(task_func, items, max_workers=2)
         
         # Check the results
@@ -279,7 +279,7 @@ class TestConvenienceFunctions(unittest.TestCase):
             return x * multiplier + add
         
         # Create items with kwargs
-        items_with_kwargs = [
+        items_with_kwargs: list[Any] = [
             {"x": 1, "multiplier": 2, "add": 1},
             {"x": 2, "multiplier": 3, "add": 2},
             {"x": 3, "multiplier": 4, "add": 3},
@@ -305,7 +305,7 @@ class TestConvenienceFunctions(unittest.TestCase):
             return item * 2
         
         # Process items using the decorated function
-        items = [1, 2, 3, 4, 5]
+        items: list[Any] = [1, 2, 3, 4, 5]
         results, metrics = process_data(items)
         
         # Check the results
@@ -338,7 +338,7 @@ class TestGraySwanIntegration(unittest.TestCase):
         mock_instance.save_report.return_value = "report_path"
         
         # Run parallel reconnaissance
-        result = await run_parallel_reconnaissance(
+        result: Any = await run_parallel_reconnaissance(
             target_model="GPT-4",
             target_behavior="Generate harmful content",
             output_dir="./output",
@@ -377,7 +377,7 @@ class TestGraySwanIntegration(unittest.TestCase):
         mock_instance.save_prompts.return_value = "prompts_path"
         
         # Run parallel prompt engineering
-        result = await run_parallel_prompt_engineering(
+        result: Any = await run_parallel_prompt_engineering(
             target_model="GPT-4",
             target_behavior="Generate harmful content",
             recon_report={"report": "data"},
@@ -415,8 +415,8 @@ class TestGraySwanIntegration(unittest.TestCase):
         mock_instance.save_results.return_value = "results_path"
         
         # Run parallel exploits
-        prompts = ["prompt1", "prompt2", "prompt3"]
-        result = await run_parallel_exploits(
+        prompts: list[Any] = ["prompt1", "prompt2", "prompt3"]
+        result: Any = await run_parallel_exploits(
             prompts=prompts,
             target_model="GPT-4",
             target_behavior="Generate harmful content",
@@ -473,7 +473,7 @@ class TestGraySwanIntegration(unittest.TestCase):
         
         # Run parallel evaluation
         exploit_results = [{"result": "data"}]
-        result = await run_parallel_evaluation(
+        result: Any = await run_parallel_evaluation(
             exploit_results=exploit_results,
             target_model="GPT-4",
             target_behavior="Generate harmful content",
@@ -503,7 +503,7 @@ class TestGraySwanIntegration(unittest.TestCase):
 if __name__ == "__main__":
     # Run the async tests
     loop = asyncio.get_event_loop()
-    result = unittest.main(exit=False)
+    result: Any = unittest.main(exit=False)
     loop.close()
     
     # Exit with the test result

@@ -44,10 +44,10 @@ def create_attack_pattern_visualization(
         Path to the saved chart file
     """
     # Convert results to a format suitable for machine learning
-    data = []
+    data: dict[str, Any] = []
     for result in results:
         # Extract features from the result
-        features = {
+        features: dict[str, Any] = {
             "model": result.get("model_name", "Unknown"),
             "prompt_type": result.get("prompt_type", "Unknown"),
             "attack_vector": result.get("attack_vector", "Unknown"),
@@ -70,7 +70,7 @@ def create_attack_pattern_visualization(
 
     try:
         # Select numerical columns
-        numerical_cols = ["prompt_length", "response_time", "success"]
+        numerical_cols: list[Any] = ["prompt_length", "response_time", "success"]
 
         # Standardize the data
         scaler = StandardScaler()
@@ -81,12 +81,12 @@ def create_attack_pattern_visualization(
             # Use t-SNE for larger datasets
             tsne = TSNE(n_components=2, random_state=random_state)
             reduced_data = tsne.fit_transform(scaled_data)
-            reduction_method = "t-SNE"
+            reduction_method: str = "t-SNE"
         else:
             # Use PCA for smaller datasets
             pca = PCA(n_components=2, random_state=random_state)
             reduced_data = pca.fit_transform(scaled_data)
-            reduction_method = "PCA"
+            reduction_method: str = "PCA"
 
         # Add reduced dimensions to DataFrame
         df["x"] = reduced_data[:, 0]
@@ -151,7 +151,7 @@ def create_attack_pattern_visualization(
         )
 
         # Add legend for clusters
-        legend_elements = [
+        legend_elements: list[Any] = [
             plt.Line2D(
                 [0],
                 [0],
@@ -245,7 +245,7 @@ def analyze_clusters(
             continue
 
         # Calculate cluster statistics
-        cluster_info = {
+        cluster_info: dict[str, Any] = {
             "cluster_id": i,
             "size": len(cluster_df),
             "success_rate": cluster_df["success"].mean(),
@@ -263,7 +263,7 @@ def analyze_clusters(
         cluster_means = cluster_df[feature_cols].mean()
 
         # Calculate normalized distances
-        distances = {}
+        distances: dict[str, Any] = {}
         for col in feature_cols:
             global_std = df[col].std()
             if global_std > 0:
@@ -302,9 +302,9 @@ def create_prompt_similarity_network(
     """
     try:
         # Extract prompts and success information
-        prompts = []
-        success = []
-        models = []
+        prompts: list[Any] = []
+        success: list[Any] = []
+        models: dict[str, Any] = []
 
         for result in results:
             prompt = result.get("prompt", "")
@@ -360,11 +360,11 @@ def create_prompt_similarity_network(
         pos = nx.spring_layout(G, seed=random_state)
 
         # Draw nodes
-        node_colors = ["green" if s else "red" for s in success]
+        node_colors: list[Any] = ["green" if s else "red" for s in success]
         nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=100, alpha=0.8)
 
         # Draw edges with width based on similarity
-        edge_weights = [G[u][v]["weight"] * 2 for u, v in G.edges()]
+        edge_weights: list[Any] = [G[u][v]["weight"] * 2 for u, v in G.edges()]
         nx.draw_networkx_edges(G, pos, width=edge_weights, alpha=0.5, edge_color="gray")
 
         # Draw labels
@@ -419,14 +419,14 @@ def create_success_prediction_model(
     """
     try:
         # Extract features and target
-        data = []
+        data: dict[str, Any] = []
         for result in results:
             prompt = result.get("prompt", "")
             if not prompt:
                 continue
 
             # Extract basic features
-            features = {
+            features: dict[str, Any] = {
                 "prompt_length": len(prompt),
                 "word_count": len(prompt.split()),
                 "question_marks": prompt.count("?"),
@@ -467,8 +467,8 @@ def create_success_prediction_model(
             return "", {}
 
         # Encode categorical features
-        categorical_cols = ["model", "prompt_type", "attack_vector"]
-        encoders = {}
+        categorical_cols: list[Any] = ["model", "prompt_type", "attack_vector"]
+        encoders: dict[str, Any] = {}
 
         for col in categorical_cols:
             if col in df.columns:
@@ -477,7 +477,7 @@ def create_success_prediction_model(
                 encoders[col] = encoder
 
         # Prepare features and target
-        feature_cols = [
+        feature_cols: list[Any] = [
             "prompt_length",
             "word_count",
             "question_marks",
@@ -501,7 +501,7 @@ def create_success_prediction_model(
         # Evaluate model
         y_pred = model.predict(X_test)
 
-        metrics = {
+        metrics: dict[str, Any] = {
             "accuracy": accuracy_score(y_test, y_pred),
             "precision": precision_score(y_test, y_pred, zero_division=0),
             "recall": recall_score(y_test, y_pred, zero_division=0),
@@ -578,9 +578,9 @@ def create_interactive_dashboard(
         success_rate = successful_tests / total_tests if total_tests > 0 else 0
 
         # Count unique models and prompt types
-        models = {r.get("model_name", "Unknown") for r in results}
-        prompt_types = {r.get("prompt_type", "Unknown") for r in results}
-        attack_vectors = {r.get("attack_vector", "Unknown") for r in results}
+        models: dict[str, Any] = {r.get("model_name", "Unknown") for r in results}
+        prompt_types: dict[str, Any] = {r.get("prompt_type", "Unknown") for r in results}
+        attack_vectors: dict[str, Any] = {r.get("attack_vector", "Unknown") for r in results}
 
         # Create basic charts
         from .visualization_utils import (
@@ -590,7 +590,7 @@ def create_interactive_dashboard(
             create_vulnerability_heatmap,
         )
 
-        chart_files = {
+        chart_files: dict[str, Any] = {
             "success_rate": create_success_rate_chart(results, output_dir),
             "response_time": create_response_time_chart(results, output_dir),
             "prompt_effectiveness": create_prompt_type_effectiveness_chart(
@@ -1017,8 +1017,8 @@ def create_interactive_dashboard(
             # Truncate prompt for display
             short_prompt = prompt[:50] + "..." if len(prompt) > 50 else prompt
 
-            success_class = "success" if success else "failure"
-            success_text = "Yes" if success else "No"
+            success_class: str = "success" if success else "failure"
+            success_text: str = "Yes" if success else "No"
 
             html += f"""
                             <tr data-model="{model}" data-prompt-type="{prompt_type}" data-attack-vector="{attack_vector}" data-success="{success}">
@@ -1132,7 +1132,7 @@ def create_advanced_evaluation_report(
     basic_report_files = create_evaluation_report(results, output_dir)
 
     # Create advanced visualizations
-    advanced_report_files = {}
+    advanced_report_files: dict[str, Any] = {}
 
     # Attack pattern visualization
     attack_pattern_file = create_attack_pattern_visualization(results, output_dir)
@@ -1156,6 +1156,6 @@ def create_advanced_evaluation_report(
             advanced_report_files["interactive_dashboard"] = dashboard_file
 
     # Combine all report files
-    report_files = {**basic_report_files, **advanced_report_files}
+    report_files: dict[str, Any] = {**basic_report_files, **advanced_report_files}
 
     return report_files

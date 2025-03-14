@@ -118,7 +118,7 @@ class EnhancedPlaywrightDriver(PlaywrightDriver):
         Raises:
             Exception: If all retry attempts fail
         """
-        last_exception = None
+        last_exception: Optional[Any] = None
 
         for attempt in range(self.retry_attempts):
             try:
@@ -160,7 +160,7 @@ class EnhancedPlaywrightDriver(PlaywrightDriver):
         # First try the selector that worked last time
         if selector_type in self.working_selectors:
             try:
-                result = action_fn(self.working_selectors[selector_type])
+                result: Any = action_fn(self.working_selectors[selector_type])
                 return result
             except Exception:
                 # If it fails, continue to try alternatives
@@ -170,7 +170,7 @@ class EnhancedPlaywrightDriver(PlaywrightDriver):
         default_selector = self.selectors.get(selector_type)
         if default_selector:
             try:
-                result = action_fn(default_selector)
+                result: Any = action_fn(default_selector)
                 self.working_selectors[selector_type] = default_selector
                 return result
             except Exception:
@@ -181,7 +181,7 @@ class EnhancedPlaywrightDriver(PlaywrightDriver):
         selectors = self.selector_alternatives.get(selector_type, [])
         for selector in selectors:
             try:
-                result = action_fn(selector)
+                result: Any = action_fn(selector)
                 # Update the working selector for future use
                 self.working_selectors[selector_type] = selector
                 self.metrics["selector_fallbacks"] += 1

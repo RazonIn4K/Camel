@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 """Test integration with AgentOps for agent monitoring."""
 
 import os
@@ -72,7 +73,7 @@ def test_agentops_monitoring():
         )
 
         # Simulate prompt execution
-        prompt = "What are the best practices for AI safety and ethics?"
+        prompt: str = "What are the best practices for AI safety and ethics?"
         session.record(
             ActionEvent(
                 action_type="prompt_execution_started",
@@ -202,7 +203,7 @@ def test_real_agent_with_agentops():
         trace_id = str(uuid.uuid4())
 
         # Execute a prompt
-        prompt = "What are the best practices for AI safety and ethics?"
+        prompt: str = "What are the best practices for AI safety and ethics?"
         session.record(
             ActionEvent(
                 action_type="prompt_execution",
@@ -228,7 +229,7 @@ def test_real_agent_with_agentops():
         )
 
         # Log a simulated response
-        response = "AI safety and ethics involve responsible development, testing, and deployment..."
+        response: str = "AI safety and ethics involve responsible development, testing, and deployment..."
         session.record(
             ActionEvent(
                 action_type="prompt_response",

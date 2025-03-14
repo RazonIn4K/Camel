@@ -35,10 +35,10 @@ def basic_search_example():
         return
     
     # Perform a basic search
-    query = "jailbreak technique"
+    query: str = "jailbreak technique"
     print(f"Searching for: '{query}'")
     
-    results = scraper.search(query, limit=20)
+    results: list[Any] = scraper.search(query, limit=20)
     
     # Print results
     print(f"Found {len(results)} messages")
@@ -46,7 +46,7 @@ def basic_search_example():
     
     # Save results
     if results:
-        filename = "basic_search_results.json"
+        filename: str = "basic_search_results.json"
         filepath = scraper.save_results(results, filename)
         if filepath:
             print(f"Results saved to: {filepath}")
@@ -66,14 +66,14 @@ def advanced_search_example():
         return
     
     # Perform an advanced search with filters
-    query = "AI safety"
+    query: str = "AI safety"
     print(f"Searching for: '{query}' with filters")
     
     # Get current date for date range
     today = datetime.now().strftime("%Y-%m-%d")
-    one_month_ago = (datetime.now().replace(day=1) - datetime.timedelta(days=1)).replace(day=1).strftime("%Y-%m-%d")
+    one_month_ago: tuple[Any, ...] = (datetime.now().replace(day=1) - datetime.timedelta(days=1)).replace(day=1).strftime("%Y-%m-%d")
     
-    results = scraper.search_with_filters(
+    results: list[Any] = scraper.search_with_filters(
         query=query,
         limit=50,
         min_date=one_month_ago,
@@ -94,7 +94,7 @@ def advanced_search_example():
     
     # Save results
     if results:
-        filename = "advanced_search_results.json"
+        filename: str = "advanced_search_results.json"
         filepath = scraper.save_results(results, filename)
         if filepath:
             print(f"Results saved to: {filepath}")
@@ -118,11 +118,11 @@ def sentiment_analysis_example():
         return
     
     # Search for messages with sentiment analysis
-    query = "language model"
+    query: str = "language model"
     print(f"Analyzing sentiment for messages about: '{query}'")
     
     # Get messages with sentiment analysis
-    results = scraper.search_with_filters(
+    results: list[Any] = scraper.search_with_filters(
         query=query,
         limit=30,
         include_sentiment=True
@@ -141,9 +141,9 @@ def sentiment_analysis_example():
     
     # Print sentiment distribution
     print("\nSentiment Distribution:")
-    total = sum(sentiment_counts.values())
+    total: int = sum(sentiment_counts.values())
     for sentiment, count in sentiment_counts.items():
-        percentage = (count / total) * 100 if total > 0 else 0
+        percentage: tuple[Any, ...] = (count / total) * 100 if total > 0 else 0
         print(f"- {sentiment.capitalize()}: {count} messages ({percentage:.1f}%)")
     
     # Print examples of each sentiment
@@ -174,11 +174,11 @@ def trending_topics_example():
         return
     
     # Search for messages
-    query = "AI"
+    query: str = "AI"
     print(f"Extracting trending topics from messages about: '{query}'")
     
     # Get messages
-    results = scraper.search(query, limit=100)
+    results: list[Any] = scraper.search(query, limit=100)
     
     if not results:
         print("No results found")
@@ -211,14 +211,14 @@ def timeframe_search_example():
         return
     
     # Search for messages from different timeframes
-    query = "AI model"
-    timeframes = ["today", "this_week", "last_week", "this_month"]
+    query: str = "AI model"
+    timeframes: list[Any] = ["today", "this_week", "last_week", "this_month"]
     
     for timeframe in timeframes:
         print(f"\nSearching for '{query}' from {timeframe}:")
         
         # Search by timeframe
-        results = scraper.search_by_timeframe(
+        results: list[Any] = scraper.search_by_timeframe(
             query=query,
             timeframe=timeframe,
             limit=20
@@ -249,11 +249,11 @@ def user_activity_example():
         return
     
     # Search for messages
-    query = "AI"
+    query: str = "AI"
     print(f"Analyzing user activity for messages about: '{query}'")
     
     # Get messages
-    results = scraper.search(query, limit=100)
+    results: list[Any] = scraper.search(query, limit=100)
     
     if not results:
         print("No results found")
@@ -286,10 +286,10 @@ def load_and_analyze_example():
     scraper = EnhancedDiscordScraper()
     
     # Try to load results from a file
-    filename = "basic_search_results.json"
+    filename: str = "basic_search_results.json"
     print(f"Loading results from: {filename}")
     
-    results = scraper.load_results(filename)
+    results: list[Any] = scraper.load_results(filename)
     
     if not results:
         print(f"No results found in {filename}")

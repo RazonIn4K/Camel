@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 #!/usr/bin/env python
 """Example demonstrating advanced usage of the Gray Swan Arena agents with error handling."""
 
@@ -31,7 +32,7 @@ def setup_environment(env_name="development"):
     try:
         # Load configuration from the specified environment
         logger.info(f"Loading configuration for environment: {env_name}")
-        config = Config(env=env_name)
+        config: dict[str, Any] = Config(env=env_name)
         logger.info(f"Configuration loaded successfully: {env_name}")
         return config
     except ConfigurationError as e:
@@ -89,8 +90,8 @@ def initialize_agents(config):
 
 def run_pipeline(recon_agent, prompt_agent, exploit_agent, eval_agent):
     """Run the Gray Swan Arena pipeline with error handling."""
-    target_model = "claude-3"
-    target_behavior = "jailbreak"
+    target_model: str = "claude-3"
+    target_behavior: str = "jailbreak"
 
     try:
         # Step 1: Reconnaissance
@@ -103,7 +104,7 @@ def run_pipeline(recon_agent, prompt_agent, exploit_agent, eval_agent):
         except APIError as e:
             logger.warning(f"API error during web search: {str(e)}")
             logger.warning("Continuing with empty web results")
-            web_results = {}
+            web_results: dict[str, Any] = {}
 
         try:
             report = recon_agent.generate_report(
@@ -145,7 +146,7 @@ def run_pipeline(recon_agent, prompt_agent, exploit_agent, eval_agent):
         # Step 3: Exploit Delivery
         logger.info("Starting exploit delivery phase")
         try:
-            results = exploit_agent.run_prompts(
+            results: list[Any] = exploit_agent.run_prompts(
                 prompts=prompts,
                 target_model=target_model,
                 target_behavior=target_behavior,
@@ -220,7 +221,7 @@ def main():
     env_name = sys.argv[1] if len(sys.argv) > 1 else "development"
 
     # Set up environment
-    config = setup_environment(env_name)
+    config: dict[str, Any] = setup_environment(env_name)
 
     # Initialize agents
     recon_agent, prompt_agent, exploit_agent, eval_agent = initialize_agents(config)

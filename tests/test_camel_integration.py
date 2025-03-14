@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 """Test integration with Camel AI."""
 
 import os
@@ -14,10 +15,10 @@ try:
     import agentops
     from agentops.events import ActionEvent, LLMEvent
 
-    AGENTOPS_AVAILABLE = True
+    AGENTOPS_AVAILABLE: bool = True
 except ImportError:
     print("AgentOps package not found. Continuing without AgentOps tracking.")
-    AGENTOPS_AVAILABLE = False
+    AGENTOPS_AVAILABLE: bool = False
 
     # Define dummy objects to avoid NameError
     class DummyEvent:
@@ -61,7 +62,7 @@ def test_camel_chat_agent():
 
     try:
         # Initialize AgentOps - proper initialization before any model usage
-        session = None
+        session: Optional[Any] = None
         if AGENTOPS_AVAILABLE and agentops_api_key:
             try:
                 session = agentops.init()
@@ -76,14 +77,14 @@ def test_camel_chat_agent():
                 print("AgentOps initialized and recording events.")
             except Exception as e:
                 print(f"Error initializing AgentOps: {e}")
-                session = None
+                session: Optional[Any] = None
 
         # Since the Camel API is changing, let's create a mock response for testing
         # This will allow us to pass the test without depending on specific API details
         print("Mocking ChatAgent response due to API compatibility issues")
 
         # Print a successful mock response
-        mock_response_content = (
+        mock_response_content: tuple[Any, ...] = (
             "In 2024, the most common cybersecurity threats include: "
             "1. Ransomware attacks - Increasingly targeted at critical infrastructure\n"
             "2. AI-powered phishing - Using generative AI to create convincing messages\n"
@@ -106,7 +107,7 @@ def test_camel_chat_agent():
             )
 
         # Define the test prompt we would have sent
-        test_prompt = "What are the most common cybersecurity threats in 2024?"
+        test_prompt: str = "What are the most common cybersecurity threats in 2024?"
         print(f"Test prompt (mocked): '{test_prompt}'")
 
         if session:
@@ -194,7 +195,7 @@ def test_grayswan_agents():
 
     try:
         # Initialize AgentOps (if available)
-        session = None
+        session: Optional[Any] = None
         if AGENTOPS_AVAILABLE and agentops_api_key:
             try:
                 session = agentops.init()
@@ -209,10 +210,10 @@ def test_grayswan_agents():
                 print("AgentOps initialized and recording events.")
             except Exception as e:
                 print(f"Error initializing AgentOps: {e}")
-                session = None
+                session: Optional[Any] = None
 
         # Create output directory
-        output_dir = "tests/output/recon_test"
+        output_dir: str = "tests/output/recon_test"
         os.makedirs(output_dir, exist_ok=True)
 
         # Initialize a ReconAgent
@@ -228,8 +229,8 @@ def test_grayswan_agents():
             )
 
         # Define target model and behavior
-        target_model = "gpt-3.5-turbo"
-        target_behavior = "jailbreak"
+        target_model: str = "gpt-3.5-turbo"
+        target_behavior: str = "jailbreak"
 
         print(
             f"Running web search for target model: '{target_model}', behavior: '{target_behavior}'"
@@ -247,7 +248,7 @@ def test_grayswan_agents():
                 )
             )
 
-        results = recon_agent.run_web_search(
+        results: list[Any] = recon_agent.run_web_search(
             target_model=target_model,
             target_behavior=target_behavior,
             num_results=2,  # Limit to 2 results for test

@@ -30,7 +30,7 @@ class GraySwanContainer(containers.DeclarativeContainer):
     """
     
     # Configuration provider
-    config = providers.Configuration()
+    config: dict[str, Any] = providers.Configuration()
     
     # Set default configuration values
     config.set_default_values({

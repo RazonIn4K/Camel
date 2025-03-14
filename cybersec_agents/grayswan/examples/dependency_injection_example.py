@@ -54,7 +54,7 @@ def custom_config_example():
     print("\n=== Custom Configuration Example ===\n")
     
     # Create custom configuration
-    config_dict = {
+    config_dict: dict[str, Any] = {
         'output_dir': './custom_output',
         'agents': {
             'recon': {
@@ -133,8 +133,8 @@ def config_file_example():
     print("\n=== Configuration File Example ===\n")
     
     # Create a temporary YAML configuration file
-    config_file = "temp_config.yaml"
-    config_dict = {
+    config_file: str = "temp_config.yaml"
+    config_dict: dict[str, Any] = {
         'output_dir': './file_output',
         'agents': {
             'recon': {
@@ -257,7 +257,7 @@ def pipeline_example():
     print("\n=== Pipeline Example ===\n")
     
     # Create custom configuration for the example
-    config_dict = {
+    config_dict: dict[str, Any] = {
         'output_dir': './example_output',
         'agents': {
             'recon': {
@@ -292,8 +292,8 @@ def pipeline_example():
     logger.info("Running simplified pipeline example")
     
     # Define target model and behavior
-    target_model = "Example Model"
-    target_behavior = "generate harmful content"
+    target_model: str = "Example Model"
+    target_behavior: str = "generate harmful content"
     
     # Create output directory
     os.makedirs(config_dict['output_dir'], exist_ok=True)

@@ -381,13 +381,13 @@ async def run_parallel_exploits(
     batch_size = max_concurrent
     batches = [prompts[i : i + batch_size] for i in range(0, len(prompts), batch_size)]
 
-    all_results = []
+    all_results: list[Any] = []
 
     for batch_idx, batch in enumerate(batches):
         logger.info(f"Processing batch {batch_idx+1}/{len(batches)}")
 
         # Create tasks for concurrent execution
-        tasks = []
+        tasks: list[Any] = []
         for prompt in batch:
             task = asyncio.create_task(
                 asyncio.to_thread(
@@ -539,7 +539,7 @@ def run_exploit_delivery(
         )
 
         # Run prompts
-        results = exploit_agent.run_prompts(
+        results: list[Any] = exploit_agent.run_prompts(
             prompts=prompts,
             target_model=target_model,
             target_behavior=target_behavior,
@@ -759,7 +759,7 @@ async def run_full_pipeline_async(
     Returns:
         Dictionary containing results from all phases
     """
-    results = {}
+    results: list[Any] = {}
     skip_phases = skip_phases or []
 
     # Initialize AgentOps session
@@ -1078,7 +1078,7 @@ def main():
     # Run the pipeline
     try:
         # Step 1: Reconnaissance (if not skipped)
-        report = None
+        report: Optional[Any] = None
         if "recon" not in (args.skip_phases or []):
             logger.info("Starting reconnaissance phase")
             start_time = time.time()
@@ -1110,7 +1110,7 @@ def main():
             logger.info("Skipping reconnaissance phase")
 
         # Step 2: Prompt Engineering (if not skipped)
-        prompts = None
+        prompts: Optional[Any] = None
         if "prompt" not in (args.skip_phases or []) and report:
             logger.info("Starting prompt engineering phase")
             start_time = time.time()
@@ -1134,12 +1134,12 @@ def main():
             logger.info("Skipping prompt engineering phase")
 
         # Step 3: Exploit Delivery (if not skipped)
-        results = None
+        results: list[Any] = None
         if "exploit" not in (args.skip_phases or []) and prompts:
             logger.info("Starting exploit delivery phase")
             start_time = time.time()
 
-            results = run_exploit_delivery(
+            results: list[Any] = run_exploit_delivery(
                 target_model=args.target_model,
                 target_behavior=args.target_behavior,
                 prompts=prompts,

@@ -9,7 +9,7 @@ from typing import List, Tuple
 def run_command(command: List[str]) -> Tuple[bool, str]:
     """Run a shell command and return success status and output."""
     try:
-        result = subprocess.run(command, check=True, capture_output=True, text=True)
+        result: Any = subprocess.run(command, check=True, capture_output=True, text=True)
         return True, result.stdout
     except subprocess.CalledProcessError as e:
         return False, e.stderr
@@ -25,7 +25,7 @@ def push_to_github(commit_msg: str, no_verify: bool = False) -> bool:
             return False
 
         # Commit changes
-        commit_cmd = ["git", "commit", "-m", commit_msg]
+        commit_cmd: list[Any] = ["git", "commit", "-m", commit_msg]
         if no_verify:
             commit_cmd.append("--no-verify")
 

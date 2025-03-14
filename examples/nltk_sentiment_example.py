@@ -80,7 +80,7 @@ def check_nltk_installation() -> None:
         
         print("\nPackages:")
         for package, available in info['packages'].items():
-            status = "Available" if available else "Not Available"
+            status: str = "Available" if available else "Not Available"
             print(f"  - {package}: {status}")
     else:
         print("NLTK is not installed.")
@@ -90,8 +90,8 @@ def initialize_and_test() -> None:
     """Initialize NLTK and test sentiment analysis."""
     # Initialize NLTK
     print("Initializing NLTK...")
-    packages = ['vader_lexicon', 'punkt', 'stopwords']
-    results = initialize_nltk(packages, quiet=False)
+    packages: list[Any] = ['vader_lexicon', 'punkt', 'stopwords']
+    results: list[Any] = initialize_nltk(packages, quiet=False)
     
     # Check initialization results
     all_success = all(results.values())
@@ -100,7 +100,7 @@ def initialize_and_test() -> None:
     else:
         print("Some packages failed to initialize:")
         for package, success in results.items():
-            status = "Success" if success else "Failed"
+            status: str = "Success" if success else "Failed"
             print(f"  - {package}: {status}")
     
     # Ensure VADER lexicon is available
@@ -132,7 +132,7 @@ def main() -> None:
     
     # Analyze sentiment of example texts
     print_section("Sentiment Analysis Examples")
-    example_texts = [
+    example_texts: list[Any] = [
         "I love this product! It's amazing and works perfectly.",
         "This is the worst experience I've ever had. Terrible service.",
         "The product arrived on time and functions as expected.",

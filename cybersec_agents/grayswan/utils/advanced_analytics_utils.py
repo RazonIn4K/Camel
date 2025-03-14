@@ -65,14 +65,14 @@ def extract_features_from_results(
         DataFrame with extracted features
     """
     # Basic features
-    data = []
+    data: dict[str, Any] = []
     for result in results:
         prompt = result.get("prompt", "")
         if not prompt:
             continue
 
         # Extract basic features
-        features = {
+        features: dict[str, Any] = {
             "model": result.get("model_name", "Unknown"),
             "prompt_type": result.get("prompt_type", "Unknown"),
             "attack_vector": result.get("attack_vector", "Unknown"),
@@ -252,7 +252,7 @@ def create_feature_distribution_plots(
         dist_dir = os.path.join(output_dir, "feature_distributions")
         ensure_output_dir(dist_dir)
 
-        output_files = []
+        output_files: list[Any] = []
 
         # Create plots in batches of 4
         for i in range(0, len(features), 4):
@@ -440,12 +440,12 @@ def create_advanced_clustering(
                 random_state=random_state,
             )
             reduced_data = tsne.fit_transform(scaled_data)
-            reduction_method = "t-SNE"
+            reduction_method: str = "t-SNE"
         else:
             # Use PCA for smaller datasets
             pca = PCA(n_components=2, random_state=random_state)
             reduced_data = pca.fit_transform(scaled_data)
-            reduction_method = "PCA"
+            reduction_method: str = "PCA"
 
         # Add reduced dimensions to DataFrame
         df["x"] = reduced_data[:, 0]
@@ -466,7 +466,7 @@ def create_advanced_clustering(
                 silhouette_avg = silhouette_score(scaled_data, df["cluster"])
                 logger.info(f"Silhouette Score: {silhouette_avg:.3f}")
             except:
-                silhouette_avg = None
+                silhouette_avg: Optional[Any] = None
 
             # Create visualization
             plt.figure(figsize=(14, 12))
@@ -523,7 +523,7 @@ def create_advanced_clustering(
             )
 
             # Add legend for clusters
-            legend_elements = [
+            legend_elements: list[Any] = [
                 plt.Line2D(
                     [0],
                     [0],
@@ -619,7 +619,7 @@ def create_advanced_clustering(
             )
 
             # Calculate silhouette score if possible and if we have more than one cluster
-            silhouette_avg = None
+            silhouette_avg: Optional[Any] = None
             if n_clusters_found > 1:
                 try:
                     from sklearn.metrics import silhouette_score
@@ -664,7 +664,7 @@ def create_advanced_clustering(
 
             # Add legend for clusters
             unique_clusters = sorted(df["cluster"].unique())
-            legend_elements = []
+            legend_elements: list[Any] = []
 
             for i, cluster_id in enumerate(unique_clusters):
                 if cluster_id == -1:
@@ -682,7 +682,7 @@ def create_advanced_clustering(
                     )
                 else:
                     # Regular clusters
-                    color_idx = (cluster_id % 10) / 10  # Cycle through colors
+                    color_idx: tuple[Any, ...] = (cluster_id % 10) / 10  # Cycle through colors
                     legend_elements.append(
                         plt.Line2D(
                             [0],
@@ -734,7 +734,7 @@ def create_advanced_clustering(
             plt.close()
 
             # Create cluster analysis
-            cluster_analysis = {
+            cluster_analysis: dict[str, Any] = {
                 "n_clusters": n_clusters_found,
                 "epsilon": epsilon,
                 "noise_points": int(sum(df["cluster"] == -1)),
@@ -749,7 +749,7 @@ def create_advanced_clustering(
                     continue
 
                 # Calculate cluster statistics
-                cluster_info = {
+                cluster_info: dict[str, Any] = {
                     "cluster_id": int(cluster_id),
                     "size": len(cluster_df),
                     "success_rate": float(cluster_df["success"].mean()),
@@ -818,7 +818,7 @@ def analyze_clusters(
             continue
 
         # Calculate cluster statistics
-        cluster_info = {
+        cluster_info: dict[str, Any] = {
             "cluster_id": i,
             "size": len(cluster_df),
             "success_rate": float(cluster_df["success"].mean())
@@ -843,7 +843,7 @@ def analyze_clusters(
         cluster_means = cluster_df[feature_cols].mean()
 
         # Calculate normalized distances
-        distances = {}
+        distances: dict[str, Any] = {}
         for col in feature_cols:
             global_std = df[col].std()
             if global_std > 0:
@@ -878,7 +878,7 @@ def create_advanced_model_comparison(
     """
     try:
         # Process results
-        data = []
+        data: dict[str, Any] = []
         for result in results:
             model = result.get("model_name", "Unknown")
             prompt_type = result.get("prompt_type", "Unknown")
@@ -907,7 +907,7 @@ def create_advanced_model_comparison(
         ensure_output_dir(output_dir)
 
         # Calculate metrics by model
-        model_metrics = (
+        model_metrics: tuple[Any, ...] = (
             df.groupby("Model")
             .agg(
                 {
@@ -936,14 +936,14 @@ def create_advanced_model_comparison(
         plt.figure(figsize=(14, 10))
 
         # Get unique models
-        models = model_metrics["Model"].unique()
+        models: dict[str, Any] = model_metrics["Model"].unique()
         n_models = len(models)
 
         # Select metrics for radar chart
-        radar_metrics = ["Success_mean", "Response Time_mean"]
+        radar_metrics: list[Any] = ["Success_mean", "Response Time_mean"]
 
         # Add prompt type success rates
-        prompt_types = [
+        prompt_types: list[Any] = [
             col
             for col in model_metrics.columns
             if col
@@ -987,7 +987,7 @@ def create_advanced_model_comparison(
             model_data = model_metrics[model_metrics["Model"] == model]
 
             # Extract values for radar chart
-            values = []
+            values: list[Any] = []
             for metric in radar_metrics:
                 if metric == "Response Time_mean":
                     # Normalize response time (lower is better)
@@ -998,7 +998,7 @@ def create_advanced_model_comparison(
                             model_data["Response Time_mean"].values[0] / max_time
                         )
                     else:
-                        value = 1.0
+                        value: float = 1.0
                 else:
                     # For success rates, higher is better
                     value = model_data[metric].values[0]
@@ -1096,14 +1096,14 @@ def create_advanced_success_prediction_model(
         ensure_output_dir(output_dir)
 
         # Prepare features and target
-        feature_cols = [
+        feature_cols: list[Any] = [
             col
             for col in df.columns
             if col not in ["success", "model", "prompt_type", "attack_vector"]
         ]
 
         # Handle categorical features
-        categorical_cols = []
+        categorical_cols: list[Any] = []
         for col in ["model", "prompt_type", "attack_vector"]:
             if col in df.columns:
                 # One-hot encode categorical features
@@ -1240,7 +1240,7 @@ def create_advanced_success_prediction_model(
         plt.close()
 
         # Save model metrics
-        metrics = {
+        metrics: dict[str, Any] = {
             "accuracy": float(accuracy),
             "precision": float(precision),
             "recall": float(recall),
@@ -1313,7 +1313,7 @@ def create_advanced_analytics_report(
     features_df = extract_features_from_results(results)
 
     # Initialize report files dictionary
-    report_files = {}
+    report_files: dict[str, Any] = {}
 
     # Create correlation matrix
     correlation_file = create_correlation_matrix(features_df, analytics_dir)

@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 #!/usr/bin/env python3
 """Example script demonstrating the browser automation utilities in Gray Swan Arena.
 
@@ -37,9 +38,9 @@ def main():
 
     # Determine which method to use
     if available_methods["playwright"]:
-        method = "playwright"
+        method: str = "playwright"
     elif available_methods["selenium"]:
-        method = "selenium"
+        method: str = "selenium"
     else:
         logger.error(
             "No browser automation methods available. Please install Playwright or Selenium."
@@ -67,9 +68,9 @@ def main():
         driver.navigate(target_url)
 
         # Example prompt to test
-        prompt = "What is the capital of France?"
-        model = "GPT-3.5"
-        behavior = "General Knowledge"
+        prompt: str = "What is the capital of France?"
+        model: str = "GPT-3.5"
+        behavior: str = "General Knowledge"
 
         # Execute the prompt
         logger.info(f"Executing prompt: {prompt}")

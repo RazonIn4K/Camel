@@ -63,7 +63,7 @@ def get_default_model_type_for_agent(agent_type: str) -> ModelType:
         The default ModelType for the agent
     """
     # Define defaults - bias toward more powerful models for critical tasks
-    defaults = {
+    defaults: dict[str, Any] = {
         "recon": ModelType.GPT_4,  # Needs strong reasoning for research
         "prompt_engineer": ModelType.GPT_4,  # Creative and nuanced task
         "exploit_delivery": ModelType.GPT_3_5_TURBO,  # Mainly execution
@@ -92,7 +92,7 @@ def get_model_info(
     model_platform_str = str(model_platform).split(".")[-1]
 
     # Map to user-friendly names where possible
-    user_friendly_names = {
+    user_friendly_names: dict[str, Any] = {
         "GPT_3_5_TURBO": "GPT-3.5 Turbo",
         "GPT_4": "GPT-4",
         "GPT_4_TURBO": "GPT-4 Turbo",
@@ -153,7 +153,7 @@ def with_exponential_backoff(
     """
 
     def wrapper(*args: Any, **kwargs: Any) -> T:
-        retries = 0
+        retries: int = 0
         while True:
             try:
                 return func(*args, **kwargs)
@@ -266,7 +266,7 @@ def get_chat_agent(
             )
 
         # Create the ChatAgent
-        model_config = {
+        model_config: dict[str, Any] = {
             "temperature": temperature,
             "max_tokens": max_tokens,
         }

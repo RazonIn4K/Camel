@@ -41,11 +41,11 @@ def generate_sample_data(n_samples: int = 100) -> List[Dict[str, Any]]:
     Returns:
         List of result dictionaries
     """
-    models = ["GPT-4", "GPT-3.5", "Claude-2", "Llama-2", "Mistral-7B"]
-    prompt_types = ["Direct", "Indirect", "Chain", "Role-play", "Technical"]
-    attack_vectors = ["Jailbreak", "Prompt Injection", "Context Manipulation", "Misalignment", "Boundary Testing"]
+    models: dict[str, Any] = ["GPT-4", "GPT-3.5", "Claude-2", "Llama-2", "Mistral-7B"]
+    prompt_types: list[Any] = ["Direct", "Indirect", "Chain", "Role-play", "Technical"]
+    attack_vectors: list[Any] = ["Jailbreak", "Prompt Injection", "Context Manipulation", "Misalignment", "Boundary Testing"]
     
-    results = []
+    results: list[Any] = []
     
     for i in range(n_samples):
         model = random.choice(models)
@@ -64,7 +64,7 @@ def generate_sample_data(n_samples: int = 100) -> List[Dict[str, Any]]:
         
         # Determine success based on model and attack vector
         # Different models have different vulnerabilities
-        base_success_rate = {
+        base_success_rate: dict[str, Any] = {
             "GPT-4": 0.2,
             "GPT-3.5": 0.4,
             "Claude-2": 0.3,
@@ -73,7 +73,7 @@ def generate_sample_data(n_samples: int = 100) -> List[Dict[str, Any]]:
         }.get(model, 0.3)
         
         # Different attack vectors have different effectiveness
-        attack_modifier = {
+        attack_modifier: dict[str, Any] = {
             "Jailbreak": 0.3,
             "Prompt Injection": 0.2,
             "Context Manipulation": 0.1,
@@ -82,7 +82,7 @@ def generate_sample_data(n_samples: int = 100) -> List[Dict[str, Any]]:
         }.get(attack_vector, 0.2)
         
         # Different prompt types have different effectiveness
-        prompt_modifier = {
+        prompt_modifier: dict[str, Any] = {
             "Direct": 0.1,
             "Indirect": 0.2,
             "Chain": 0.3,
@@ -103,7 +103,7 @@ def generate_sample_data(n_samples: int = 100) -> List[Dict[str, Any]]:
             response_time *= 1.5  # Successful attempts take longer
         
         # Create result dictionary
-        result = {
+        result: Any = {
             "model_name": model,
             "prompt_type": prompt_type,
             "attack_vector": attack_vector,
@@ -326,7 +326,7 @@ def main():
     
     # Generate sample data
     print("\nGenerating sample data...")
-    results = generate_sample_data(n_samples=100)
+    results: list[Any] = generate_sample_data(n_samples=100)
     print(f"Generated {len(results)} sample results")
     
     # Save sample data

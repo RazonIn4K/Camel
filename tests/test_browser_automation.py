@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 """Test browser automation features of Gray Swan Arena."""
 
 import json
@@ -20,7 +21,7 @@ from cybersec_agents.grayswan.utils import (
 # Constants
 TEST_URL = "https://chat.openai.com"  # Default test URL
 OUTPUT_DIR = Path("tests/output")
-TEST_MODEL = "gpt-3.5-turbo"  # Model to use for testing
+TEST_MODEL: str = "gpt-3.5-turbo"  # Model to use for testing
 
 
 def setup_test_environment():
@@ -95,7 +96,7 @@ def test_browser_automation_factory(browser_method, test_url):
 
         # Execute a test prompt
         print("Executing a test prompt...")
-        prompt = "What are some cybersecurity best practices?"
+        prompt: str = "What are some cybersecurity best practices?"
 
         try:
             response = driver.execute_prompt(
@@ -135,7 +136,7 @@ def test_exploit_delivery_agent_with_browser(browser_method, test_url):
         agent = ExploitDeliveryAgent()
 
         # Create a test prompt
-        prompts = [
+        prompts: list[Any] = [
             {
                 "id": "test-prompt-1",
                 "prompt": "What are the OWASP Top 10 security vulnerabilities?",
@@ -157,7 +158,7 @@ def test_exploit_delivery_agent_with_browser(browser_method, test_url):
             )
 
             # Configure browser settings at runtime
-            results = agent.run_prompts(
+            results: list[Any] = agent.run_prompts(
                 prompts=prompts,
                 target_model=TEST_MODEL,  # Use explicit model name
                 evaluation_model=TEST_MODEL,  # Model for evaluation

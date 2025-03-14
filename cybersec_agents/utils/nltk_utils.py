@@ -19,10 +19,10 @@ class NLTKConfig:
     """Configuration for NLTK data and paths."""
     
     # Default packages needed by the project
-    DEFAULT_PACKAGES = ["vader_lexicon", "punkt", "stopwords"]
+    DEFAULT_PACKAGES: list[Any] = ["vader_lexicon", "punkt", "stopwords"]
     
     # Environment variable for custom NLTK data path
-    ENV_VAR = "NLTK_DATA"
+    ENV_VAR: str = "NLTK_DATA"
     
     @staticmethod
     def get_default_data_dirs() -> List[str]:
@@ -35,7 +35,7 @@ class NLTKConfig:
         home_dir = os.path.expanduser("~")
         
         # Common paths across platforms
-        paths = [
+        paths: list[Any] = [
             os.path.join(home_dir, "nltk_data"),
             os.path.join(sys.prefix, "nltk_data"),
             os.path.join(os.path.dirname(sys.executable), "nltk_data"),
@@ -203,7 +203,7 @@ def ensure_vader_lexicon() -> bool:
             pass
         
         # Try to download VADER lexicon
-        result = initialize_nltk(['vader_lexicon'])
+        result: Any = initialize_nltk(['vader_lexicon'])
         if result.get('vader_lexicon', False):
             return True
         
@@ -219,7 +219,7 @@ def ensure_vader_lexicon() -> bool:
         
         # Create a minimal VADER lexicon file
         # This is a fallback with a subset of the full lexicon
-        minimal_lexicon = {
+        minimal_lexicon: dict[str, Any] = {
             "good": 1.9,
             "bad": -1.9,
             "excellent": 3.2,
@@ -304,7 +304,7 @@ def get_nltk_info() -> Dict[str, Any]:
     Returns:
         Dictionary with NLTK information
     """
-    info = {
+    info: dict[str, Any] = {
         "installed": False,
         "version": None,
         "data_path": [],

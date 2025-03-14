@@ -16,7 +16,7 @@ def test_import(module_path: str) -> Dict[str, Any]:
 
 def main():
     # Core imports to test
-    imports_to_test = [
+    imports_to_test: list[Any] = [
         # Main package
         "cybersec_agents",
         # Gray Swan Arena components
@@ -35,14 +35,14 @@ def main():
     ]
 
     # Test each import
-    failed_imports = []
-    successful_imports = []
+    failed_imports: list[Any] = []
+    successful_imports: list[Any] = []
 
     print("Testing imports...")
     print("-" * 50)
 
     for import_path in imports_to_test:
-        result = test_import(import_path)
+        result: Any = test_import(import_path)
         if result["success"]:
             successful_imports.append(import_path)
             print(f"✓ {import_path}")
@@ -59,7 +59,7 @@ def main():
     print("\nTesting class imports...")
     print("-" * 50)
 
-    class_imports_to_test = [
+    class_imports_to_test: list[Any] = [
         # Gray Swan Arena agents
         ("cybersec_agents", "ReconAgent"),
         ("cybersec_agents", "PromptEngineerAgent"),
@@ -74,8 +74,8 @@ def main():
         ("cybersec_agents.grayswan", "main"),
     ]
 
-    failed_class_imports = []
-    successful_class_imports = []
+    failed_class_imports: list[Any] = []
+    successful_class_imports: list[Any] = []
 
     for module_path, class_name in class_imports_to_test:
         try:

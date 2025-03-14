@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 """Test Discord integration features of Gray Swan Arena."""
 
 import json
@@ -16,7 +17,7 @@ from cybersec_agents.grayswan.utils.logging_utils import setup_logging
 
 # Constants
 OUTPUT_DIR = Path("tests/output")
-TEST_CHANNEL_ID = (
+TEST_CHANNEL_ID: tuple[Any, ...] = (
     "123456789012345678"  # Replace with actual channel ID for real testing
 )
 
@@ -90,7 +91,7 @@ def test_discord_message_collection(env, scraper):
         if not discord_token:
             # Simulation mode - create fake messages
             print("Running in simulation mode (no Discord token available)")
-            messages = [
+            messages: list[Any] = [
                 {
                     "id": "1",
                     "content": "This is a simulated message for testing",
@@ -115,7 +116,7 @@ def test_discord_message_collection(env, scraper):
         output_file = OUTPUT_DIR / "discord_messages.json"
         with open(output_file, "w") as f:
             # Convert to serializable format if needed
-            serializable_messages = []
+            serializable_messages: list[Any] = []
             for msg in messages:
                 if isinstance(msg, dict):
                     serializable_messages.append(msg)
@@ -125,7 +126,7 @@ def test_discord_message_collection(env, scraper):
                         serializable_messages.append(msg.to_dict())
                     else:
                         # Basic serialization for other objects
-                        serializable_msg = {
+                        serializable_msg: dict[str, Any] = {
                             "id": getattr(msg, "id", "unknown"),
                             "content": getattr(msg, "content", ""),
                             "author": {
@@ -180,9 +181,9 @@ def test_discord_data_analysis(env):
             return False
 
         # Simple analysis
-        user_message_counts = {}
-        word_counts = {}
-        total_words = 0
+        user_message_counts: dict[str, Any] = {}
+        word_counts: dict[str, Any] = {}
+        total_words: int = 0
 
         for msg in messages:
             # Count messages per user
@@ -198,7 +199,7 @@ def test_discord_data_analysis(env):
                 word_counts[word] = word_counts.get(word, 0) + 1
 
         # Save analysis to file
-        analysis = {
+        analysis: dict[str, Any] = {
             "total_messages": len(messages),
             "total_words": total_words,
             "avg_words_per_message": total_words / len(messages) if messages else 0,
@@ -239,7 +240,7 @@ def run_discord_tests():
     if init_success:
         collection_success = test_discord_message_collection(env, scraper)
     else:
-        collection_success = False
+        collection_success: bool = False
         print("⚠️ Skipping message collection test due to initialization failure")
 
     # Test data analysis

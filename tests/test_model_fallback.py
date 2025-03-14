@@ -1,3 +1,4 @@
+from typing import Any, Dict, List, Optional, Tuple, Union
 """
 Tests for the Model Integration and Fallback System.
 
@@ -116,11 +117,11 @@ class TestModelManager(unittest.TestCase):
     def test_estimate_complexity(self):
         """Test the estimate_complexity method."""
         # Test with a simple prompt
-        simple_prompt = "What is the capital of France?"
+        simple_prompt: str = "What is the capital of France?"
         simple_complexity = self.model_manager.estimate_complexity(simple_prompt)
         
         # Test with a complex prompt
-        complex_prompt = """
+        complex_prompt: str = """
         Analyze the following code and explain in detail how it implements the Observer pattern.
         Provide step-by-step explanation of how the pattern works, compare it with other behavioral
         patterns, and suggest improvements for better maintainability and extensibility.
@@ -310,7 +311,7 @@ class TestModelManagerIntegration(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         # Create a container with custom configuration
-        config_dict = {
+        config_dict: dict[str, Any] = {
             'model': {
                 'primary_model': 'gpt-4',
                 'backup_model': 'gpt-3.5-turbo',

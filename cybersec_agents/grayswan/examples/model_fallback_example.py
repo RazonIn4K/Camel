@@ -41,7 +41,7 @@ async def demonstrate_model_fallback():
     print(f"Complexity threshold: {model_manager.complexity_threshold}")
     
     # Create a prompt that will be processed
-    prompt = "Explain the concept of dependency injection in software engineering."
+    prompt: str = "Explain the concept of dependency injection in software engineering."
     
     try:
         # Simulate primary model failure by using a non-existent model
@@ -82,7 +82,7 @@ async def demonstrate_complexity_based_selection():
     print("\n=== Complexity-Based Model Selection Example ===\n")
     
     # Create container with custom configuration
-    config_dict = {
+    config_dict: dict[str, Any] = {
         'model': {
             'primary_model': 'gpt-4',
             'backup_model': 'gpt-3.5-turbo',
@@ -99,10 +99,10 @@ async def demonstrate_complexity_based_selection():
     print(f"Complexity threshold: {model_manager.complexity_threshold}")
     
     # Create a simple prompt
-    simple_prompt = "What is the capital of France?"
+    simple_prompt: str = "What is the capital of France?"
     
     # Create a complex prompt
-    complex_prompt = """
+    complex_prompt: str = """
     Analyze the following code and explain in detail how it implements the Observer pattern.
     Provide step-by-step explanation of how the pattern works, compare it with other behavioral
     patterns, and suggest improvements for better maintainability and extensibility.
@@ -203,7 +203,7 @@ async def demonstrate_agent_specific_models():
     print("\n=== Agent-Specific Model Managers Example ===\n")
     
     # Create container with custom configuration
-    config_dict = {
+    config_dict: dict[str, Any] = {
         'agents': {
             'recon': {
                 'model_name': 'gpt-4',

@@ -12,8 +12,8 @@ logger = setup_logging("BrowserUtils")
 class BrowserMethod(Enum):
     """Supported browser automation methods."""
 
-    PLAYWRIGHT = "playwright"
-    SELENIUM = "selenium"
+    PLAYWRIGHT: str = "playwright"
+    SELENIUM: str = "selenium"
 
 
 class BrowserDriver:
@@ -251,7 +251,7 @@ class SeleniumDriver(BrowserDriver):
             from selenium.webdriver.chrome.service import Service as ChromeService
             from webdriver_manager.chrome import ChromeDriverManager
 
-            options = Options()
+            options: dict[str, Any] = Options()
             if self.headless:
                 options.add_argument("--headless")
                 options.add_argument("--disable-gpu")
