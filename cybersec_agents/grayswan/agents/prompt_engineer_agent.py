@@ -51,9 +51,13 @@ class PromptEngineerAgent(ChatAgent):
         designed to cause real harm or damage.
         """
 
-        super().__init__(
-            system_message, model_type=model_type, model_platform=model_platform
-        )
+        # Initialize with the updated API
+        super().__init__(system_message)
+
+        # Store model information to use when generating responses
+        self.model_type = model_type
+        self.model_platform = model_platform
+
         self.prompt_lists_path = os.path.join("data", "prompt_lists")
         os.makedirs(self.prompt_lists_path, exist_ok=True)
         self.max_retries = int(os.getenv("MAX_RETRIES", "3"))
@@ -64,7 +68,8 @@ class PromptEngineerAgent(ChatAgent):
 
             agentops_key = os.getenv("AGENTOPS_API_KEY")
             if agentops_key:
-                agentops.init(api_key=agentops_key, agent_name="PromptEngineerAgent")
+                # Use start_session instead of init
+                agentops.start_session(api_key=agentops_key)
                 logger.info("AgentOps initialized successfully")
             else:
                 logger.warning("AgentOps API key not found, monitoring disabled")
@@ -196,9 +201,7 @@ class PromptEngineerAgent(ChatAgent):
                     # Get AI-generated prompt
                     response = self.step(
                         BaseMessage(
-                            generation_prompt,
-                            role_name="Prompt Engineer",
-                            role_type="user",
+                            content=generation_prompt, role_name="Prompt Engineer"
                         )
                     )
                     response_content = response.content
@@ -343,7 +346,12 @@ class PromptEngineerAgent(ChatAgent):
             The response from the AI
         """
         try:
-            response = super().step(task_prompt)
+            # Pass model_type and model_platform explicitly
+            response = self.generate_response(
+                messages=[task_prompt],
+                model_type=self.model_type,
+                model_platform=self.model_platform,
+            )
             return response
         except Exception as e:
             logger.error(f"Error during AI interaction: {str(e)}")

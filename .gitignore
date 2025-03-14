@@ -1,24 +1,51 @@
-# Python cache files
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-
-# pytest
-.pytest_cache/
-
-# macOS system files
-.DS_Store
-
-# Distribution / packaging
-*.egg-info/
-dist/
+*.so
+.Python
+env/
 build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Virtual environment
-venv/
-.venv/
-ENV/
+# Data and output directories
+data/
+output/
+tests/output/
+tests/benchmark_results/
 
-# IDE settings
-.vscode/
+# IDE and editor files
 .idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Specific to this project
+*.log

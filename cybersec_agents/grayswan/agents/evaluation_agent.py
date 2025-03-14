@@ -55,9 +55,12 @@ class EvaluationAgent(ChatAgent):
         and increase the success rate of future attempts. Be analytical, precise, and constructive in your feedback.
         """
 
-        super().__init__(
-            system_message, model_type=model_type, model_platform=model_platform
-        )
+        # Initialize with the updated API
+        super().__init__(system_message)
+
+        # Store model information to use when generating responses
+        self.model_type = model_type
+        self.model_platform = model_platform
 
         # Set up paths
         self.evaluation_reports_path = os.path.join("data", "evaluation_reports")
@@ -76,7 +79,8 @@ class EvaluationAgent(ChatAgent):
 
             agentops_key = os.getenv("AGENTOPS_API_KEY")
             if agentops_key:
-                agentops.init(api_key=agentops_key, agent_name="EvaluationAgent")
+                # Use start_session instead of init
+                agentops.start_session(api_key=agentops_key)
                 logger.info("AgentOps initialized successfully")
             else:
                 logger.warning("AgentOps API key not found, monitoring disabled")
@@ -521,9 +525,7 @@ class EvaluationAgent(ChatAgent):
         # Get analysis with retry mechanism
         for attempt in range(self.max_retries):
             try:
-                response = self.step(
-                    BaseMessage(prompt, role_name="Evaluator", role_type="user")
-                )
+                response = self.step(BaseMessage(content=prompt, role_name="Evaluator"))
                 return response.content
             except Exception as e:
                 logger.warning(
@@ -582,9 +584,7 @@ class EvaluationAgent(ChatAgent):
         # Get recommendations with retry mechanism
         for attempt in range(self.max_retries):
             try:
-                response = self.step(
-                    BaseMessage(prompt, role_name="Evaluator", role_type="user")
-                )
+                response = self.step(BaseMessage(content=prompt, role_name="Evaluator"))
                 return response.content
             except Exception as e:
                 logger.warning(
@@ -778,7 +778,12 @@ class EvaluationAgent(ChatAgent):
             The response from the AI
         """
         try:
-            response = super().step(task_prompt)
+            # Pass model_type and model_platform explicitly when calling the LLM
+            response = self.generate_response(
+                messages=[task_prompt],
+                model_type=self.model_type,
+                model_platform=self.model_platform,
+            )
             return response
         except Exception as e:
             logger.error(f"Error during AI interaction: {str(e)}")

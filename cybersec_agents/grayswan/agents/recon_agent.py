@@ -52,9 +52,13 @@ class ReconAgent(ChatAgent):
         next phases of the red-teaming operation.
         """
 
-        super().__init__(
-            system_message, model_type=model_type, model_platform=model_platform
-        )
+        # Initialize the ChatAgent with the updated API
+        super().__init__(system_message)
+
+        # Store model information to use when generating responses
+        self.model_type = model_type
+        self.model_platform = model_platform
+
         self.report_path = os.path.join("data", "recon_reports")
         os.makedirs(self.report_path, exist_ok=True)
         self.discord_scraper = DiscordScraper()
@@ -66,7 +70,7 @@ class ReconAgent(ChatAgent):
 
             agentops_key = os.getenv("AGENTOPS_API_KEY")
             if agentops_key:
-                agentops.init(api_key=agentops_key, agent_name="ReconAgent")
+                agentops.start_session(api_key=agentops_key)
                 logger.info("AgentOps initialized successfully")
             else:
                 logger.warning("AgentOps API key not found, monitoring disabled")
@@ -236,7 +240,7 @@ class ReconAgent(ChatAgent):
             try:
                 # Get AI analysis
                 analysis_response = self.step(
-                    BaseMessage(analysis_prompt, role_name="Analyst", role_type="user")
+                    BaseMessage(content=analysis_prompt, role_name="Analyst")
                 )
                 analysis_content = analysis_response.content
 
@@ -311,7 +315,12 @@ class ReconAgent(ChatAgent):
             The response from the AI
         """
         try:
-            response = super().step(task_prompt)
+            # Pass model_type and model_platform explicitly when calling the LLM
+            response = self.generate_response(
+                messages=[task_prompt],
+                model_type=self.model_type,
+                model_platform=self.model_platform,
+            )
             return response
         except Exception as e:
             logger.error(f"Error during AI interaction: {str(e)}")
