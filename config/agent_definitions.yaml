@@ -1,0 +1,75 @@
+# Agent Definitions for Gray Swan Arena
+# This file defines the agents and their configurations
+
+agents:
+  recon:
+    type: "ReconAgent"
+    description: "Agent responsible for reconnaissance activities and data gathering"
+    model: "gpt-4"
+    backup_model: "gpt-4o"
+    capabilities:
+      - web_search
+      - metadata_extraction
+      - data_gathering
+      - threat_intelligence
+    parameters:
+      search_depth: 3
+      max_queries_per_minute: 10
+      data_freshness_days: 30
+  
+  exploit_delivery:
+    type: "ExploitAgent"
+    description: "Agent responsible for exploit delivery and execution"
+    model: "gpt-4"
+    backup_model: "gpt-3.5-turbo"
+    capabilities:
+      - vulnerability_analysis
+      - payload_generation
+      - evasion_techniques
+    parameters:
+      analysis_depth: 2
+      retry_attempts: 3
+      safety_checks: true
+  
+  prompt_engineer:
+    type: "PromptEngineerAgent"
+    description: "Agent responsible for crafting and optimizing prompts"
+    model: "gpt-4o"
+    backup_model: "gpt-4"
+    capabilities:
+      - prompt_optimization
+      - context_window_management
+      - template_generation
+    parameters:
+      optimization_iterations: 3
+      evaluation_metrics:
+        - clarity
+        - specificity
+        - efficiency
+  
+  evaluation:
+    type: "EvaluationAgent"
+    description: "Agent responsible for evaluating results and providing feedback"
+    model: "o3-mini"
+    backup_model: "gpt-4o"
+    capabilities:
+      - result_validation
+      - success_metrics
+      - error_analysis
+    parameters:
+      validation_criteria:
+        - accuracy
+        - completeness
+        - relevance
+      threshold_score: 0.75
+
+# Agent interaction rules
+interaction_rules:
+  max_conversation_turns: 10
+  timeout_seconds: 300
+  retry_policy:
+    max_retries: 3
+    backoff_factor: 2.0
+  error_handling:
+    log_errors: true
+    terminate_on_critical: true 

@@ -1,0 +1,157 @@
+# Gray Swan Arena Example Configuration
+# This file provides a template for configuring the Gray Swan Arena pipeline.
+# Copy this file to config/development.yml or another location and customize as needed.
+
+# Logging configuration
+logging:
+  level: INFO  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/grayswan.log"  # Set to null to disable file logging
+  console: true  # Whether to log to console
+
+# Model configuration
+models:
+  # Default model configurations
+  default:
+    model_type: GPT_4  # Default model type
+    model_platform: OPENAI  # Default model platform
+    temperature: 0.7  # Default temperature for generation
+    max_tokens: 1000  # Default maximum tokens for generation
+    top_p: 1.0  # Default top_p for generation
+    frequency_penalty: 0.0  # Default frequency penalty
+    presence_penalty: 0.0  # Default presence penalty
+    
+  # Specific model configurations (overrides defaults)
+  GPT_4:
+    temperature: 0.8
+    max_tokens: 2000
+    
+  CLAUDE_3_OPUS:
+    temperature: 0.7
+    max_tokens: 4000
+    
+  GEMINI_PRO:
+    temperature: 0.9
+    max_tokens: 1500
+
+# Agent configuration
+agents:
+  # Reconnaissance agent configuration
+  recon:
+    model_type: GPT_4  # Model type for recon agent
+    model_platform: OPENAI  # Model platform for recon agent
+    backup_model_type: CLAUDE_3_SONNET  # Backup model type
+    backup_model_platform: ANTHROPIC  # Backup model platform
+    max_retries: 3  # Maximum number of retries for API calls
+    retry_delay: 2  # Delay between retries in seconds
+    
+  # Prompt engineering agent configuration
+  prompt_engineer:
+    model_type: GPT_4_TURBO  # Model type for prompt engineering agent
+    model_platform: OPENAI  # Model platform for prompt engineering agent
+    reasoning_model_type: O3_MINI  # Model type for reasoning
+    reasoning_model_platform: OPENAI  # Model platform for reasoning
+    max_retries: 3  # Maximum number of retries for API calls
+    retry_delay: 2  # Delay between retries in seconds
+    
+  # Exploit delivery agent configuration
+  exploit_delivery:
+    model_type: GPT_4  # Model type for exploit delivery agent
+    model_platform: OPENAI  # Model platform for exploit delivery agent
+    backup_model_type: CLAUDE_3_SONNET  # Backup model type
+    backup_model_platform: ANTHROPIC  # Backup model platform
+    max_retries: 3  # Maximum number of retries for API calls
+    retry_delay: 2  # Delay between retries in seconds
+    
+  # Evaluation agent configuration
+  evaluation:
+    model_type: GPT_4  # Model type for evaluation agent
+    model_platform: OPENAI  # Model platform for evaluation agent
+    reasoning_model_type: O3_MINI  # Model type for reasoning
+    reasoning_model_platform: OPENAI  # Model platform for reasoning
+    max_retries: 3  # Maximum number of retries for API calls
+    retry_delay: 2  # Delay between retries in seconds
+
+# Pipeline configuration
+pipeline:
+  max_prompts: 10  # Maximum number of prompts to generate
+  max_concurrent: 3  # Maximum number of concurrent tasks
+  test_method: api  # Method to use for testing (api or web)
+  output_dir: ./output  # Directory to save output files
+  
+  # Visualization options
+  visualizations:
+    include_advanced: true  # Whether to include advanced visualizations
+    include_dashboard: true  # Whether to generate an interactive dashboard
+    
+  # Dead letter queue configuration
+  dead_letter_queue:
+    enabled: true  # Whether to enable the dead letter queue
+    storage_path: ./output/dead_letter_queue  # Path to store dead letter queue messages
+    max_size: 1000  # Maximum number of messages to store in the queue
+
+# API keys and credentials
+# Note: It's recommended to use environment variables instead of storing credentials in this file
+credentials:
+  openai_api_key: ${OPENAI_API_KEY}  # OpenAI API key (from environment variable)
+  anthropic_api_key: ${ANTHROPIC_API_KEY}  # Anthropic API key (from environment variable)
+  google_api_key: ${GOOGLE_API_KEY}  # Google API key (from environment variable)
+  agentops_api_key: ${AGENTOPS_API_KEY}  # AgentOps API key (from environment variable)
+
+# Example configuration for Gray Swan Arena
+models:
+  - type: SONA_PRO
+    platform: PERPLEXITY
+    api_key_env: PERPLEXITY_API_KEY
+    base_url: "https://api.perplexity.ai"
+    timeout: 60
+    max_retries: 5
+    temperature: 0.8
+    max_tokens: 4096
+  - type: GPT_4
+    platform: OPENAI
+    api_key_env: OPENAI_API_KEY
+    base_url: "https://api.openai.com/v1"
+    timeout: 30
+    max_retries: 3
+    temperature: 0.7
+    max_tokens: 2048
+  - type: CLAUDE_3_SONNET
+    platform: ANTHROPIC
+    api_key_env: ANTHROPIC_API_KEY
+    base_url: "https://api.anthropic.com/v1"
+    timeout: 30
+    max_retries: 3
+    temperature: 0.7
+    max_tokens: 2048
+  - type: GEMINI_PRO
+    platform: GOOGLE
+    api_key_env: GEMINI_API_KEY
+    base_url: "https://generativelanguage.googleapis.com/v1beta"
+    timeout: 30
+    max_retries: 3
+    temperature: 0.7
+    max_tokens: 2048
+
+agents:
+  my_agent:
+    output_dir: "outputs/my_agent"
+    model_type: SONA_PRO
+    model_platform: PERPLEXITY
+    backup_model_type: GPT_4
+    backup_model_platform: OPENAI
+    complexity_threshold: 0.8
+  
+  research_agent:
+    output_dir: "outputs/research_agent"
+    model_type: CLAUDE_3_SONNET
+    model_platform: ANTHROPIC
+    backup_model_type: GEMINI_PRO
+    backup_model_platform: GOOGLE
+    complexity_threshold: 0.7
+
+api:
+  discord_token: null
+  agentops_key: null
+  rate_limit_delay: 1.5
+  max_concurrent: 10 

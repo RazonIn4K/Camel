@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-03-15T03:44:57.441013",
+  "num_prompts_tested": 0,
+  "summaries": [],
+  "visualizations": {
+    "classification_chart": "reports/evaluations/visualizations/edge_case_results_20250315_034457_evaluation_agent_20250315034419_gpt-4_classification.png",
+    "success_rate_chart_error": "cannot convert float NaN to integer"
+  },
+  "meta": {
+    "evaluation_model": "gpt-4",
+    "agent_id": "evaluation_agent_20250315034419"
+  }
+}

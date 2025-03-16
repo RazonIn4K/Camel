@@ -1,0 +1,89 @@
+{
+  "n_clusters": 4,
+  "clusters": [
+    {
+      "cluster_id": 0,
+      "size": 10,
+      "success_rate": 0.0,
+      "avg_prompt_length": 273.0,
+      "avg_response_time": 0.0,
+      "common_models": {
+        "Unknown": 10
+      },
+      "common_prompt_types": {
+        "Unknown": 10
+      },
+      "common_attack_vectors": {
+        "Unknown": 10
+      },
+      "feature_importance": {
+        "prompt_length": 0.9226277223679861,
+        "response_time": 0,
+        "success": 0
+      }
+    },
+    {
+      "cluster_id": 1,
+      "size": 4,
+      "success_rate": 0.0,
+      "avg_prompt_length": 218.5,
+      "avg_response_time": 0.0,
+      "common_models": {
+        "Unknown": 4
+      },
+      "common_prompt_types": {
+        "Unknown": 4
+      },
+      "common_attack_vectors": {
+        "Unknown": 4
+      },
+      "feature_importance": {
+        "prompt_length": 0.7876855724978381,
+        "response_time": 0,
+        "success": 0
+      }
+    },
+    {
+      "cluster_id": 2,
+      "size": 4,
+      "success_rate": 0.0,
+      "avg_prompt_length": 201.0,
+      "avg_response_time": 0.0,
+      "common_models": {
+        "Unknown": 4
+      },
+      "common_prompt_types": {
+        "Unknown": 4
+      },
+      "common_attack_vectors": {
+        "Unknown": 4
+      },
+      "feature_importance": {
+        "prompt_length": 1.33686874057402,
+        "response_time": 0,
+        "success": 0
+      }
+    },
+    {
+      "cluster_id": 3,
+      "size": 2,
+      "success_rate": 0.0,
+      "avg_prompt_length": 232.0,
+      "avg_response_time": 0.0,
+      "common_models": {
+        "Unknown": 2
+      },
+      "common_prompt_types": {
+        "Unknown": 2
+      },
+      "common_attack_vectors": {
+        "Unknown": 2
+      },
+      "feature_importance": {
+        "prompt_length": 0.3640299856962119,
+        "response_time": 0,
+        "success": 0
+      }
+    }
+  ]
+}

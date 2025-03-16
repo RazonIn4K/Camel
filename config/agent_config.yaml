@@ -1,0 +1,217 @@
+# Configuration for Cyber Writer Tool
+# WARNING: Never commit this file with actual API keys to version control
+
+# API Keys and Authentication
+api:
+  openai:
+    api_key: ${OPENAI_API_KEY}
+  anthropic:
+    api_key: ${ANTHROPIC_API_KEY}
+  google:
+    project_id: ${GCP_PROJECT_ID}
+    api_key: ${GCP_API_KEY}
+  camel:
+    api_key: "${CAMEL_API_KEY}" # If required
+  research_tools:
+    google_api_key: "${GOOGLE_API_KEY}"
+    news_api_key: "${NEWS_API_KEY}"
+    nvd_api_key: "${NVD_API_KEY}" # National Vulnerability Database
+
+# Model Settings
+model:
+  # Provider options: "anthropic", "openai", "google"
+  provider: "anthropic"
+  
+  # Anthropic Settings
+  anthropic:
+    model_name: "claude-3-7-sonnet-20250219"
+    backup_model_name: "claude-3-5-sonnet-latest"
+    context_window: 200000
+    temperature: 0.7
+    max_tokens: 4096
+    response_format:
+      type: "json"
+      schema:
+        type: "object"
+        properties:
+          analysis: 
+            type: "string"
+          recommendations:
+            type: "array"
+          confidence:
+            type: "number"
+  
+  # OpenAI Settings
+  openai:
+    model_name: "o3-mini"
+    backup_model_name: "GPT-4o"
+    max_tokens: 4000
+    temperature: 0.7
+    top_p: 1.0
+    frequency_penalty: 0.0
+    presence_penalty: 0.0
+    
+  # Google AI Settings
+  google:
+    model_name: "gemini-2.0-pro-exp-02-05"
+    backup_model_name: "gemini-2.0-flash-lite-001"
+    location: "us-central1"
+    project_id: ${GCP_PROJECT_ID}
+    temperature: 0.7
+    max_tokens: 4096
+
+# Content Generation Settings
+content:
+  default_word_count: 1500
+  tone: "professional"
+  expertise_level: "advanced" # beginner, intermediate, advanced
+  include_sources: true
+  include_code_samples: true
+  formats:
+    - markdown
+    - html
+
+# Cybersecurity Topics Focus
+topics:
+  categories:
+    - network_security
+    - application_security
+    - cloud_security
+    - cryptography
+    - incident_response
+    - ethical_hacking
+    - malware_analysis
+    - security_awareness
+  priority_tags:
+    - zero_day
+    - ransomware
+    - supply_chain
+    - ai_security
+
+# Research Tools Configuration
+research:
+  enable_web_search: true
+  enable_cvss_lookup: true
+  max_search_results: 8
+  recency_priority: "high" # low, medium, high
+  verify_sources: true
+  
+# Output Settings
+output:
+  directory: "./output/"
+  save_format: "markdown"
+  create_summary: true
+  create_meta_description: true
+  seo_optimization: true
+  
+# Monetization Settings
+monetization:
+  pricing_tiers:
+    basic:
+      price: 29.99
+      features:
+        - blog_generation
+        - basic_assessment
+      limits:
+        blogs_per_month: 5
+        assessments_per_month: 2
+    
+    professional:
+      price: 99.99
+      features:
+        - blog_generation
+        - advanced_assessment
+        - marketing_material
+      limits:
+        blogs_per_month: 20
+        assessments_per_month: 10
+    
+    enterprise:
+      price: 299.99
+      features:
+        - unlimited_blogs
+        - comprehensive_assessment
+        - custom_reports
+        - api_access
+      limits:
+        blogs_per_month: -1  # unlimited
+        assessments_per_month: -1  # unlimited
+  enable_affiliate_links: true
+  affiliate_programs:
+    - name: "Amazon"
+      id: "YOUR_AMAZON_ID"
+    - name: "DigitalOcean"
+      id: "YOUR_DO_REFERRAL_CODE"
+  ad_placement: "strategic" # none, minimal, strategic, aggressive
+  
+# Hosting Settings
+hosting:
+  platform: "local"
+  auto_deploy: false
+  
+# Logging Configuration
+logging:
+  level: "info" # debug, info, warning, error
+  file: "./logs/cyber_writer.log"
+  max_file_size_mb: 10
+  backup_count: 5
+
+# Codebase Analyzer Configuration
+codebase_analyzer:
+  memory:
+    db_path: ".agent_memory.db"
+    history_limit: 10
+    
+  analysis:
+    ignore_patterns:
+      - "*.pyc"
+      - "__pycache__"
+      - "venv/*"
+      - ".git/*"
+    
+  embedding:
+    model: "text-embedding-ada-002"
+    chunk_size: 1000
+    
+  response:
+    max_tokens: 4000
+    temperature: 0.7
+
+# Wireless Mobile Security Assessor Configuration
+model:
+  provider: "anthropic"
+  anthropic:
+    model_name: "claude-3-7-sonnet-20250219"  # or "claude-3-5-sonnet-latest"
+    context_window: 200000
+    temperature: 0.7
+    max_tokens: 4096
+    response_format:
+      type: "json"
+      schema:
+        type: "object"
+        properties:
+          analysis: 
+            type: "string"
+          recommendations:
+            type: "array"
+          confidence:
+            type: "number"
+
+agents:
+  network:
+    enabled: true
+    scan_interval: 300
+  
+  wireless:
+    enabled: true
+    monitoring: true
+  
+  forensics:
+    enabled: true
+    retention_days: 30
+
+reporting:
+  format: "markdown"
+  output_dir: "reports/"
+  include_metrics: true
+

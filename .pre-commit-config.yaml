@@ -1,0 +1,30 @@
+repos:
+-   repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+    -   id: black
+        args: [--line-length=88, --target-version=py37]
+-   repo: https://github.com/pycqa/isort
+    rev: 6.0.1
+    hooks:
+    -   id: isort
+        args: [--profile=black, --line-length=88]
+-   repo: https://github.com/PyCQA/autoflake
+    rev: v2.2.1
+    hooks:
+    -   id: autoflake
+        args: [--remove-all-unused-imports, --remove-unused-variables]
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+    -   id: mypy
+        additional_dependencies:
+            - types-PyYAML
+            - types-requests
+            - types-setuptools
+        args: [
+            --ignore-missing-imports,
+            --config-file=mypy.ini
+        ]
+        exclude: ^venv/|^\.venv/|^\.env/
+        files: ^(cybersec_agents|tests)/.*\.py$

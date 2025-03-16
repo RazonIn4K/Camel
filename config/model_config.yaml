@@ -1,0 +1,51 @@
+# Model Configuration for Gray Swan Arena
+# This file defines the models and their parameters used by the agents
+
+# Default model to use when not explicitly specified
+default_model: "gpt-4"
+
+# Model definitions
+models:
+  gpt-4:
+    temperature: 0.7
+    max_tokens: 8192
+    top_p: 1.0
+    presence_penalty: 0.0
+    frequency_penalty: 0.0
+    retry_attempts: 3
+    retry_delay: 2.0
+    
+  gpt-4o:
+    temperature: 0.8
+    max_tokens: 8192
+    top_p: 1.0
+    presence_penalty: 0.0
+    frequency_penalty: 0.0
+    retry_attempts: 3
+    retry_delay: 2.0
+
+  gpt-3.5-turbo:
+    temperature: 0.7
+    max_tokens: 4096
+    top_p: 1.0
+    presence_penalty: 0.0
+    frequency_penalty: 0.0
+    retry_attempts: 3
+    retry_delay: 1.0
+    
+  o3-mini:
+    temperature: 0.5
+    max_tokens: 4096
+    top_p: 0.9
+    presence_penalty: 0.1
+    frequency_penalty: 0.1
+    retry_attempts: 2
+    retry_delay: 1.0
+
+# Model selection criteria for specific tasks
+task_models:
+  prompt_engineering: "gpt-4o"
+  recon: "gpt-4"
+  exploit_delivery: "gpt-4"
+  evaluation: "o3-mini"
+  backup: "gpt-3.5-turbo" 
