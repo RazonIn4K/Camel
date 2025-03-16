@@ -13,7 +13,11 @@ repos:
     rev: v2.2.1
     hooks:
     -   id: autoflake
-        args: [--remove-all-unused-imports, --remove-unused-variables]
+        args: [
+            --remove-all-unused-imports,
+            --remove-unused-variables,
+            --in-place
+        ]
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.8.0
     hooks:
@@ -22,9 +26,5 @@ repos:
             - types-PyYAML
             - types-requests
             - types-setuptools
-        args: [
-            --ignore-missing-imports,
-            --config-file=mypy.ini
-        ]
-        exclude: ^venv/|^\.venv/|^\.env/
-        files: ^(cybersec_agents|tests)/.*\.py$
+        args: [--config-file=pyproject.toml]
+        exclude: ^(venv/|\.venv/|\.env/)

@@ -19,9 +19,9 @@ pre-commit run mypy
 
 echo "✅ Fix process completed!"
 echo 
-echo "If there are still mypy errors, you can:"
-echo "1. Edit the mypy.ini file to add more ignored modules"
-echo "2. Add more specific type annotations to your code"
-echo "3. Use the bypass_mypy.sh script for committing changes: ./scripts/bypass_mypy.sh \"Your commit message\""
+echo "If there are still mypy errors:"
+echo "1. Add specific type annotations to your code"
+echo "2. Add module-specific overrides in pyproject.toml if needed"
+echo "3. Run 'mypy --show-error-codes' to identify specific issues"
 echo
 echo "For a long-term solution, consider gradually improving type safety in your codebase." 

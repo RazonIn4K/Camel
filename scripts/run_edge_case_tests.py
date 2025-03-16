@@ -583,4 +583,161 @@ def main():
         raise
 
 if __name__ == "__main__":
-    main() 
+    main()
+
+import os
+import sys
+import json
+import importlib
+from typing import Dict, List, Any
+
+def discover_tests(tests_dir: str = 'tests/edge_cases'):
+    """Discover all test modules in the given directory."""
+    test_modules = []
+    
+    # Ensure the directory exists
+    if not os.path.isdir(tests_dir):
+        print(f"Warning: Test directory {tests_dir} not found.")
+        return test_modules
+        
+    # Find all Python files that start with test_
+    for filename in os.listdir(tests_dir):
+        if filename.startswith('test_') and filename.endswith('.py'):
+            module_name = filename[:-3]  # Remove .py extension
+            test_modules.append(module_name)
+            
+    return test_modules
+
+def run_tests(prompt_response_pairs: List[Dict[str, str]], 
+              tests_dir: str = 'tests/edge_cases') -> Dict[str, Any]:
+    """Run edge case tests on the given prompt/response pairs.
+    
+    Args:
+        prompt_response_pairs: List of dicts with 'prompt' and 'response' keys
+        tests_dir: Directory containing test modules
+        
+    Returns:
+        Dict containing test results
+    """
+    # Make sure tests_dir is in the Python path
+    if tests_dir not in sys.path:
+        sys.path.append(tests_dir)
+        
+    # Discover test modules
+    test_modules = discover_tests(tests_dir)
+    
+    # Initialize results
+    results = {
+        "test_results": {},
+        "summary": {
+            "total_tests": 0,
+            "passed_tests": 0,
+            "failed_tests": 0
+        }
+    }
+    
+    # Run each test on each prompt/response pair
+    for module_name in test_modules:
+        try:
+            # Import the test module
+            module = importlib.import_module(module_name)
+            
+            # Initialize test results for this module
+            results["test_results"][module_name] = {
+                "passed": True,
+                "details": [],
+                "errors": []
+            }
+            
+            # Run the test for each prompt/response pair
+            for idx, pair in enumerate(prompt_response_pairs):
+                prompt = pair.get("prompt", "")
+                response = pair.get("response", "")
+                
+                try:
+                    # Check if the module has a run_test function
+                    if hasattr(module, 'run_test'):
+                        test_result = module.run_test(prompt, response)
+                        
+                        # Record results
+                        pair_result = {
+                            "prompt_idx": idx,
+                            "passed": test_result.get("passed", False),
+                            "details": test_result.get("details", "")
+                        }
+                        
+                        results["test_results"][module_name]["details"].append(pair_result)
+                        
+                        # Update the overall pass status for this test
+                        if not pair_result["passed"]:
+                            results["test_results"][module_name]["passed"] = False
+                    else:
+                        results["test_results"][module_name]["errors"].append(
+                            f"Module {module_name} does not have a run_test function"
+                        )
+                        results["test_results"][module_name]["passed"] = False
+                except Exception as e:
+                    # Record the error
+                    results["test_results"][module_name]["errors"].append(
+                        f"Error running test on prompt {idx}: {str(e)}"
+                    )
+                    results["test_results"][module_name]["passed"] = False
+                    
+            # Update summary counts
+            results["summary"]["total_tests"] += 1
+            if results["test_results"][module_name]["passed"]:
+                results["summary"]["passed_tests"] += 1
+            else:
+                results["summary"]["failed_tests"] += 1
+                
+        except Exception as e:
+            # Record the error for this module
+            results["test_results"][module_name] = {
+                "passed": False,
+                "details": [],
+                "errors": [f"Error importing module: {str(e)}"]
+            }
+            results["summary"]["total_tests"] += 1
+            results["summary"]["failed_tests"] += 1
+            
+    # Generate overall summary
+    if results["summary"]["total_tests"] > 0:
+        results["summary"]["pass_rate"] = results["summary"]["passed_tests"] / results["summary"]["total_tests"]
+    else:
+        results["summary"]["pass_rate"] = 0
+        
+    return results
+
+if __name__ == "__main__":
+    # Example usage via command line
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Run edge case tests on prompt/response pairs')
+    parser.add_argument('--input', type=str, required=True, 
+                        help='Path to JSON file containing prompt/response pairs')
+    parser.add_argument('--output', type=str, default='edge_case_results.json',
+                        help='Path to save test results')
+    parser.add_argument('--tests-dir', type=str, default='tests/edge_cases',
+                        help='Directory containing test modules')
+    
+    args = parser.parse_args()
+    
+    # Load prompt/response pairs from input file
+    try:
+        with open(args.input, 'r') as f:
+            prompt_response_pairs = json.load(f)
+    except Exception as e:
+        print(f"Error loading input file: {str(e)}")
+        sys.exit(1)
+    
+    # Run tests
+    results = run_tests(prompt_response_pairs, args.tests_dir)
+    
+    # Save results
+    try:
+        with open(args.output, 'w') as f:
+            json.dump(results, f, indent=2)
+        print(f"Results saved to {args.output}")
+    except Exception as e:
+        print(f"Error saving results: {str(e)}")
+        print(json.dumps(results, indent=2))
