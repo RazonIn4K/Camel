@@ -22,19 +22,27 @@ class GraySwanError(Exception):
 
 
 class ModelError(Exception):
-    """Base exception for model-related errors."""
-
-    def __init__(self, message: str, operation: str = "", details: Optional[Dict[str, Any]] = None):
-        """Initialize the ModelError.
-
-        Args:
-            message: Error message
-            operation: Operation that failed
-            details: Additional error details
+    """Custom exception for model-related errors."""
+    
+    def __init__(self, message: str, model: Optional[str] = None, details: Optional[Dict[str, Any]] = None):
         """
-        super().__init__(message)
-        self.operation = operation
+        Initialize the ModelError.
+        
+        Args:
+            message (str): The error message.
+            model (Optional[str]): The name of the model (optional).
+            details (Optional[Dict[str, Any]]): Additional error details (optional).
+        """
+        self.message = message
+        self.model = model
         self.details = details or {}
+        super().__init__(message)
+
+    def __str__(self):
+        """String representation of the error."""
+        if self.model:
+            return f"{self.message} (Model: {self.model})"
+        return self.message
 
 
 class ModelConfigError(ModelError):
@@ -47,7 +55,7 @@ class ModelConfigError(ModelError):
             message: Error message
             details: Additional error details
         """
-        super().__init__(message, "config", details)
+        super().__init__(message, model="config", details=details)
 
 
 class ModelBackupError(ModelError):
@@ -78,7 +86,8 @@ class ModelBackupError(ModelError):
             backup_model_type: Type of the backup model
             backup_model_platform: Platform of the backup model
         """
-        super().__init__(message, operation, details)
+        # Fix: properly pass parameters to parent constructor
+        super().__init__(message, model=operation, details=details)
         
         # Support both the old and new parameter styles
         self.primary_model = primary_model
@@ -102,7 +111,7 @@ class RateLimitError(ModelError):
             retry_after: Seconds to wait before retrying
             details: Additional error details
         """
-        super().__init__(message, "rate_limit", details)
+        super().__init__(message, model="rate_limit", details=details)
         self.retry_after = retry_after
 
 
@@ -117,7 +126,7 @@ class ModelTimeoutError(ModelError):
             timeout: Timeout duration in seconds
             details: Additional error details
         """
-        super().__init__(message, "timeout", details)
+        super().__init__(message, model="timeout", details=details)
         self.timeout = timeout
 
 
@@ -132,7 +141,7 @@ class ModelValidationError(ModelError):
             field: Field that failed validation
             details: Additional error details
         """
-        super().__init__(message, "validation", details)
+        super().__init__(message, model="validation", details=details)
         self.field = field
 
 
@@ -147,7 +156,7 @@ class ModelConnectionError(ModelError):
             endpoint: Endpoint that failed to connect
             details: Additional error details
         """
-        super().__init__(message, "connection", details)
+        super().__init__(message, model="connection", details=details)
         self.endpoint = endpoint
 
 
@@ -162,7 +171,7 @@ class ModelAuthenticationError(ModelError):
             provider: Provider that failed authentication
             details: Additional error details
         """
-        super().__init__(message, "authentication", details)
+        super().__init__(message, model="authentication", details=details)
         self.provider = provider
 
 

@@ -44,9 +44,6 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 # Google API Key
 GOOGLE_API_KEY=your_google_api_key
 
-# Perplexity API Key
-PERPLEXITY_API_KEY=your_perplexity_api_key
-
 # Optional: AgentOps API Key for monitoring
 AGENTOPS_API_KEY=your_agentops_api_key
 ```

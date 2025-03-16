@@ -101,9 +101,9 @@ credentials:
 # Example configuration for Gray Swan Arena
 models:
   - type: SONA_PRO
-    platform: PERPLEXITY
-    api_key_env: PERPLEXITY_API_KEY
-    base_url: "https://api.perplexity.ai"
+    platform: OPENAI
+    api_key_env: OPENAI_API_KEY
+    base_url: "https://api.openai.com/v1"
     timeout: 60
     max_retries: 5
     temperature: 0.8
@@ -137,7 +137,7 @@ agents:
   my_agent:
     output_dir: "outputs/my_agent"
     model_type: SONA_PRO
-    model_platform: PERPLEXITY
+    model_platform: OPENAI
     backup_model_type: GPT_4
     backup_model_platform: OPENAI
     complexity_threshold: 0.8

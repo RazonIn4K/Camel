@@ -391,7 +391,7 @@ def create_advanced_clustering(
     output_dir: str,
     n_clusters: int = 4,
     algorithm: str = "kmeans",
-    perplexity: int = 30,
+    tsne_neighbors: int = 30,
     random_state: int = 42,
 ) -> Dict[str, Any]:
     """
@@ -402,7 +402,7 @@ def create_advanced_clustering(
         output_dir: Directory where visualization files will be saved
         n_clusters: Number of clusters for KMeans
         algorithm: Clustering algorithm to use ('kmeans' or 'dbscan')
-        perplexity: Perplexity parameter for t-SNE
+        tsne_neighbors: Number of neighbors parameter for t-SNE (formerly perplexity)
         random_state: Random state for reproducibility
 
     Returns:
@@ -436,7 +436,7 @@ def create_advanced_clustering(
             # Use t-SNE for larger datasets
             tsne = TSNE(
                 n_components=2,
-                perplexity=min(perplexity, len(df) - 1),
+                perplexity=min(tsne_neighbors, len(df) - 1),
                 random_state=random_state,
             )
             reduced_data = tsne.fit_transform(scaled_data)

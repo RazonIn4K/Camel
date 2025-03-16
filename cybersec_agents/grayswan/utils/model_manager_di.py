@@ -24,11 +24,14 @@ from cybersec_agents.grayswan.utils.model_manager import (
     with_exponential_backoff,
 )
 
-# Import from model_utils
+# Import from model_utils and other modules
 from cybersec_agents.grayswan.utils.model_utils import (
-    create_model,
-    get_default_model_type_for_agent,
+    get_model_platform,
+    get_model_type,
+    get_model_name_from_type,
 )
+from cybersec_agents.grayswan.utils.model_factory import create_model
+from cybersec_agents.grayswan.utils.model_type_mapping import get_default_model_type_for_agent
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -173,11 +176,15 @@ class ModelManager:
         if model_name not in self.models:
             try:
                 # Determine model type and platform
-                model_type = get_default_model_type_for_agent("default")
+                # Use model name directly instead of trying to get default model type
+                model_platform = get_model_platform(model_name)
+                model_type = get_model_type(model_name)
 
                 # Create the model
                 model = create_model(
-                    model_type=model_type, model_config_dict={"model_name": model_name}
+                    model_type=model_type,
+                    model_platform=model_platform,
+                    model_config_dict={"model_name": model_name}
                 )
 
                 if model:
@@ -202,10 +209,15 @@ class ModelManager:
         backup_pairs: dict[str, Any] = {
             "gpt-4": "gpt-3.5-turbo",
             "gpt-4-turbo": "gpt-4",
+            "gpt-4o": "gpt-4-turbo",  # Add GPT-4o
             "gpt-3.5-turbo": "gpt-3.5-turbo-instruct",
+            "o3-mini": "gpt-3.5-turbo",  # Add O3-mini
             "claude-2": "claude-instant-1",
             "claude-3-opus": "claude-3-sonnet",
             "claude-3-sonnet": "claude-3-haiku",
+            "claude-3-7-sonnet": "claude-3-sonnet",  # Add Claude 3.7 Sonnet
+            "gemini-2.0-pro-exp-02-05": "gemini-pro",  # Add Gemini 2.0 Pro
+            "gemini-pro": "gpt-3.5-turbo",  # Fallback for Gemini Pro
         }
 
         return backup_pairs.get(model_name)

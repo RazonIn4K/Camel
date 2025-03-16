@@ -23,6 +23,9 @@ class ModelType(Enum):
     GEMINI_PRO_EXPERIMENTAL = auto()
     SONA_PRO = auto()
     O3_MINI = auto()
+    GEMINI_2_PRO = auto()  # Add Gemini
+    CLAUDE_3_7_SONNET = auto()  # Add Claude
+    GPT_4O = auto()  # Add GPT-4o
 
 
 class ModelPlatformType(Enum):
@@ -32,5 +35,4 @@ class ModelPlatformType(Enum):
     ANTHROPIC = auto()
     HUGGINGFACE = auto()
     GOOGLE = auto()
-    PERPLEXITY = auto()
     LOCAL = auto() 

@@ -24,8 +24,8 @@ from cybersec_agents.grayswan.utils.model_factory import (
 )
 from cybersec_agents.grayswan.utils.model_type_mapping import get_default_model_type_for_agent
 from cybersec_agents.grayswan.utils.model_utils import (
-    _get_model_platform,
-    _get_model_type,
+    get_model_platform,
+    get_model_type,
     get_api_key,
 )
 
@@ -254,7 +254,7 @@ class ModelConfigManager:
         # Get model type from agent parameters or default
         model_type_str = agent_params.get("model_type")
         if model_type_str:
-            model_type = _get_model_type(model_type_str)
+            model_type = get_model_type(model_type_str)
         else:
             # Default model types based on agent type
             default_model_types = {
@@ -267,6 +267,6 @@ class ModelConfigManager:
         
         # Get model platform from agent parameters or default
         model_platform_str = agent_params.get("model_platform")
-        model_platform = _get_model_platform(model_platform_str) if model_platform_str else ModelPlatformType.OPENAI
+        model_platform = get_model_platform(model_platform_str) if model_platform_str else ModelPlatformType.OPENAI
         
         return model_type, model_platform
